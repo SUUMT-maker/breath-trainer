@@ -489,7 +489,7 @@
 
     <script>
         // 구글 Apps Script 배포 URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-6MgHRP2HZ0sEfmeavA6IVAfC5yC4OEgR5kG3YE17NNpTRXW8GBIirfjyXNSMlPLYDQ/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxiLo5QlrTv24-cT3B4BFSppkn87bt11_D9YFN9-Ld6Pv9XWlRSIPUwymqgKeJ-zL5LOg/exec';
 
         // 전역 변수
         let currentSet = 1;
@@ -584,7 +584,8 @@
         }
 
         // 사용자 정보 표시
-        function displayUserInfo(userInfo) {
+        function displayUserInfo(result) {
+            const userInfo = result.success ? result : result; // 새로운 형식과 기존 형식 모두 지원
             currentUserInfo = userInfo;
             const userBadge = document.getElementById('userBadge');
             const userDescription = document.getElementById('userDescription');
@@ -601,7 +602,8 @@
         }
 
         // 사용자 통계 표시
-        function displayUserStats(stats) {
+        function displayUserStats(result) {
+            const stats = result.success ? result : result; // 새로운 형식과 기존 형식 모두 지원
             currentUserStats = stats;
             document.getElementById('totalExercises').textContent = stats.totalExercises;
             document.getElementById('consecutiveDays').textContent = stats.consecutiveDays;
@@ -612,7 +614,8 @@
         // 히스토리 로드
         async function loadHistory() {
             try {
-                const history = await callAPI('getExerciseHistory', { limit: 5 });
+                const result = await callAPI('getExerciseHistory', { limit: 5 });
+                const history = result.data || result; // 새로운 형식과 기존 형식 모두 지원
                 displayHistory(history);
             } catch (error) {
                 console.error('히스토리 로드 오류:', error);

@@ -488,7 +488,7 @@
     </div>
 
     <script>
-        // 구글 Apps Script 배포 URL (여기에 실제 URL 입력)
+        // 구글 Apps Script 배포 URL
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-6MgHRP2HZ0sEfmeavA6IVAfC5yC4OEgR5kG3YE17NNpTRXW8GBIirfjyXNSMlPLYDQ/exec';
 
         // 전역 변수
@@ -503,18 +503,16 @@
         let currentUserInfo = null;
         let currentUserStats = null;
 
-        // 구글 Apps Script 호출 함수
+        // 수정된 구글 Apps Script 호출 함수 (GET 요청)
         async function callGoogleScript(functionName, parameters = {}) {
             try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
+                const url = `${SCRIPT_URL}?function=${functionName}&parameters=${encodeURIComponent(JSON.stringify(parameters))}`;
+                
+                const response = await fetch(url, {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        function: functionName,
-                        parameters: parameters
-                    })
+                    }
                 });
 
                 if (!response.ok) {

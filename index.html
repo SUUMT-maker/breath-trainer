@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숨 트레이너</title>
+    
+    <!-- PWA 메타 태그 -->
+    <meta name="description" content="마음을 편안하게 해주는 호흡운동 트레이너 앱">
+    <meta name="keywords" content="호흡운동, 명상, 스트레스 완화, 웰빙, 건강">
+    <meta name="author" content="숨 트레이너">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="숨 트레이너">
+    
+    <!-- 매니페스트 링크 -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- 파비콘 및 아이콘 -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="/icons/icon-180x180.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .start-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .start-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .user-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-badge.anonymous {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+        }
+
+        .user-stats {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-stats h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .history {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .history h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-date {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .history-stats {
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            margin: 2rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+            transform: scale(0.7);
+        }
+
+        .breathing-circle.inhale {
+            transform: scale(1.2);
+            box-shadow: 0 0 50px rgba(102, 126, 234, 0.6);
+            transition: all 4s ease;
+        }
+
+        .breathing-circle.hold {
+            transform: scale(1.2);
+            box-shadow: 0 0 50px rgba(102, 126, 234, 0.6);
+            transition: none;
+        }
+
+        .breathing-circle.exhale {
+            transform: scale(0.7);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+            transition: all 4s ease;
+        }
+
+        .breathing-circle.exhale-hold {
+            transform: scale(0.7);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+            transition: none;
+        }
+
+        .countdown {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 2rem 0;
+        }
+
+        .status-text {
+            font-size: 2rem;
+            margin: 1rem 0;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .progress-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin: 1rem 0;
+        }
+
+        .control-buttons {
+            margin-top: 2rem;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+        }
+
+        .result-content {
+            text-align: left;
+            margin: 1.5rem 0;
+        }
+
+        .result-section {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-section h4 {
+            color: #333;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .result-section p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .celebration {
+            font-size: 3rem;
+            margin: 1rem 0;
+        }
+
+        .achievement-badge {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 0.5rem;
+            display: inline-block;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .start-button {
+                width: 150px;
+                height: 150px;
+                font-size: 1.2rem;
+            }
+
+            .breathing-circle {
+                width: 150px;
+                height: 150px;
+            }
+
+            .countdown {
+                font-size: 3rem;
+            }
+
+            .status-text {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 메인 화면 -->
+        <div id="mainScreen" class="screen active">
+            <h1>숨 트레이너</h1>
+            <p class="subtitle">마음을 편안하게 해주는 호흡운동</p>
+            
+            <div class="user-info">
+                <div class="user-badge" id="userBadge">사용자 정보 로딩중...</div>
+                <div id="userDescription">사용자 정보를 불러오는 중...</div>
+            </div>
+            
+            <button class="start-button" onclick="startExercise()">
+                운동 시작
+            </button>
+            
+            <div class="user-stats">
+                <h3>나의 운동 통계</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalExercises">0</div>
+                        <div class="stat-label">총 운동 횟수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="consecutiveDays">0</div>
+                        <div class="stat-label">연속 운동 일수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="completionRate">0%</div>
+                        <div class="stat-label">완료율</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalBreaths">0</div>
+                        <div class="stat-label">총 호흡 횟수</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="history">
+                <h3>최근 운동 기록</h3>
+                <div id="historyList">
+                    <p style="color: #999;">기록을 불러오는 중...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 운동 화면 -->
+        <div id="exerciseScreen" class="screen">
+            <div id="countdownSection">
+                <h2>준비하세요</h2>
+                <div class="countdown" id="countdown">3</div>
+            </div>
+
+            <div id="breathingSection" style="display: none;">
+                <div class="breathing-circle" id="breathingCircle">
+                    <span id="circleText">준비</span>
+                </div>
+                <div class="status-text" id="statusText">준비</div>
+                <div class="progress-text" id="progressText">3세트 중 1세트, 10회 중 1회</div>
+                
+                <div class="control-buttons">
+                    <button class="btn btn-secondary" onclick="pauseExercise()">일시정지</button>
+                    <button class="btn btn-secondary" onclick="stopExercise()">중단</button>
+                </div>
+            </div>
+
+            <div id="restSection" style="display: none;">
+                <h2>휴식 시간</h2>
+                <div class="countdown" id="restCountdown">120</div>
+                <p style="color: #666; margin: 1rem 0;">다음 세트까지 휴식하세요</p>
+                <div class="progress-text" id="restProgressText">1세트 완료</div>
+                
+                <div class="control-buttons">
+                    <button class="btn btn-success" onclick="skipRest()">휴식 건너뛰기</button>
+                    <button class="btn btn-secondary" onclick="stopExercise()">중단</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div id="resultScreen" class="screen">
+            <div class="celebration">🎉</div>
+            <h2>운동 완료!</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalTime">0분 0초</div>
+                    <div class="stat-label">총 시간</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="completedSets">0/3</div>
+                    <div class="stat-label">완료 세트</div>
+                </div>
+            </div>
+
+            <div id="achievementBadges"></div>
+
+            <div class="result-content">
+                <div class="result-section">
+                    <h4>💪 트레이너 조언</h4>
+                    <p id="trainerAdvice">조언을 불러오는 중...</p>
+                </div>
+
+                <div class="result-section">
+                    <h4>🌟 운동 효과</h4>
+                    <p id="exerciseEffect">효과를 불러오는 중...</p>
+                </div>
+
+                <div class="result-section">
+                    <h4>📊 업데이트된 통계</h4>
+                    <p id="updatedStats">통계를 업데이트하는 중...</p>
+                </div>
+            </div>
+
+            <div class="control-buttons">
+                <button class="btn btn-success" onclick="startExercise()">다시 운동하기</button>
+                <button class="btn" onclick="goToMain()">메인으로</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 구글 Apps Script 배포 URL (여기에 실제 URL 입력)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-6MgHRP2HZ0sEfmeavA6IVAfC5yC4OEgR5kG3YE17NNpTRXW8GBIirfjyXNSMlPLYDQ/exec';
+
+        // 전역 변수
+        let currentSet = 1;
+        let currentBreath = 1;
+        let exerciseStartTime;
+        let breathingTimer;
+        let restTimer;
+        let isPaused = false;
+        let isAborted = false;
+        let breathingPhase = 'inhale';
+        let currentUserInfo = null;
+        let currentUserStats = null;
+
+        // 구글 Apps Script 호출 함수
+        async function callGoogleScript(functionName, parameters = {}) {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        function: functionName,
+                        parameters: parameters
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('API 호출 오류:', error);
+                throw error;
+            }
+        }
+
+        // 화면 전환
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // 메인 화면으로 이동
+        function goToMain() {
+            showScreen('mainScreen');
+            resetExercise();
+            loadUserData();
+        }
+
+        // 사용자 데이터 로드
+        async function loadUserData() {
+            try {
+                // 사용자 정보 로드
+                const userInfo = await callGoogleScript('getUserInfo');
+                displayUserInfo(userInfo);
+
+                // 사용자 통계 로드
+                const userStats = await callGoogleScript('getUserStats');
+                displayUserStats(userStats);
+
+                // 히스토리 로드
+                await loadHistory();
+            } catch (error) {
+                console.error('사용자 데이터 로드 오류:', error);
+                document.getElementById('userBadge').textContent = '익명 사용자';
+                document.getElementById('userDescription').textContent = '사용자 정보를 불러올 수 없습니다.';
+            }
+        }
+
+        // 사용자 정보 표시
+        function displayUserInfo(userInfo) {
+            currentUserInfo = userInfo;
+            const userBadge = document.getElementById('userBadge');
+            const userDescription = document.getElementById('userDescription');
+
+            if (userInfo.isLoggedIn) {
+                userBadge.textContent = '구글 계정';
+                userBadge.className = 'user-badge';
+                userDescription.textContent = `${userInfo.userId}로 로그인됨`;
+            } else {
+                userBadge.textContent = '익명 사용자';
+                userBadge.className = 'user-badge anonymous';
+                userDescription.textContent = '기기에 저장된 임시 사용자';
+            }
+        }
+
+        // 사용자 통계 표시
+        function displayUserStats(stats) {
+            currentUserStats = stats;
+            document.getElementById('totalExercises').textContent = stats.totalExercises;
+            document.getElementById('consecutiveDays').textContent = stats.consecutiveDays;
+            document.getElementById('completionRate').textContent = stats.completionRate + '%';
+            document.getElementById('totalBreaths').textContent = stats.totalBreaths;
+        }
+
+        // 히스토리 로드
+        async function loadHistory() {
+            try {
+                const history = await callGoogleScript('getExerciseHistory', { limit: 5 });
+                displayHistory(history);
+            } catch (error) {
+                console.error('히스토리 로드 오류:', error);
+                document.getElementById('historyList').innerHTML = '<p style="color: #999;">기록을 불러올 수 없습니다.</p>';
+            }
+        }
+
+        // 히스토리 표시
+        function displayHistory(history) {
+            const historyList = document.getElementById('historyList');
+            
+            if (!history || history.length === 0) {
+                historyList.innerHTML = '<p style="color: #999;">아직 운동 기록이 없습니다.</p>';
+                return;
+            }
+
+            historyList.innerHTML = history.map(record => {
+                const date = new Date(record.timestamp).toLocaleDateString('ko-KR');
+                const time = new Date(record.timestamp).toLocaleTimeString('ko-KR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                const status = record.isAborted ? '중단' : '완료';
+                return `
+                    <div class="history-item">
+                        <div class="history-date">${date} ${time}</div>
+                        <div class="history-stats">${record.completedSets}세트 ${status}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 운동 시작
+        function startExercise() {
+            resetExercise();
+            showScreen('exerciseScreen');
+            startCountdown();
+        }
+
+        // 카운트다운 시작
+        function startCountdown() {
+            let count = 3;
+            const countdownEl = document.getElementById('countdown');
+            
+            const countdownInterval = setInterval(() => {
+                countdownEl.textContent = count;
+                count--;
+                
+                if (count < 0) {
+                    clearInterval(countdownInterval);
+                    startBreathing();
+                }
+            }, 1000);
+        }
+
+        // 호흡운동 시작
+        function startBreathing() {
+            document.getElementById('countdownSection').style.display = 'none';
+            document.getElementById('breathingSection').style.display = 'block';
+            
+            const circle = document.getElementById('breathingCircle');
+            circle.className = 'breathing-circle exhale';
+            
+            exerciseStartTime = new Date();
+            
+            setTimeout(() => {
+                breathingCycle();
+            }, 500);
+        }
+
+        // 호흡 사이클 (4단계)
+        function breathingCycle() {
+            if (isPaused || isAborted) return;
+
+            const circle = document.getElementById('breathingCircle');
+            const statusText = document.getElementById('statusText');
+            const circleText = document.getElementById('circleText');
+            const progressText = document.getElementById('progressText');
+
+            progressText.textContent = `3세트 중 ${currentSet}세트, 10회 중 ${currentBreath}회`;
+
+            if (breathingPhase === 'inhale') {
+                statusText.textContent = '마시기';
+                circleText.textContent = '마시기';
+                circle.className = 'breathing-circle inhale';
+                
+                breathingTimer = setTimeout(() => {
+                    breathingPhase = 'hold';
+                    breathingCycle();
+                }, 4000);
+
+            } else if (breathingPhase === 'hold') {
+                statusText.textContent = '숨참기';
+                circleText.textContent = '숨참기';
+                circle.className = 'breathing-circle hold';
+                
+                breathingTimer = setTimeout(() => {
+                    breathingPhase = 'exhale';
+                    breathingCycle();
+                }, 2000);
+
+            } else if (breathingPhase === 'exhale') {
+                statusText.textContent = '뱉기';
+                circleText.textContent = '뱉기';
+                circle.className = 'breathing-circle exhale';
+                
+                breathingTimer = setTimeout(() => {
+                    breathingPhase = 'exhale-hold';
+                    breathingCycle();
+                }, 4000);
+
+            } else if (breathingPhase === 'exhale-hold') {
+                statusText.textContent = '잠시 멈춤';
+                circleText.textContent = '잠시 멈춤';
+                circle.className = 'breathing-circle exhale-hold';
+                
+                breathingTimer = setTimeout(() => {
+                    currentBreath++;
+                    breathingPhase = 'inhale';
+                    
+                    if (currentBreath > 10) {
+                        currentSet++;
+                        currentBreath = 1;
+                        
+                        if (currentSet > 3) {
+                            completeExercise();
+                        } else {
+                            startRest();
+                        }
+                    } else {
+                        breathingCycle();
+                    }
+                }, 2000);
+            }
+        }
+
+        // 휴식 시간 시작
+        function startRest() {
+            document.getElementById('breathingSection').style.display = 'none';
+            document.getElementById('restSection').style.display = 'block';
+            
+            let restTime = 120;
+            const restCountdownEl = document.getElementById('restCountdown');
+            const restProgressEl = document.getElementById('restProgressText');
+            
+            restProgressEl.textContent = `${currentSet - 1}세트 완료`;
+            
+            restTimer = setInterval(() => {
+                if (isAborted) {
+                    clearInterval(restTimer);
+                    return;
+                }
+                
+                restCountdownEl.textContent = restTime;
+                restTime--;
+                
+                if (restTime < 0) {
+                    clearInterval(restTimer);
+                    startNextSet();
+                }
+            }, 1000);
+        }
+
+        // 휴식 건너뛰기
+        function skipRest() {
+            clearInterval(restTimer);
+            startNextSet();
+        }
+
+        // 다음 세트 시작
+        function startNextSet() {
+            document.getElementById('restSection').style.display = 'none';
+            document.getElementById('breathingSection').style.display = 'block';
+            
+            const circle = document.getElementById('breathingCircle');
+            circle.className = 'breathing-circle exhale';
+            
+            setTimeout(() => {
+                breathingCycle();
+            }, 500);
+        }
+
+        // 운동 일시정지
+        function pauseExercise() {
+            isPaused = !isPaused;
+            const button = event.target;
+            
+            if (isPaused) {
+                clearTimeout(breathingTimer);
+                button.textContent = '계속하기';
+                document.getElementById('statusText').textContent = '일시정지';
+            } else {
+                button.textContent = '일시정지';
+                breathingCycle();
+            }
+        }
+
+        // 운동 중단
+        function stopExercise() {
+            if (confirm('정말 운동을 중단하시겠습니까?')) {
+                isAborted = true;
+                clearTimeout(breathingTimer);
+                clearInterval(restTimer);
+                completeExercise();
+            }
+        }
+
+        // 운동 완료
+        async function completeExercise() {
+            clearTimeout(breathingTimer);
+            clearInterval(restTimer);
+            
+            const exerciseTime = Math.floor((new Date() - exerciseStartTime) / 1000);
+            const minutes = Math.floor(exerciseTime / 60);
+            const seconds = exerciseTime % 60;
+            
+            const exerciseData = {
+                exerciseTime: `${minutes}:${seconds.toString().padStart(2, '0')}`,
+                completedSets: isAborted ? Math.max(0, currentSet - 1) : 3,
+                completedBreaths: isAborted ? Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1)) : 30,
+                isAborted: isAborted
+            };
+
+            showScreen('resultScreen');
+            
+            document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
+            document.getElementById('completedSets').textContent = `${exerciseData.completedSets}/3`;
+            
+            // 서버에 데이터 전송 및 조언 받기
+            try {
+                const result = await callGoogleScript('completeExercise', exerciseData);
+                handleExerciseResult(result);
+            } catch (error) {
+                console.error('운동 완료 처리 오류:', error);
+                document.getElementById('trainerAdvice').textContent = '조언을 불러올 수 없습니다.';
+                document.getElementById('exerciseEffect').textContent = '효과 설명을 불러올 수 없습니다.';
+            }
+        }
+
+        // 운동 결과 처리
+        function handleExerciseResult(result) {
+            if (result.success) {
+                document.getElementById('trainerAdvice').textContent = result.advice;
+                document.getElementById('exerciseEffect').textContent = result.effect;
+                
+                // 업데이트된 통계 표시
+                const stats = result.stats;
+                document.getElementById('updatedStats').textContent = 
+                    `총 운동 횟수: ${stats.totalExercises}, 연속 운동 일수: ${stats.consecutiveDays}일, 완료율: ${stats.completionRate}%`;
+                
+                // 성취 배지 표시
+                displayAchievementBadges(result.stats);
+            } else {
+                document.getElementById('trainerAdvice').textContent = '조언을 불러오는 중 오류가 발생했습니다.';
+                document.getElementById('exerciseEffect').textContent = '효과 설명을 불러오는 중 오류가 발생했습니다.';
+            }
+        }
+
+        // 성취 배지 표시
+        function displayAchievementBadges(stats) {
+            const badgesContainer = document.getElementById('achievementBadges');
+            const badges = [];
+            
+            if (stats.totalExercises === 1) {
+                badges.push('🎯 첫 운동 완료!');
+            }
+            if (stats.totalExercises === 10) {
+                badges.push('🏆 10회 달성!');
+            }
+            if (stats.consecutiveDays >= 7) {
+                badges.push('🔥 일주일 연속!');
+            }
+            if (stats.completionRate >= 80) {
+                badges.push('⭐ 완료율 80%+');
+            }
+            
+            badgesContainer.innerHTML = badges.map(badge => 
+                `<div class="achievement-badge">${badge}</div>`
+            ).join('');
+        }
+
+        // 운동 상태 초기화
+        function resetExercise() {
+            currentSet = 1;
+            currentBreath = 1;
+            isPaused = false;
+            isAborted = false;
+            breathingPhase = 'inhale';
+            clearTimeout(breathingTimer);
+            clearInterval(restTimer);
+            
+            document.getElementById('countdownSection').style.display = 'block';
+            document.getElementById('breathingSection').style.display = 'none';
+            document.getElementById('restSection').style.display = 'none';
+        }
+
+        // 페이지 로드 시 사용자 데이터 로드
+        window.onload = function() {
+            loadUserData();
+        };
+
+        // Service Worker 등록
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker 등록 성공:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('ServiceWorker 등록 실패:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,4 +1,0 @@
-# 파일 제거
-git rm 파일명
-git commit -m "불필요한 파일 제거"
-git push origin main

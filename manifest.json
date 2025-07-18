@@ -1,8 +1,9 @@
 {
-  "name": "숨 트레이너 - 호흡운동 앱",
-  "short_name": "숨 트레이너",
-  "description": "마음을 편안하게 해주는 호흡운동 트레이너 앱",
-  "start_url": "/",
+  "name": "숨 트레이너 - 호흡운동 앱 v2.0",
+  "short_name": "숨 트레이너 v2",
+  "description": "숨트 호흡운동기구 전용 가이드 앱 - 개선된 AI 조언",
+  "version": "2.0.0",
+  "start_url": "/?v=2.0.0",
   "display": "standalone",
   "background_color": "#667eea",
   "theme_color": "#667eea",

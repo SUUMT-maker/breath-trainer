@@ -406,17 +406,98 @@
             margin: 2rem 0;
         }
 
-        .status-text {
-            font-size: 2rem;
-            margin: 1rem 0;
-            font-weight: bold;
-            color: #333 !important;
+        /* 🎯 직관적인 진행도 표시 */
+        .progress-container {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.9) !important;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
         }
 
-        .progress-text {
-            font-size: 1.2rem;
+        .sets-progress {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-label {
+            font-size: 0.9rem;
             color: #666 !important;
-            margin: 1rem 0;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+
+        .sets-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .set-indicator {
+            width: 60px;
+            height: 8px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .set-indicator.active {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .set-indicator.current {
+            background: rgba(102, 126, 234, 0.5);
+            animation: setGlow 2s ease-in-out infinite;
+        }
+
+        .breaths-progress {
+            margin-bottom: 1rem;
+        }
+
+        .breaths-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .breath-indicator {
+            width: 12px;
+            height: 12px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .breath-indicator.completed {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.4);
+            transform: scale(1.1);
+        }
+
+        .breath-indicator.current {
+            background: #4facfe;
+            animation: breathGlow 1s ease-in-out infinite;
+            transform: scale(1.2);
+        }
+
+        .progress-numbers {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #888 !important;
+        }
+
+        @keyframes setGlow {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes breathGlow {
+            0%, 100% { opacity: 0.8; transform: scale(1.2); }
+            50% { opacity: 1; transform: scale(1.3); }
         }
 
         .control-buttons {
@@ -611,16 +692,29 @@
                 font-size: 3rem;
             }
 
-            .status-text {
-                font-size: 1.5rem;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
             }
 
             .resistance-info {
                 grid-template-columns: 1fr;
+            }
+
+            .sets-indicators {
+                gap: 0.8rem;
+            }
+
+            .set-indicator {
+                width: 50px;
+            }
+
+            .breaths-indicators {
+                gap: 0.2rem;
+            }
+
+            .breath-indicator {
+                width: 10px;
+                height: 10px;
             }
         }
 
@@ -656,8 +750,6 @@
             <h1 class="fallback-title">숨트레이너</h1>
             <p class="fallback-subtitle">숨트 호흡운동기구 전용 가이드 앱</p>
         </div>
-        
-        <!-- 터치 가이드 제거 -->
         
         <!-- 자동 진행 프로그레스 바 -->
         <div class="progress-bar"></div>
@@ -747,8 +839,27 @@
                 <div class="breathing-circle" id="breathingCircle">
                     <span id="circleText">준비</span>
                 </div>
-                <div class="status-text" id="statusText">준비</div>
-                <div class="progress-text" id="progressText">3세트 중 1세트, 10회 중 1회</div>
+                
+                <!-- 🎯 새로운 직관적인 진행도 표시 -->
+                <div class="progress-container">
+                    <div class="sets-progress">
+                        <div class="progress-label">세트 진행도</div>
+                        <div class="sets-indicators" id="setsIndicators">
+                            <div class="set-indicator"></div>
+                            <div class="set-indicator"></div>
+                            <div class="set-indicator"></div>
+                        </div>
+                        <div class="progress-numbers" id="setNumbers">1 / 3 세트</div>
+                    </div>
+                    
+                    <div class="breaths-progress">
+                        <div class="progress-label">호흡 횟수</div>
+                        <div class="breaths-indicators" id="breathsIndicators">
+                            <!-- 10개의 호흡 점들이 JavaScript로 생성됨 -->
+                        </div>
+                        <div class="progress-numbers" id="breathNumbers">1 / 10 회</div>
+                    </div>
+                </div>
                 
                 <div class="control-buttons">
                     <button class="btn btn-secondary" onclick="pauseExercise()">일시정지</button>
@@ -760,7 +871,7 @@
                 <h2>휴식 시간</h2>
                 <div class="countdown" id="restCountdown">120</div>
                 <p style="color: #666; margin: 1rem 0;">다음 세트까지 호흡을 정리하세요</p>
-                <div class="progress-text" id="restProgressText">1세트 완료</div>
+                <div class="progress-numbers" style="font-size: 1.1rem; margin: 1rem 0;" id="restProgressText">1세트 완료</div>
                 
                 <div class="control-buttons">
                     <button class="btn btn-success" onclick="skipRest()">휴식 건너뛰기</button>
@@ -863,13 +974,60 @@
             });
             
             // 로고 이미지 로드 실패 시 숨김
-            logoImage.addEventListener('error', function() {
-                console.log('⚠️ 로고 이미지 로드 실패');
-                this.style.display = 'none';
-            });
+            if (logoImage) {
+                logoImage.addEventListener('error', function() {
+                    console.log('⚠️ 로고 이미지 로드 실패');
+                    this.style.display = 'none';
+                });
+            }
 
             console.log('🎬 스플래시 화면 로딩 완료');
         });
+
+        // 🎯 진행도 표시 초기화
+        function initializeProgressIndicators() {
+            // 호흡 점들 생성
+            const breathsContainer = document.getElementById('breathsIndicators');
+            breathsContainer.innerHTML = '';
+            
+            for (let i = 0; i < 10; i++) {
+                const breathDot = document.createElement('div');
+                breathDot.className = 'breath-indicator';
+                breathDot.setAttribute('data-breath', i + 1);
+                breathsContainer.appendChild(breathDot);
+            }
+            
+            updateProgressIndicators();
+        }
+
+        // 🎯 진행도 표시 업데이트
+        function updateProgressIndicators() {
+            // 세트 진행도 업데이트
+            const setIndicators = document.querySelectorAll('.set-indicator');
+            setIndicators.forEach((indicator, index) => {
+                indicator.classList.remove('active', 'current');
+                if (index < currentSet - 1) {
+                    indicator.classList.add('active');
+                } else if (index === currentSet - 1) {
+                    indicator.classList.add('current');
+                }
+            });
+            
+            // 호흡 진행도 업데이트
+            const breathIndicators = document.querySelectorAll('.breath-indicator');
+            breathIndicators.forEach((indicator, index) => {
+                indicator.classList.remove('completed', 'current');
+                if (index < currentBreath - 1) {
+                    indicator.classList.add('completed');
+                } else if (index === currentBreath - 1) {
+                    indicator.classList.add('current');
+                }
+            });
+            
+            // 숫자 업데이트
+            document.getElementById('setNumbers').textContent = `${currentSet} / 3 세트`;
+            document.getElementById('breathNumbers').textContent = `${currentBreath} / 10 회`;
+        }
 
         // 🎯 커스텀 모달 관리
         function showStopModal() {
@@ -1127,6 +1285,9 @@
             const circle = document.getElementById('breathingCircle');
             circle.className = 'breathing-circle exhale';
             
+            // 진행도 초기화
+            initializeProgressIndicators();
+            
             exerciseStartTime = new Date();
             
             setTimeout(() => {
@@ -1139,15 +1300,13 @@
             if (isPaused || isAborted) return;
 
             const circle = document.getElementById('breathingCircle');
-            const statusText = document.getElementById('statusText');
             const circleText = document.getElementById('circleText');
-            const progressText = document.getElementById('progressText');
 
-            progressText.textContent = `3세트 중 ${currentSet}세트, 10회 중 ${currentBreath}회`;
+            // 진행도 업데이트
+            updateProgressIndicators();
 
             if (breathingPhase === 'inhale') {
-                statusText.textContent = '들숨 (4초)';
-                circleText.textContent = '들숨';
+                circleText.textContent = '들숨 (4초)';
                 circle.className = 'breathing-circle inhale';
                 
                 breathingTimer = setTimeout(() => {
@@ -1156,8 +1315,7 @@
                 }, 4000);
 
             } else if (breathingPhase === 'hold') {
-                statusText.textContent = '유지 (2초)';
-                circleText.textContent = '유지';
+                circleText.textContent = '유지 (2초)';
                 circle.className = 'breathing-circle hold';
                 
                 breathingTimer = setTimeout(() => {
@@ -1166,8 +1324,7 @@
                 }, 2000);
 
             } else if (breathingPhase === 'exhale') {
-                statusText.textContent = '날숨 (4초)';
-                circleText.textContent = '날숨';
+                circleText.textContent = '날숨 (4초)';
                 circle.className = 'breathing-circle exhale';
                 
                 breathingTimer = setTimeout(() => {
@@ -1176,8 +1333,7 @@
                 }, 4000);
 
             } else if (breathingPhase === 'exhale-hold') {
-                statusText.textContent = '유지 (2초)';
-                circleText.textContent = '유지';
+                circleText.textContent = '유지 (2초)';
                 circle.className = 'breathing-circle exhale-hold';
                 
                 breathingTimer = setTimeout(() => {
@@ -1241,6 +1397,9 @@
             const circle = document.getElementById('breathingCircle');
             circle.className = 'breathing-circle exhale';
             
+            // 진행도 다시 초기화
+            initializeProgressIndicators();
+            
             setTimeout(() => {
                 breathingCycle();
             }, 500);
@@ -1254,7 +1413,7 @@
             if (isPaused) {
                 clearTimeout(breathingTimer);
                 button.textContent = '계속하기';
-                document.getElementById('statusText').textContent = '일시정지';
+                document.getElementById('circleText').textContent = '일시정지';
             } else {
                 button.textContent = '일시정지';
                 breathingCycle();

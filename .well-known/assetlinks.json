@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.breathtrainer.app",
+        "sha256_cert_fingerprints": ["76:04:22:89:3A:3D:A1:CB:26:F1:44:EA:91:16:33:37:89:2B:21:D9:0D:08:D6:02:EF:5C:B1:EB:E8:FE:93:D5"]
+      }
+    }]

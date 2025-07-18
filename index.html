@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>숨 트레이너</title>
     
+    <!-- 🌙 다크모드 문제 해결: 색상 스키마 고정 -->
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    
     <!-- PWA 메타 태그 -->
     <meta name="description" content="마음을 편안하게 해주는 호흡운동 트레이너 앱">
     <meta name="keywords" content="호흡운동, 명상, 스트레스 완화, 웰빙, 건강">
@@ -23,24 +27,33 @@
     <link rel="apple-touch-icon" href="/icons/icon-180x180.png">
     
     <style>
+        /* 🌙 다크모드 강제 방지 */
+        :root {
+            color-scheme: light !important;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            /* 🌙 모든 요소에 라이트 모드 강제 적용 */
+            color-scheme: light !important;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #333;
+            color: #333 !important;
+            /* 🌙 다크모드에서도 배경이 어두워지지 않도록 */
+            -webkit-color-scheme: light !important;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.95) !important;
             backdrop-filter: blur(10px);
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -49,6 +62,8 @@
             width: 90%;
             text-align: center;
             transition: all 0.3s ease;
+            /* 🌙 컨테이너가 다크모드의 영향을 받지 않도록 */
+            color-scheme: light !important;
         }
 
         .screen {
@@ -62,21 +77,21 @@
         h1 {
             font-size: 2.5rem;
             margin-bottom: 1rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #667eea, #764ba2) !important;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .subtitle {
-            color: #666;
+            color: #666 !important;
             margin-bottom: 2rem;
             font-size: 1.1rem;
         }
 
         .start-button {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            background: linear-gradient(45deg, #667eea, #764ba2) !important;
+            color: white !important;
             border: none;
             border-radius: 50%;
             width: 200px;
@@ -95,17 +110,18 @@
         }
 
         .user-info {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.8) !important;
             border-radius: 15px;
             padding: 1rem;
             margin-bottom: 1.5rem;
             font-size: 0.9rem;
+            color: #333 !important;
         }
 
         .user-badge {
             display: inline-block;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            background: linear-gradient(45deg, #667eea, #764ba2) !important;
+            color: white !important;
             padding: 0.3rem 0.8rem;
             border-radius: 20px;
             font-size: 0.8rem;
@@ -113,7 +129,7 @@
         }
 
         .user-stats {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.8) !important;
             border-radius: 15px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
@@ -121,7 +137,7 @@
 
         .user-stats h3 {
             margin-bottom: 1rem;
-            color: #333;
+            color: #333 !important;
         }
 
         .stats-grid {
@@ -132,7 +148,7 @@
         }
 
         .stat-item {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.8) !important;
             border-radius: 12px;
             padding: 1rem;
             text-align: center;
@@ -141,17 +157,17 @@
         .stat-value {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #667eea;
+            color: #667eea !important;
         }
 
         .stat-label {
             font-size: 0.9rem;
-            color: #666;
+            color: #666 !important;
             margin-top: 0.5rem;
         }
 
         .history {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.8) !important;
             border-radius: 15px;
             padding: 1.5rem;
             margin-top: 1.5rem;
@@ -159,7 +175,7 @@
 
         .history h3 {
             margin-bottom: 1rem;
-            color: #333;
+            color: #333 !important;
         }
 
         .history-item {
@@ -176,12 +192,12 @@
 
         .history-date {
             font-size: 0.9rem;
-            color: #666;
+            color: #666 !important;
         }
 
         .history-stats {
             font-size: 0.9rem;
-            color: #333;
+            color: #333 !important;
             font-weight: 500;
         }
 
@@ -189,12 +205,12 @@
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #667eea, #764ba2) !important;
             margin: 2rem auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: white !important;
             font-size: 1.2rem;
             font-weight: bold;
             box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
@@ -228,7 +244,7 @@
         .countdown {
             font-size: 4rem;
             font-weight: bold;
-            color: #667eea;
+            color: #667eea !important;
             margin: 2rem 0;
         }
 
@@ -236,12 +252,12 @@
             font-size: 2rem;
             margin: 1rem 0;
             font-weight: bold;
-            color: #333;
+            color: #333 !important;
         }
 
         .progress-text {
             font-size: 1.2rem;
-            color: #666;
+            color: #666 !important;
             margin: 1rem 0;
         }
 
@@ -250,8 +266,8 @@
         }
 
         .btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
+            background: linear-gradient(45deg, #667eea, #764ba2) !important;
+            color: white !important;
             border: none;
             border-radius: 25px;
             padding: 12px 24px;
@@ -268,11 +284,11 @@
         }
 
         .btn-secondary {
-            background: linear-gradient(45deg, #f093fb, #f5576c);
+            background: linear-gradient(45deg, #f093fb, #f5576c) !important;
         }
 
         .btn-success {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            background: linear-gradient(45deg, #4facfe, #00f2fe) !important;
         }
 
         .result-content {
@@ -281,7 +297,7 @@
         }
 
         .result-section {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.8) !important;
             border-radius: 12px;
             padding: 1.5rem;
             margin: 1rem 0;
@@ -289,13 +305,13 @@
         }
 
         .result-section h4 {
-            color: #333;
+            color: #333 !important;
             margin-bottom: 0.8rem;
             font-size: 1.2rem;
         }
 
         .result-section p {
-            color: #555;
+            color: #555 !important;
             line-height: 1.6;
         }
 
@@ -305,13 +321,132 @@
         }
 
         .achievement-badge {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            color: white;
+            background: linear-gradient(45deg, #4facfe, #00f2fe) !important;
+            color: white !important;
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.9rem;
             margin: 0.5rem;
             display: inline-block;
+        }
+
+        /* 🎯 커스텀 모달 스타일 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 300px;
+            width: 85%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8);
+            animation: modalSlideIn 0.3s ease forwards;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333 !important;
+            margin-bottom: 1rem;
+        }
+
+        .modal-message {
+            color: #666 !important;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .modal-btn-cancel {
+            background: #f5f5f5 !important;
+            color: #666 !important;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #e0e0e0 !important;
+            transform: translateY(-2px);
+        }
+
+        .modal-btn-confirm {
+            background: linear-gradient(45deg, #f093fb, #f5576c) !important;
+            color: white !important;
+        }
+
+        .modal-btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalSlideIn {
+            from { 
+                transform: scale(0.8) translateY(-20px);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* 🌙 다크모드 미디어 쿼리 무시 */
+        @media (prefers-color-scheme: dark) {
+            * {
+                color-scheme: light !important;
+            }
+            
+            body {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                color: #333 !important;
+            }
+            
+            .container {
+                background: rgba(255, 255, 255, 0.95) !important;
+            }
+
+            .modal-content {
+                background: rgba(255, 255, 255, 0.98) !important;
+            }
         }
 
         @media (max-width: 480px) {
@@ -345,6 +480,21 @@
 
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                max-width: 280px;
+                width: 90%;
+                padding: 1.5rem;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .modal-btn {
+                width: 100%;
             }
         }
 
@@ -484,6 +634,18 @@
         </div>
     </div>
 
+    <!-- 🎯 커스텀 확인 모달 -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle">운동 중단</div>
+            <div class="modal-message" id="modalMessage">정말 운동을 중단하시겠습니까?</div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="hideConfirmModal()">취소</button>
+                <button class="modal-btn modal-btn-confirm" id="modalConfirmBtn" onclick="confirmAction()">중단</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Apps Script URL
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-6MgHRP2HZ0sEfmeavA6IVAfC5yC4OEgR5kG3YE17NNpTRXW8GBIirfjyXNSMlPLYDQ/exec';
@@ -497,6 +659,28 @@
         let isPaused = false;
         let isAborted = false;
         let breathingPhase = 'inhale';
+        let pendingConfirmAction = null; // 🎯 확인 대기 중인 액션
+
+        // 🎯 커스텀 확인 모달 관리
+        function showConfirmModal(title, message, confirmText, action) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('modalConfirmBtn').textContent = confirmText;
+            document.getElementById('confirmModal').classList.add('show');
+            pendingConfirmAction = action;
+        }
+
+        function hideConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('show');
+            pendingConfirmAction = null;
+        }
+
+        function confirmAction() {
+            if (pendingConfirmAction) {
+                pendingConfirmAction();
+            }
+            hideConfirmModal();
+        }
 
         // 🔧 수정된 로컬 스토리지 기반 통계 관리
         function getLocalStats() {
@@ -846,14 +1030,19 @@
             }
         }
 
-        // 운동 중단
+        // 🎯 운동 중단 - 커스텀 모달 사용
         function stopExercise() {
-            if (confirm('정말 운동을 중단하시겠습니까?')) {
-                isAborted = true;
-                clearTimeout(breathingTimer);
-                clearInterval(restTimer);
-                completeExercise();
-            }
+            showConfirmModal(
+                '운동 중단', 
+                '정말 운동을 중단하시겠습니까?', 
+                '중단', 
+                function() {
+                    isAborted = true;
+                    clearTimeout(breathingTimer);
+                    clearInterval(restTimer);
+                    completeExercise();
+                }
+            );
         }
 
         // 🎯 수정된 운동 완료 함수
@@ -946,6 +1135,13 @@
             document.getElementById('breathingSection').style.display = 'none';
             document.getElementById('restSection').style.display = 'none';
         }
+
+        // 🎯 모달 외부 클릭 시 닫기
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideConfirmModal();
+            }
+        });
 
         // 페이지 로드 시 사용자 데이터 로드
         window.onload = function() {

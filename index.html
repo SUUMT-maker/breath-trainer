@@ -96,21 +96,6 @@
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
         }
 
-        /* 터치 가이드 */
-        .touch-guide {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            color: #333;
-            animation: fadeInOut 3s ease-in-out;
-            z-index: 2001;
-        }
-
         /* 자동 진행 프로그레스 바 */
         .progress-bar {
             position: absolute;
@@ -165,12 +150,6 @@
             .splash-logo {
                 width: 80px;
             }
-            
-            .touch-guide {
-                bottom: 40px;
-                font-size: 0.8rem;
-                padding: 10px 20px;
-            }
 
             .fallback-title {
                 font-size: 2.5rem;
@@ -186,13 +165,6 @@
         }
 
         /* 애니메이션 */
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
-            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-        }
-
         @keyframes progressFill {
             0% { width: 0%; }
             100% { width: 100%; }
@@ -284,18 +256,14 @@
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             border-left: 4px solid #667eea;
-        }
-
-        .device-guide h3 {
-            color: #333 !important;
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
+            text-align: left;
         }
 
         .device-guide p {
             color: #555 !important;
             line-height: 1.5;
             margin-bottom: 0.5rem;
+            font-size: 0.9rem;
         }
 
         .resistance-info {
@@ -679,7 +647,7 @@
              alt="숨트 호흡운동기구" 
              class="splash-image"
              id="mainSplashImage">
-       
+
         </div>
         
         <!-- 이미지 로딩 실패 시 대체 화면 -->
@@ -689,10 +657,7 @@
             <p class="fallback-subtitle">숨트 호흡운동기구 전용 가이드 앱</p>
         </div>
         
-        <!-- 터치 가이드 -->
-        <div class="touch-guide">
-            화면을 터치하여 시작하기
-        </div>
+        <!-- 터치 가이드 제거 -->
         
         <!-- 자동 진행 프로그레스 바 -->
         <div class="progress-bar"></div>
@@ -722,7 +687,6 @@
             </div>
 
             <div class="device-guide">
-                <h3>🔹 숨트 사용 준비</h3>
                 <p>• 숨트 기구를 입에 물고 준비하세요</p>
                 <p>• 개인에 맞는 저항 단계를 설정하세요</p>
                 <p>• 편안한 자세로 앉거나 서서 트레이닝하세요</p>

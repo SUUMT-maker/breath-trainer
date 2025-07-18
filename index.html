@@ -51,22 +51,21 @@
             overflow-x: hidden;
         }
 
-        /* 🎬 인트로 화면 스타일 */
+        /* 🎬 숨트 제품 노출 스플래시 화면 (기존 인트로 교체) */
         #introScreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            height: 100vh;
+            background: #000;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000;
+            cursor: pointer;
             opacity: 1;
             transition: opacity 0.8s ease-out;
-            cursor: pointer;
         }
 
         #introScreen.hidden {
@@ -74,18 +73,129 @@
             pointer-events: none;
         }
 
-        .intro-logo {
+        /* 메인 제품 이미지 */
+        .splash-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        /* 로고 오버레이 */
+        .splash-logo-overlay {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2001;
+        }
+
+        .splash-logo {
             width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.95) !important;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
+            height: auto;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+        }
+
+        /* 터치 가이드 */
+        .touch-guide {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            color: #333;
+            animation: fadeInOut 3s ease-in-out;
+            z-index: 2001;
+        }
+
+        /* 자동 진행 프로그레스 바 */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0;
+            animation: progressFill 3s linear;
+            z-index: 2001;
+        }
+
+        /* 이미지 로딩 실패 시 대체 화면 */
+        .fallback-splash {
+            display: none;
+            flex-direction: column;
             justify-content: center;
-            font-size: 3rem;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .fallback-logo {
+            font-size: 4rem;
             margin-bottom: 2rem;
             animation: breathe 3s ease-in-out infinite;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .fallback-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .fallback-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+
+        /* 반응형 처리 */
+        @media (orientation: landscape) {
+            .splash-image {
+                object-fit: contain;
+                background: #000;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .splash-logo {
+                width: 80px;
+            }
+            
+            .touch-guide {
+                bottom: 40px;
+                font-size: 0.8rem;
+                padding: 10px 20px;
+            }
+
+            .fallback-title {
+                font-size: 2.5rem;
+            }
+
+            .fallback-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .fallback-logo {
+                font-size: 3rem;
+            }
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        }
+
+        @keyframes progressFill {
+            0% { width: 0%; }
+            100% { width: 100%; }
         }
 
         @keyframes breathe {
@@ -93,36 +203,7 @@
             50% { transform: scale(1.1); }
         }
 
-        .intro-title {
-            font-size: 3rem;
-            font-weight: bold;
-            color: white !important;
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .intro-subtitle {
-            font-size: 1.3rem;
-            color: rgba(255, 255, 255, 0.9) !important;
-            margin-bottom: 3rem;
-            text-align: center;
-        }
-
-        .intro-touch {
-            background: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 25px;
-            padding: 12px 24px;
-            font-size: 1rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.7; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
-        }
-
+        /* 기존 스타일들은 모두 그대로 유지 */
         .container {
             background: rgba(255, 255, 255, 0.95) !important;
             backdrop-filter: blur(10px);
@@ -573,20 +654,6 @@
             .resistance-info {
                 grid-template-columns: 1fr;
             }
-
-            .intro-title {
-                font-size: 2.5rem;
-            }
-
-            .intro-subtitle {
-                font-size: 1.1rem;
-            }
-
-            .intro-logo {
-                width: 100px;
-                height: 100px;
-                font-size: 2.5rem;
-            }
         }
 
         .loading {
@@ -605,12 +672,36 @@
     </style>
 </head>
 <body>
-    <!-- 🎬 인트로 화면 -->
+    <!-- 🎬 숨트 제품 노출 스플래시 화면 (기존 인트로 교체) -->
     <div id="introScreen" onclick="hideIntro()">
-        <div class="intro-logo">🫁</div>
-        <h1 class="intro-title">숨트레이너</h1>
-        <p class="intro-subtitle">숨트 호흡운동기구<br>전용 가이드 앱</p>
-        <div class="intro-touch">터치하여 시작하기</div>
+        <!-- 메인 제품 이미지 -->
+        <img src="./images/suumt-splash-main.jpg" 
+             alt="숨트 호흡운동기구" 
+             class="splash-image"
+             id="mainSplashImage">
+        
+        <!-- 로고 오버레이 -->
+        <div class="splash-logo-overlay">
+            <img src="./images/suumt-logo.png" 
+                 alt="숨트 로고" 
+                 class="splash-logo"
+                 id="logoImage">
+        </div>
+        
+        <!-- 이미지 로딩 실패 시 대체 화면 -->
+        <div class="fallback-splash" id="fallbackSplash">
+            <div class="fallback-logo">🫁</div>
+            <h1 class="fallback-title">숨트레이너</h1>
+            <p class="fallback-subtitle">숨트 호흡운동기구 전용 가이드 앱</p>
+        </div>
+        
+        <!-- 터치 가이드 -->
+        <div class="touch-guide">
+            화면을 터치하여 시작하기
+        </div>
+        
+        <!-- 자동 진행 프로그레스 바 -->
+        <div class="progress-bar"></div>
     </div>
 
     <!-- 🎯 커스텀 확인 모달 -->
@@ -776,14 +867,51 @@
         let isAborted = false;
         let breathingPhase = 'inhale';
 
-        // 🎬 인트로 화면 관리
+        // 🎯 3초 후 자동으로 메인 앱으로 이동
+        let autoProgressTimer = setTimeout(() => {
+            hideIntro();
+        }, 3000);
+
+        // 🎬 스플래시 화면 관리 (기존 hideIntro 함수 수정)
         function hideIntro() {
+            clearTimeout(autoProgressTimer); // 자동 타이머 취소
+            
             const introScreen = document.getElementById('introScreen');
             introScreen.classList.add('hidden');
             setTimeout(() => {
                 introScreen.style.display = 'none';
             }, 800);
         }
+
+        // 🖼️ 이미지 로드 처리
+        window.addEventListener('load', function() {
+            const mainImage = document.getElementById('mainSplashImage');
+            const logoImage = document.getElementById('logoImage');
+            const fallbackSplash = document.getElementById('fallbackSplash');
+            
+            // 메인 이미지 로드 실패 시 처리
+            mainImage.addEventListener('error', function() {
+                console.log('⚠️ 메인 스플래시 이미지 로드 실패');
+                
+                // 백업 이미지 시도
+                this.src = './images/suumt-splash-wide.png';
+                
+                // 백업 이미지도 실패하면 대체 화면 표시
+                this.addEventListener('error', function() {
+                    console.log('⚠️ 모든 이미지 로드 실패, 대체 화면 표시');
+                    this.style.display = 'none';
+                    fallbackSplash.style.display = 'flex';
+                });
+            });
+            
+            // 로고 이미지 로드 실패 시 숨김
+            logoImage.addEventListener('error', function() {
+                console.log('⚠️ 로고 이미지 로드 실패');
+                this.style.display = 'none';
+            });
+
+            console.log('🎬 스플래시 화면 로딩 완료');
+        });
 
         // 🎯 커스텀 모달 관리
         function showStopModal() {

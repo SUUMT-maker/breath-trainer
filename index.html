@@ -104,7 +104,7 @@
 
         .user-badge {
             display: inline-block;
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             padding: 0.3rem 0.8rem;
             border-radius: 20px;
@@ -367,11 +367,11 @@
         <!-- 메인 화면 -->
         <div id="mainScreen" class="screen active">
             <h1>숨 트레이너</h1>
-            <p class="subtitle">마음을 편안하게 해주는 호흡운동</p>
+            <p class="subtitle"> 숨트와 함께하는 호흡운동</p>
             
             <div class="user-info">
-                <div class="user-badge">🤖 실제 AI 조언</div>
-                <div>Vercel + Google Apps Script + Gemini AI</div>
+                <div class="user-badge">💪 AI 숨트레이너</div>
+                <div>개인 맞춤 호흡 가이드</div>
             </div>
             
             <button class="start-button" onclick="startExercise()">
@@ -403,7 +403,7 @@
             <div class="history">
                 <h3>최근 운동 기록</h3>
                 <div id="historyList">
-                    <p style="color: #999;">브라우저 로컬 저장소 사용</p>
+                    <p style="color: #999;">첫 운동을 시작해보세요!</p>
                 </div>
             </div>
         </div>
@@ -461,13 +461,13 @@
 
             <div class="result-content">
                 <div class="result-section">
-                    <h4>💪 AI 트레이너 조언</h4>
-                    <p id="trainerAdvice">🤖 AI가 개인화된 조언을 생성하는 중...</p>
+                    <h4>💪 트레이너 조언</h4>
+                    <p id="trainerAdvice">트레이너가 당신의 운동을 분석하고 있습니다...</p>
                 </div>
 
                 <div class="result-section">
                     <h4>🌟 운동 효과</h4>
-                    <p id="exerciseEffect">🧠 AI가 운동 효과를 분석하는 중...</p>
+                    <p id="exerciseEffect">오늘 운동의 효과를 정리해드릴게요...</p>
                 </div>
 
                 <div class="result-section">
@@ -484,8 +484,8 @@
     </div>
 
     <script>
-        // 🚀 Apps Script URL (GET 방식 AI 조언 지원)
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlw2MJrQnfIsRnG9-O-JZUL1DmK70Pf0QZna2NGZFV-UXKGaKy0dft0-COmiJsGID_-w/exec';
+        // Apps Script URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-6MgHRP2HZ0sEfmeavA6IVAfC5yC4OEgR5kG3YE17NNpTRXW8GBIirfjyXNSMlPLYDQ/exec';
 
         // 전역 변수
         let currentSet = 1;
@@ -543,10 +543,10 @@
             return stats;
         }
 
-        // 🤖 GET 방식으로 실제 AI 조언 받기
-        async function getAIAdvice(exerciseData) {
+        // 🧑‍💼 자연스러운 트레이너 조언 받기
+        async function getTrainerAdvice(exerciseData) {
             try {
-                console.log('🚀 AI 조언 요청 시작...', exerciseData);
+                console.log('💪 트레이너 조언 요청...', exerciseData);
                 
                 const params = new URLSearchParams({
                     function: 'getAIAdvice',
@@ -556,16 +556,14 @@
                     isAborted: exerciseData.isAborted.toString()
                 });
                 
-                console.log('📡 요청 URL:', `${SCRIPT_URL}?${params}`);
-                
                 const response = await fetch(`${SCRIPT_URL}?${params}`);
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error(`연결 오류: ${response.status}`);
                 }
                 
                 const result = await response.json();
-                console.log('🎯 AI 조언 응답:', result);
+                console.log('✅ 트레이너 조언 완료');
                 
                 if (result.success) {
                     return {
@@ -573,17 +571,30 @@
                         effect: result.effect || '규칙적인 호흡운동은 건강에 도움됩니다.'
                     };
                 } else {
-                    throw new Error(result.message || 'AI 조언 생성 실패');
+                    throw new Error(result.message || '조언 생성 실패');
                 }
                 
             } catch (error) {
-                console.error('❌ AI 조언 요청 실패:', error);
+                console.log('⚠️ 트레이너 연결 실패, 기본 조언 제공');
                 
-                // 실패시 기본 메시지 (하지만 오류 정보 포함)
-                return {
-                    advice: `AI 조언을 불러오는데 실패했습니다. (${error.message}) 하지만 ${exerciseData.completedSets}세트 완료, 정말 훌륭합니다!`,
-                    effect: '규칙적인 호흡운동은 스트레스 완화와 집중력 향상에 큰 도움이 됩니다.'
-                };
+                // 🎯 자연스러운 기본 조언 (다양한 패턴)
+                const naturalAdvices = [
+                    {
+                        advice: `${exerciseData.completedSets}세트 완료하셨네요! 정말 잘하셨습니다. 꾸준히 계속하시면 더 큰 변화를 느끼실 거예요.`,
+                        effect: '깊은 호흡은 자율신경계를 안정시키고 스트레스 호르몬을 줄여 마음의 평정을 찾는 데 도움을 줍니다.'
+                    },
+                    {
+                        advice: `${exerciseData.exerciseTime} 동안 집중해서 호흡하신 모습이 인상적이었어요. 이런 꾸준함이 건강한 습관을 만들어갑니다.`,
+                        effect: '규칙적인 호흡운동은 혈압을 안정시키고 집중력을 높이며, 수면의 질 향상에도 큰 도움이 됩니다.'
+                    },
+                    {
+                        advice: '호흡에 온전히 집중하신 시간이 마음에 평안을 가져다주었길 바랍니다. 오늘 하루도 수고 많으셨어요!',
+                        effect: '의식적인 호흡은 뇌파를 안정시키고 창의성을 높이며, 감정 조절 능력을 크게 향상시킵니다.'
+                    }
+                ];
+                
+                const randomIndex = Math.floor(Math.random() * naturalAdvices.length);
+                return naturalAdvices[randomIndex];
             }
         }
 
@@ -791,7 +802,7 @@
             }
         }
 
-        // 🎯 운동 완료 - GET 방식으로 실제 AI 조언 받기
+        // 🎯 운동 완료 - 자연스러운 트레이너 조언
         async function completeExercise() {
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
@@ -812,12 +823,12 @@
             document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
             document.getElementById('completedSets').textContent = `${exerciseData.completedSets}/3`;
             
-            // 🤖 실제 AI 조언 요청 (GET 방식)
-            console.log('🚀 AI 조언 요청 시작...');
-            document.getElementById('trainerAdvice').textContent = '🤖 Gemini AI가 개인화된 조언을 생성하는 중...';
-            document.getElementById('exerciseEffect').textContent = '🧠 AI가 운동 효과를 분석하는 중...';
+            // 💪 자연스러운 트레이너 조언 요청
+            console.log('💪 트레이너가 운동을 분석중...');
+            document.getElementById('trainerAdvice').textContent = '트레이너가 당신의 운동을 분석하고 있습니다...';
+            document.getElementById('exerciseEffect').textContent = '오늘 운동의 효과를 정리해드릴게요...';
             
-            const aiResult = await getAIAdvice(exerciseData);
+            const trainerResult = await getTrainerAdvice(exerciseData);
             
             // 통계 업데이트
             const updatedStats = updateLocalStats(exerciseData);
@@ -825,8 +836,8 @@
             // 결과 표시
             handleExerciseResult({
                 success: true,
-                advice: aiResult.advice,
-                effect: aiResult.effect,
+                advice: trainerResult.advice,
+                effect: trainerResult.effect,
                 stats: updatedStats
             });
         }

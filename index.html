@@ -104,16 +104,12 @@
 
         .user-badge {
             display: inline-block;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
             color: white;
             padding: 0.3rem 0.8rem;
             border-radius: 20px;
             font-size: 0.8rem;
             margin-bottom: 0.5rem;
-        }
-
-        .user-badge.anonymous {
-            background: linear-gradient(45deg, #f093fb, #f5576c);
         }
 
         .user-stats {
@@ -374,8 +370,8 @@
             <p class="subtitle">마음을 편안하게 해주는 호흡운동</p>
             
             <div class="user-info">
-                <div class="user-badge" id="userBadge">사용자 정보 로딩중...</div>
-                <div id="userDescription">사용자 정보를 불러오는 중...</div>
+                <div class="user-badge">🤖 실제 AI 조언</div>
+                <div>Vercel + Google Apps Script + Gemini AI</div>
             </div>
             
             <button class="start-button" onclick="startExercise()">
@@ -407,7 +403,7 @@
             <div class="history">
                 <h3>최근 운동 기록</h3>
                 <div id="historyList">
-                    <p style="color: #999;">기록을 불러오는 중...</p>
+                    <p style="color: #999;">브라우저 로컬 저장소 사용</p>
                 </div>
             </div>
         </div>
@@ -465,13 +461,13 @@
 
             <div class="result-content">
                 <div class="result-section">
-                    <h4>💪 트레이너 조언</h4>
-                    <p id="trainerAdvice">조언을 불러오는 중...</p>
+                    <h4>💪 AI 트레이너 조언</h4>
+                    <p id="trainerAdvice">🤖 AI가 개인화된 조언을 생성하는 중...</p>
                 </div>
 
                 <div class="result-section">
                     <h4>🌟 운동 효과</h4>
-                    <p id="exerciseEffect">효과를 불러오는 중...</p>
+                    <p id="exerciseEffect">🧠 AI가 운동 효과를 분석하는 중...</p>
                 </div>
 
                 <div class="result-section">
@@ -488,8 +484,8 @@
     </div>
 
     <script>
-        // 구글 Apps Script 배포 URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxiLo5QlrTv24-cT3B4BFSppkn87bt11_D9YFN9-Ld6Pv9XWlRSIPUwymqgKeJ-zL5LOg/exec';
+        // 🚀 Apps Script URL (GET 방식 AI 조언 지원)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlw2MJrQnfIsRnG9-O-JZUL1DmK70Pf0QZna2NGZFV-UXKGaKy0dft0-COmiJsGID_-w/exec';
 
         // 전역 변수
         let currentSet = 1;
@@ -500,51 +496,94 @@
         let isPaused = false;
         let isAborted = false;
         let breathingPhase = 'inhale';
-        let currentUserInfo = null;
-        let currentUserStats = null;
 
-        // 환경 감지 및 API 호출 함수
-        function isAppsScriptEnvironment() {
-            return typeof google !== 'undefined' && google.script && google.script.run;
+        // 로컬 스토리지 기반 통계 관리
+        function getLocalStats() {
+            const stats = JSON.parse(localStorage.getItem('breathTrainerStats') || '{}');
+            return {
+                totalExercises: stats.totalExercises || 0,
+                completedExercises: stats.completedExercises || 0,
+                totalBreaths: stats.totalBreaths || 0,
+                consecutiveDays: stats.consecutiveDays || 0,
+                lastExerciseDate: stats.lastExerciseDate || null,
+                completionRate: stats.totalExercises > 0 ? 
+                    Math.round((stats.completedExercises / stats.totalExercises) * 100) : 0
+            };
         }
 
-        // 통합 API 호출 함수
-        async function callAPI(functionName, parameters = {}) {
-            if (isAppsScriptEnvironment()) {
-                // Apps Script 환경에서는 google.script.run 사용
-                return new Promise((resolve, reject) => {
-                    google.script.run
-                        .withSuccessHandler(resolve)
-                        .withFailureHandler(reject)
-                        [functionName](parameters);
-                });
+        function updateLocalStats(exerciseData) {
+            const stats = getLocalStats();
+            
+            stats.totalExercises += 1;
+            stats.totalBreaths += exerciseData.completedBreaths;
+            
+            if (!exerciseData.isAborted) {
+                stats.completedExercises += 1;
+            }
+            
+            // 연속 일수 계산
+            const today = new Date().toDateString();
+            const lastDate = stats.lastExerciseDate ? new Date(stats.lastExerciseDate).toDateString() : null;
+            
+            if (lastDate === today) {
+                // 오늘 이미 운동함
+            } else if (lastDate === new Date(Date.now() - 24*60*60*1000).toDateString()) {
+                // 어제 운동함
+                stats.consecutiveDays += 1;
             } else {
-                // Vercel 환경에서는 fetch API 사용
-                try {
-                    const response = await fetch(SCRIPT_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            function: functionName,
-                            parameters: parameters
-                        })
-                    });
+                // 연속 끊김
+                stats.consecutiveDays = 1;
+            }
+            
+            stats.lastExerciseDate = new Date().toISOString();
+            stats.completionRate = stats.totalExercises > 0 ? 
+                Math.round((stats.completedExercises / stats.totalExercises) * 100) : 0;
+            
+            localStorage.setItem('breathTrainerStats', JSON.stringify(stats));
+            return stats;
+        }
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-                    if (data.success === false) {
-                        throw new Error(data.message || 'API 호출 실패');
-                    }
-                    return data;
-                } catch (error) {
-                    console.error('API 호출 오류:', error);
-                    throw error;
+        // 🤖 GET 방식으로 실제 AI 조언 받기
+        async function getAIAdvice(exerciseData) {
+            try {
+                console.log('🚀 AI 조언 요청 시작...', exerciseData);
+                
+                const params = new URLSearchParams({
+                    function: 'getAIAdvice',
+                    exerciseTime: exerciseData.exerciseTime,
+                    completedSets: exerciseData.completedSets.toString(),
+                    completedBreaths: exerciseData.completedBreaths.toString(),
+                    isAborted: exerciseData.isAborted.toString()
+                });
+                
+                console.log('📡 요청 URL:', `${SCRIPT_URL}?${params}`);
+                
+                const response = await fetch(`${SCRIPT_URL}?${params}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
+                
+                const result = await response.json();
+                console.log('🎯 AI 조언 응답:', result);
+                
+                if (result.success) {
+                    return {
+                        advice: result.advice || '훌륭한 호흡운동이었습니다!',
+                        effect: result.effect || '규칙적인 호흡운동은 건강에 도움됩니다.'
+                    };
+                } else {
+                    throw new Error(result.message || 'AI 조언 생성 실패');
+                }
+                
+            } catch (error) {
+                console.error('❌ AI 조언 요청 실패:', error);
+                
+                // 실패시 기본 메시지 (하지만 오류 정보 포함)
+                return {
+                    advice: `AI 조언을 불러오는데 실패했습니다. (${error.message}) 하지만 ${exerciseData.completedSets}세트 완료, 정말 훌륭합니다!`,
+                    effect: '규칙적인 호흡운동은 스트레스 완화와 집중력 향상에 큰 도움이 됩니다.'
+                };
             }
         }
 
@@ -564,88 +603,17 @@
         }
 
         // 사용자 데이터 로드
-        async function loadUserData() {
-            try {
-                // 사용자 정보 로드
-                const userInfo = await callAPI('getUserInfo');
-                displayUserInfo(userInfo);
-
-                // 사용자 통계 로드
-                const userStats = await callAPI('getUserStats');
-                displayUserStats(userStats);
-
-                // 히스토리 로드
-                await loadHistory();
-            } catch (error) {
-                console.error('사용자 데이터 로드 오류:', error);
-                document.getElementById('userBadge').textContent = '익명 사용자';
-                document.getElementById('userDescription').textContent = '사용자 정보를 불러올 수 없습니다.';
-            }
-        }
-
-        // 사용자 정보 표시
-        function displayUserInfo(result) {
-            const userInfo = result.success ? result : result; // 새로운 형식과 기존 형식 모두 지원
-            currentUserInfo = userInfo;
-            const userBadge = document.getElementById('userBadge');
-            const userDescription = document.getElementById('userDescription');
-
-            if (userInfo.isLoggedIn) {
-                userBadge.textContent = '구글 계정';
-                userBadge.className = 'user-badge';
-                userDescription.textContent = `${userInfo.userId}로 로그인됨`;
-            } else {
-                userBadge.textContent = '익명 사용자';
-                userBadge.className = 'user-badge anonymous';
-                userDescription.textContent = '기기에 저장된 임시 사용자';
-            }
+        function loadUserData() {
+            const stats = getLocalStats();
+            displayUserStats(stats);
         }
 
         // 사용자 통계 표시
-        function displayUserStats(result) {
-            const stats = result.success ? result : result; // 새로운 형식과 기존 형식 모두 지원
-            currentUserStats = stats;
+        function displayUserStats(stats) {
             document.getElementById('totalExercises').textContent = stats.totalExercises;
             document.getElementById('consecutiveDays').textContent = stats.consecutiveDays;
             document.getElementById('completionRate').textContent = stats.completionRate + '%';
             document.getElementById('totalBreaths').textContent = stats.totalBreaths;
-        }
-
-        // 히스토리 로드
-        async function loadHistory() {
-            try {
-                const result = await callAPI('getExerciseHistory', { limit: 5 });
-                const history = result.data || result; // 새로운 형식과 기존 형식 모두 지원
-                displayHistory(history);
-            } catch (error) {
-                console.error('히스토리 로드 오류:', error);
-                document.getElementById('historyList').innerHTML = '<p style="color: #999;">기록을 불러올 수 없습니다.</p>';
-            }
-        }
-
-        // 히스토리 표시
-        function displayHistory(history) {
-            const historyList = document.getElementById('historyList');
-            
-            if (!history || history.length === 0) {
-                historyList.innerHTML = '<p style="color: #999;">아직 운동 기록이 없습니다.</p>';
-                return;
-            }
-
-            historyList.innerHTML = history.map(record => {
-                const date = new Date(record.timestamp).toLocaleDateString('ko-KR');
-                const time = new Date(record.timestamp).toLocaleTimeString('ko-KR', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
-                const status = record.isAborted ? '중단' : '완료';
-                return `
-                    <div class="history-item">
-                        <div class="history-date">${date} ${time}</div>
-                        <div class="history-stats">${record.completedSets}세트 ${status}</div>
-                    </div>
-                `;
-            }).join('');
         }
 
         // 운동 시작
@@ -823,7 +791,7 @@
             }
         }
 
-        // 운동 완료
+        // 🎯 운동 완료 - GET 방식으로 실제 AI 조언 받기
         async function completeExercise() {
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
@@ -844,36 +812,35 @@
             document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
             document.getElementById('completedSets').textContent = `${exerciseData.completedSets}/3`;
             
-            // 서버에 데이터 전송 및 조언 받기
-            try {
-                const result = await callAPI('completeExercise', exerciseData);
-                handleExerciseResult(result);
-            } catch (error) {
-                console.error('운동 완료 처리 오류:', error);
-                // 오류 시 기본 메시지 표시
-                document.getElementById('trainerAdvice').textContent = '훌륭한 호흡운동이었습니다! 꾸준히 계속해보세요.';
-                document.getElementById('exerciseEffect').textContent = '규칙적인 호흡운동은 스트레스 완화와 집중력 향상에 도움됩니다.';
-                document.getElementById('updatedStats').textContent = '통계를 업데이트할 수 없습니다. 나중에 다시 시도해주세요.';
-            }
+            // 🤖 실제 AI 조언 요청 (GET 방식)
+            console.log('🚀 AI 조언 요청 시작...');
+            document.getElementById('trainerAdvice').textContent = '🤖 Gemini AI가 개인화된 조언을 생성하는 중...';
+            document.getElementById('exerciseEffect').textContent = '🧠 AI가 운동 효과를 분석하는 중...';
+            
+            const aiResult = await getAIAdvice(exerciseData);
+            
+            // 통계 업데이트
+            const updatedStats = updateLocalStats(exerciseData);
+            
+            // 결과 표시
+            handleExerciseResult({
+                success: true,
+                advice: aiResult.advice,
+                effect: aiResult.effect,
+                stats: updatedStats
+            });
         }
 
         // 운동 결과 처리
         function handleExerciseResult(result) {
-            if (result.success) {
-                document.getElementById('trainerAdvice').textContent = result.advice;
-                document.getElementById('exerciseEffect').textContent = result.effect;
-                
-                // 업데이트된 통계 표시
-                const stats = result.stats;
-                document.getElementById('updatedStats').textContent = 
-                    `총 운동 횟수: ${stats.totalExercises}, 연속 운동 일수: ${stats.consecutiveDays}일, 완료율: ${stats.completionRate}%`;
-                
-                // 성취 배지 표시
-                displayAchievementBadges(result.stats);
-            } else {
-                document.getElementById('trainerAdvice').textContent = '조언을 불러오는 중 오류가 발생했습니다.';
-                document.getElementById('exerciseEffect').textContent = '효과 설명을 불러오는 중 오류가 발생했습니다.';
-            }
+            document.getElementById('trainerAdvice').textContent = result.advice;
+            document.getElementById('exerciseEffect').textContent = result.effect;
+            
+            const stats = result.stats;
+            document.getElementById('updatedStats').textContent = 
+                `총 운동 횟수: ${stats.totalExercises}, 연속 운동 일수: ${stats.consecutiveDays}일, 완료율: ${stats.completionRate}%`;
+            
+            displayAchievementBadges(result.stats);
         }
 
         // 성취 배지 표시

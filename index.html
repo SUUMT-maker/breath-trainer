@@ -166,7 +166,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem 0;
+            padding: 0.8rem 0;
             border-bottom: 1px solid #eee;
         }
 
@@ -182,6 +182,7 @@
         .history-stats {
             font-size: 0.9rem;
             color: #333;
+            font-weight: 500;
         }
 
         .breathing-circle {
@@ -390,8 +391,8 @@
                         <div class="stat-label">연속 운동 일수</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value" id="completionRate">0%</div>
-                        <div class="stat-label">완료율</div>
+                        <div class="stat-value" id="averageSets">0</div>
+                        <div class="stat-label">평균 완료 세트</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="totalBreaths">0</div>
@@ -485,7 +486,7 @@
 
     <script>
         // Apps Script URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjEBmscdS7nu89J33ZTBQ7mjyXYbljkT2wPgW8EQIbtQYnNR2A90f2k_HkOFKfMDPY_g/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-6MgHRP2HZ0sEfmeavA6IVAfC5yC4OEgR5kG3YE17NNpTRXW8GBIirfjyXNSMlPLYDQ/exec';
 
         // 전역 변수
         let currentSet = 1;
@@ -497,29 +498,50 @@
         let isAborted = false;
         let breathingPhase = 'inhale';
 
-        // 로컬 스토리지 기반 통계 관리
+        // 🔧 수정된 로컬 스토리지 기반 통계 관리
         function getLocalStats() {
             const stats = JSON.parse(localStorage.getItem('breathTrainerStats') || '{}');
             return {
                 totalExercises: stats.totalExercises || 0,
-                completedExercises: stats.completedExercises || 0,
+                totalSets: stats.totalSets || 0,
                 totalBreaths: stats.totalBreaths || 0,
                 consecutiveDays: stats.consecutiveDays || 0,
                 lastExerciseDate: stats.lastExerciseDate || null,
-                completionRate: stats.totalExercises > 0 ? 
-                    Math.round((stats.completedExercises / stats.totalExercises) * 100) : 0
+                averageSets: stats.totalExercises > 0 ? Math.round((stats.totalSets / stats.totalExercises) * 10) / 10 : 0
             };
+        }
+
+        // 🔧 수정된 히스토리 관리
+        function getExerciseHistory() {
+            return JSON.parse(localStorage.getItem('breathTrainerHistory') || '[]');
+        }
+
+        function addExerciseHistory(exerciseData) {
+            const history = getExerciseHistory();
+            const newRecord = {
+                date: new Date().toISOString(),
+                exerciseTime: exerciseData.exerciseTime,
+                completedSets: exerciseData.completedSets,
+                completedBreaths: exerciseData.completedBreaths,
+                isAborted: exerciseData.isAborted
+            };
+            
+            history.unshift(newRecord); // 최신 기록을 맨 앞에
+            
+            // 최대 10개 기록만 유지
+            if (history.length > 10) {
+                history.splice(10);
+            }
+            
+            localStorage.setItem('breathTrainerHistory', JSON.stringify(history));
         }
 
         function updateLocalStats(exerciseData) {
             const stats = getLocalStats();
             
             stats.totalExercises += 1;
+            stats.totalSets += exerciseData.completedSets;
             stats.totalBreaths += exerciseData.completedBreaths;
-            
-            if (!exerciseData.isAborted) {
-                stats.completedExercises += 1;
-            }
             
             // 연속 일수 계산
             const today = new Date().toDateString();
@@ -536,8 +558,7 @@
             }
             
             stats.lastExerciseDate = new Date().toISOString();
-            stats.completionRate = stats.totalExercises > 0 ? 
-                Math.round((stats.completedExercises / stats.totalExercises) * 100) : 0;
+            stats.averageSets = stats.totalExercises > 0 ? Math.round((stats.totalSets / stats.totalExercises) * 10) / 10 : 0;
             
             localStorage.setItem('breathTrainerStats', JSON.stringify(stats));
             return stats;
@@ -613,18 +634,51 @@
             loadUserData();
         }
 
-        // 사용자 데이터 로드
+        // 🔧 수정된 사용자 데이터 로드
         function loadUserData() {
             const stats = getLocalStats();
             displayUserStats(stats);
+            displayHistory();
         }
 
-        // 사용자 통계 표시
+        // 🔧 수정된 사용자 통계 표시
         function displayUserStats(stats) {
             document.getElementById('totalExercises').textContent = stats.totalExercises;
             document.getElementById('consecutiveDays').textContent = stats.consecutiveDays;
-            document.getElementById('completionRate').textContent = stats.completionRate + '%';
+            document.getElementById('averageSets').textContent = stats.averageSets;
             document.getElementById('totalBreaths').textContent = stats.totalBreaths;
+        }
+
+        // 🔧 새로 만든 히스토리 표시 함수
+        function displayHistory() {
+            const historyList = document.getElementById('historyList');
+            const history = getExerciseHistory();
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<p style="color: #999;">첫 운동을 시작해보세요!</p>';
+                return;
+            }
+
+            historyList.innerHTML = history.slice(0, 5).map(record => {
+                const date = new Date(record.date);
+                const dateStr = date.toLocaleDateString('ko-KR', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                const status = record.isAborted ? '중단됨' : '완료';
+                const statusClass = record.isAborted ? 'color: #f5576c' : 'color: #4facfe';
+                
+                return `
+                    <div class="history-item">
+                        <div class="history-date">${dateStr}</div>
+                        <div class="history-stats" style="${statusClass}">
+                            ${record.completedSets}세트 ${status}
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // 운동 시작
@@ -802,7 +856,7 @@
             }
         }
 
-        // 🎯 운동 완료 - 자연스러운 트레이너 조언
+        // 🎯 수정된 운동 완료 함수
         async function completeExercise() {
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
@@ -830,8 +884,9 @@
             
             const trainerResult = await getTrainerAdvice(exerciseData);
             
-            // 통계 업데이트
+            // 🔧 통계 업데이트 및 히스토리 추가
             const updatedStats = updateLocalStats(exerciseData);
+            addExerciseHistory(exerciseData);
             
             // 결과 표시
             handleExerciseResult({
@@ -849,7 +904,7 @@
             
             const stats = result.stats;
             document.getElementById('updatedStats').textContent = 
-                `총 운동 횟수: ${stats.totalExercises}, 연속 운동 일수: ${stats.consecutiveDays}일, 완료율: ${stats.completionRate}%`;
+                `총 운동 횟수: ${stats.totalExercises}, 연속 운동 일수: ${stats.consecutiveDays}일, 평균 완료 세트: ${stats.averageSets}`;
             
             displayAchievementBadges(result.stats);
         }
@@ -868,8 +923,8 @@
             if (stats.consecutiveDays >= 7) {
                 badges.push('🔥 일주일 연속!');
             }
-            if (stats.completionRate >= 80) {
-                badges.push('⭐ 완료율 80%+');
+            if (stats.averageSets >= 2.5) {
+                badges.push('⭐ 꾸준한 운동러!');
             }
             
             badgesContainer.innerHTML = badges.map(badge => 

@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>숨 트레이너</title>
+    <title>숨트레이너</title>
     
     <!-- 🌙 다크모드 문제 해결: 색상 스키마 고정 -->
     <meta name="color-scheme" content="light">
     <meta name="supported-color-schemes" content="light">
     
     <!-- PWA 메타 태그 -->
-    <meta name="description" content="마음을 편안하게 해주는 호흡운동 트레이너 앱">
-    <meta name="keywords" content="호흡운동, 명상, 스트레스 완화, 웰빙, 건강">
-    <meta name="author" content="숨 트레이너">
+    <meta name="description" content="숨트 호흡운동기구 전용 가이드 앱">
+    <meta name="keywords" content="숨트, 호흡운동기구, 호흡근훈련, 폐활량, 호흡근강화">
+    <meta name="author" content="숨트레이너">
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="숨 트레이너">
+    <meta name="apple-mobile-web-app-title" content="숨트레이너">
     
     <!-- 매니페스트 링크 -->
     <link rel="manifest" href="/manifest.json">
@@ -36,7 +36,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            /* 🌙 모든 요소에 라이트 모드 강제 적용 */
             color-scheme: light !important;
         }
 
@@ -48,8 +47,80 @@
             justify-content: center;
             align-items: center;
             color: #333 !important;
-            /* 🌙 다크모드에서도 배경이 어두워지지 않도록 */
             -webkit-color-scheme: light !important;
+            overflow-x: hidden;
+        }
+
+        /* 🎬 인트로 화면 스타일 */
+        #introScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.8s ease-out;
+            cursor: pointer;
+        }
+
+        #introScreen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-logo {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            animation: breathe 3s ease-in-out infinite;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .intro-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white !important;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .intro-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9) !important;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .intro-touch {
+            background: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
         }
 
         .container {
@@ -62,7 +133,6 @@
             width: 90%;
             text-align: center;
             transition: all 0.3s ease;
-            /* 🌙 컨테이너가 다크모드의 영향을 받지 않도록 */
             color-scheme: light !important;
         }
 
@@ -74,13 +144,12 @@
             display: block;
         }
 
+        /* 🔧 글씨 문제 수정: 그라디언트 제거하고 일반 텍스트로 */
         h1 {
             font-size: 2.5rem;
             margin-bottom: 1rem;
-            background: linear-gradient(45deg, #667eea, #764ba2) !important;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #333 !important;
+            font-weight: bold;
         }
 
         .subtitle {
@@ -126,6 +195,46 @@
             border-radius: 20px;
             font-size: 0.8rem;
             margin-bottom: 0.5rem;
+        }
+
+        .device-guide {
+            background: rgba(255, 255, 255, 0.8) !important;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .device-guide h3 {
+            color: #333 !important;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .device-guide p {
+            color: #555 !important;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .resistance-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .resistance-item {
+            background: rgba(255, 255, 255, 0.8) !important;
+            padding: 0.8rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .resistance-item strong {
+            color: #667eea !important;
+            display: block;
+            margin-bottom: 0.3rem;
         }
 
         .user-stats {
@@ -337,43 +446,39 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease;
         }
 
         .modal-overlay.show {
             display: flex;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .modal-content {
-            background: rgba(255, 255, 255, 0.98) !important;
+        .modal {
+            background: white !important;
             border-radius: 20px;
             padding: 2rem;
-            max-width: 300px;
-            width: 85%;
+            max-width: 320px;
+            width: 90%;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            transform: scale(0.8);
-            animation: modalSlideIn 0.3s ease forwards;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: scaleIn 0.3s ease-out;
         }
 
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: bold;
+        .modal h3 {
             color: #333 !important;
             margin-bottom: 1rem;
+            font-size: 1.3rem;
         }
 
-        .modal-message {
+        .modal p {
             color: #666 !important;
-            font-size: 1rem;
-            line-height: 1.5;
             margin-bottom: 2rem;
+            line-height: 1.5;
         }
 
         .modal-buttons {
@@ -387,10 +492,9 @@
             border: none;
             border-radius: 25px;
             font-size: 1rem;
-            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 100px;
+            transition: all 0.2s ease;
+            min-width: 80px;
         }
 
         .modal-btn-cancel {
@@ -398,19 +502,13 @@
             color: #666 !important;
         }
 
-        .modal-btn-cancel:hover {
-            background: #e0e0e0 !important;
-            transform: translateY(-2px);
-        }
-
         .modal-btn-confirm {
             background: linear-gradient(45deg, #f093fb, #f5576c) !important;
             color: white !important;
         }
 
-        .modal-btn-confirm:hover {
+        .modal-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.4);
         }
 
         @keyframes fadeIn {
@@ -418,15 +516,9 @@
             to { opacity: 1; }
         }
 
-        @keyframes modalSlideIn {
-            from { 
-                transform: scale(0.8) translateY(-20px);
-                opacity: 0;
-            }
-            to { 
-                transform: scale(1) translateY(0);
-                opacity: 1;
-            }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         /* 🌙 다크모드 미디어 쿼리 무시 */
@@ -442,10 +534,6 @@
             
             .container {
                 background: rgba(255, 255, 255, 0.95) !important;
-            }
-
-            .modal-content {
-                background: rgba(255, 255, 255, 0.98) !important;
             }
         }
 
@@ -482,19 +570,22 @@
                 grid-template-columns: 1fr;
             }
 
-            .modal-content {
-                max-width: 280px;
-                width: 90%;
-                padding: 1.5rem;
+            .resistance-info {
+                grid-template-columns: 1fr;
             }
 
-            .modal-buttons {
-                flex-direction: column;
-                gap: 0.8rem;
+            .intro-title {
+                font-size: 2.5rem;
             }
 
-            .modal-btn {
-                width: 100%;
+            .intro-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .intro-logo {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
             }
         }
 
@@ -514,31 +605,68 @@
     </style>
 </head>
 <body>
+    <!-- 🎬 인트로 화면 -->
+    <div id="introScreen" onclick="hideIntro()">
+        <div class="intro-logo">🫁</div>
+        <h1 class="intro-title">숨트레이너</h1>
+        <p class="intro-subtitle">숨트 호흡운동기구<br>전용 가이드 앱</p>
+        <div class="intro-touch">터치하여 시작하기</div>
+    </div>
+
+    <!-- 🎯 커스텀 확인 모달 -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal">
+            <h3>훈련 중단</h3>
+            <p>정말 호흡근 훈련을 중단하시겠습니까?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="hideModal()">취소</button>
+                <button class="modal-btn modal-btn-confirm" onclick="confirmStop()">중단</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- 메인 화면 -->
         <div id="mainScreen" class="screen active">
-            <h1>숨 트레이너</h1>
-            <p class="subtitle"> 숨트와 함께하는 호흡운동</p>
+            <h1>숨트레이너</h1>
+            <p class="subtitle">숨트와 함께하는 호흡근 강화 훈련</p>
             
             <div class="user-info">
-                <div class="user-badge">💪 AI 숨트레이너</div>
-                <div>개인 맞춤 호흡 가이드</div>
+                <div class="user-badge">💪 AI 호흡 코치</div>
+                <div>전문 호흡근 훈련 가이드</div>
+            </div>
+
+            <div class="device-guide">
+                <h3>🔹 숨트 사용 준비</h3>
+                <p>• 숨트 기구를 입에 물고 준비하세요</p>
+                <p>• 개인에 맞는 저항 단계를 설정하세요</p>
+                <p>• 편안한 자세로 앉거나 서서 훈련하세요</p>
+                <div class="resistance-info">
+                    <div class="resistance-item">
+                        <strong>들숨 저항</strong>
+                        <span>1~6단계</span>
+                    </div>
+                    <div class="resistance-item">
+                        <strong>날숨 저항</strong>
+                        <span>1~5단계</span>
+                    </div>
+                </div>
             </div>
             
             <button class="start-button" onclick="startExercise()">
-                운동 시작
+                훈련 시작
             </button>
             
             <div class="user-stats">
-                <h3>나의 운동 통계</h3>
+                <h3>나의 호흡근 훈련 통계</h3>
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-value" id="totalExercises">0</div>
-                        <div class="stat-label">총 운동 횟수</div>
+                        <div class="stat-label">총 훈련 횟수</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="consecutiveDays">0</div>
-                        <div class="stat-label">연속 운동 일수</div>
+                        <div class="stat-label">연속 훈련 일수</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-value" id="averageSets">0</div>
@@ -552,9 +680,9 @@
             </div>
             
             <div class="history">
-                <h3>최근 운동 기록</h3>
+                <h3>최근 훈련 기록</h3>
                 <div id="historyList">
-                    <p style="color: #999;">첫 운동을 시작해보세요!</p>
+                    <p style="color: #999;">첫 호흡근 훈련을 시작해보세요!</p>
                 </div>
             </div>
         </div>
@@ -562,7 +690,7 @@
         <!-- 운동 화면 -->
         <div id="exerciseScreen" class="screen">
             <div id="countdownSection">
-                <h2>준비하세요</h2>
+                <h2>숨트 훈련 준비</h2>
                 <div class="countdown" id="countdown">3</div>
             </div>
 
@@ -575,19 +703,19 @@
                 
                 <div class="control-buttons">
                     <button class="btn btn-secondary" onclick="pauseExercise()">일시정지</button>
-                    <button class="btn btn-secondary" onclick="stopExercise()">중단</button>
+                    <button class="btn btn-secondary" onclick="showStopModal()">중단</button>
                 </div>
             </div>
 
             <div id="restSection" style="display: none;">
                 <h2>휴식 시간</h2>
                 <div class="countdown" id="restCountdown">120</div>
-                <p style="color: #666; margin: 1rem 0;">다음 세트까지 휴식하세요</p>
+                <p style="color: #666; margin: 1rem 0;">다음 세트까지 호흡을 정리하세요</p>
                 <div class="progress-text" id="restProgressText">1세트 완료</div>
                 
                 <div class="control-buttons">
                     <button class="btn btn-success" onclick="skipRest()">휴식 건너뛰기</button>
-                    <button class="btn btn-secondary" onclick="stopExercise()">중단</button>
+                    <button class="btn btn-secondary" onclick="showStopModal()">중단</button>
                 </div>
             </div>
         </div>
@@ -595,7 +723,7 @@
         <!-- 결과 화면 -->
         <div id="resultScreen" class="screen">
             <div class="celebration">🎉</div>
-            <h2>운동 완료!</h2>
+            <h2>훈련 완료!</h2>
             
             <div class="stats-grid">
                 <div class="stat-item">
@@ -612,13 +740,13 @@
 
             <div class="result-content">
                 <div class="result-section">
-                    <h4>💪 트레이너 조언</h4>
-                    <p id="trainerAdvice">트레이너가 당신의 운동을 분석하고 있습니다...</p>
+                    <h4>💪 호흡 코치 조언</h4>
+                    <p id="trainerAdvice">AI 호흡 코치가 당신의 훈련을 분석하고 있습니다...</p>
                 </div>
 
                 <div class="result-section">
-                    <h4>🌟 운동 효과</h4>
-                    <p id="exerciseEffect">오늘 운동의 효과를 정리해드릴게요...</p>
+                    <h4>🌟 훈련 효과</h4>
+                    <p id="exerciseEffect">오늘 호흡근 훈련의 효과를 정리해드릴게요...</p>
                 </div>
 
                 <div class="result-section">
@@ -628,20 +756,8 @@
             </div>
 
             <div class="control-buttons">
-                <button class="btn btn-success" onclick="startExercise()">다시 운동하기</button>
+                <button class="btn btn-success" onclick="startExercise()">다시 훈련하기</button>
                 <button class="btn" onclick="goToMain()">메인으로</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 🎯 커스텀 확인 모달 -->
-    <div id="confirmModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-title" id="modalTitle">운동 중단</div>
-            <div class="modal-message" id="modalMessage">정말 운동을 중단하시겠습니까?</div>
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-cancel" onclick="hideConfirmModal()">취소</button>
-                <button class="modal-btn modal-btn-confirm" id="modalConfirmBtn" onclick="confirmAction()">중단</button>
             </div>
         </div>
     </div>
@@ -659,30 +775,34 @@
         let isPaused = false;
         let isAborted = false;
         let breathingPhase = 'inhale';
-        let pendingConfirmAction = null; // 🎯 확인 대기 중인 액션
 
-        // 🎯 커스텀 확인 모달 관리
-        function showConfirmModal(title, message, confirmText, action) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalMessage').textContent = message;
-            document.getElementById('modalConfirmBtn').textContent = confirmText;
+        // 🎬 인트로 화면 관리
+        function hideIntro() {
+            const introScreen = document.getElementById('introScreen');
+            introScreen.classList.add('hidden');
+            setTimeout(() => {
+                introScreen.style.display = 'none';
+            }, 800);
+        }
+
+        // 🎯 커스텀 모달 관리
+        function showStopModal() {
             document.getElementById('confirmModal').classList.add('show');
-            pendingConfirmAction = action;
         }
 
-        function hideConfirmModal() {
+        function hideModal() {
             document.getElementById('confirmModal').classList.remove('show');
-            pendingConfirmAction = null;
         }
 
-        function confirmAction() {
-            if (pendingConfirmAction) {
-                pendingConfirmAction();
-            }
-            hideConfirmModal();
+        function confirmStop() {
+            hideModal();
+            isAborted = true;
+            clearTimeout(breathingTimer);
+            clearInterval(restTimer);
+            completeExercise();
         }
 
-        // 🔧 수정된 로컬 스토리지 기반 통계 관리
+        // 로컬 스토리지 기반 통계 관리
         function getLocalStats() {
             const stats = JSON.parse(localStorage.getItem('breathTrainerStats') || '{}');
             return {
@@ -695,7 +815,7 @@
             };
         }
 
-        // 🔧 수정된 히스토리 관리
+        // 히스토리 관리
         function getExerciseHistory() {
             return JSON.parse(localStorage.getItem('breathTrainerHistory') || '[]');
         }
@@ -710,9 +830,8 @@
                 isAborted: exerciseData.isAborted
             };
             
-            history.unshift(newRecord); // 최신 기록을 맨 앞에
+            history.unshift(newRecord);
             
-            // 최대 10개 기록만 유지
             if (history.length > 10) {
                 history.splice(10);
             }
@@ -727,14 +846,13 @@
             stats.totalSets += exerciseData.completedSets;
             stats.totalBreaths += exerciseData.completedBreaths;
             
-            // 연속 일수 계산
             const today = new Date().toDateString();
             const lastDate = stats.lastExerciseDate ? new Date(stats.lastExerciseDate).toDateString() : null;
             
             if (lastDate === today) {
-                // 오늘 이미 운동함
+                // 오늘 이미 훈련함
             } else if (lastDate === new Date(Date.now() - 24*60*60*1000).toDateString()) {
-                // 어제 운동함
+                // 어제 훈련함
                 stats.consecutiveDays += 1;
             } else {
                 // 연속 끊김
@@ -748,17 +866,47 @@
             return stats;
         }
 
-        // 🧑‍💼 자연스러운 트레이너 조언 받기
+        // 🔧 수정된 AI 트레이너 조언 (숨트 전용)
         async function getTrainerAdvice(exerciseData) {
             try {
-                console.log('💪 트레이너 조언 요청...', exerciseData);
+                const userStats = getLocalStats();
                 
+                // 숨트 전용 AI 프롬프트
+                const suumtPrompt = `당신은 숨트레이너 앱의 전문 호흡 코치입니다. 다음 정보를 바탕으로 답변하세요:
+
+### 숨트(SUUMT) 제품 정보:
+- 들숨과 날숨을 동시에 훈련할 수 있는 세계 유일한 호흡운동기구
+- 저항 조절이 가능하여 개인별 맞춤 훈련 제공 (들숨 6단계, 날숨 5단계)
+- 호흡법: 들숨 4초 → 유지 2초 → 날숨 4초 → 유지 2초
+- 하루 10분, 3세트 권장, 1세트는 10회, 세트별 120초 휴식
+- 호흡근육 강화를 통한 폐활량 증가 및 일상 활동 능력 향상
+
+### 훈련 결과:
+- 완료 세트: ${exerciseData.completedSets}/3세트
+- 완료 호흡 횟수: ${exerciseData.completedBreaths}/30회
+- 훈련 시간: ${exerciseData.exerciseTime}
+- 중단 여부: ${exerciseData.isAborted ? '중단됨' : '완료'}
+
+### 사용자 통계:
+- 총 훈련 횟수: ${userStats.totalExercises}
+- 연속 훈련 일수: ${userStats.consecutiveDays}
+- 평균 완료 세트: ${userStats.averageSets}
+
+다음 두 섹션으로 나누어 응답해주세요:
+1. 호흡 코치 조언 (격려와 개선점, 숨트 활용 팁, 100-150자)
+2. 훈련 효과 (호흡근 강화 효과, 폐활량 증가, 일상 능력 향상, 100-150자)
+
+응답 형식:
+[조언] 내용
+[효과] 내용`;
+
                 const params = new URLSearchParams({
                     function: 'getAIAdvice',
                     exerciseTime: exerciseData.exerciseTime,
                     completedSets: exerciseData.completedSets.toString(),
                     completedBreaths: exerciseData.completedBreaths.toString(),
-                    isAborted: exerciseData.isAborted.toString()
+                    isAborted: exerciseData.isAborted.toString(),
+                    customPrompt: suumtPrompt
                 });
                 
                 const response = await fetch(`${SCRIPT_URL}?${params}`);
@@ -768,38 +916,35 @@
                 }
                 
                 const result = await response.json();
-                console.log('✅ 트레이너 조언 완료');
                 
                 if (result.success) {
                     return {
-                        advice: result.advice || '훌륭한 호흡운동이었습니다!',
-                        effect: result.effect || '규칙적인 호흡운동은 건강에 도움됩니다.'
+                        advice: result.advice || '훌륭한 호흡근 훈련이었습니다!',
+                        effect: result.effect || '규칙적인 숨트 훈련은 호흡근 강화에 도움됩니다.'
                     };
                 } else {
                     throw new Error(result.message || '조언 생성 실패');
                 }
                 
             } catch (error) {
-                console.log('⚠️ 트레이너 연결 실패, 기본 조언 제공');
-                
-                // 🎯 자연스러운 기본 조언 (다양한 패턴)
-                const naturalAdvices = [
+                // 숨트 전용 기본 조언
+                const suumtAdvices = [
                     {
-                        advice: `${exerciseData.completedSets}세트 완료하셨네요! 정말 잘하셨습니다. 꾸준히 계속하시면 더 큰 변화를 느끼실 거예요.`,
-                        effect: '깊은 호흡은 자율신경계를 안정시키고 스트레스 호르몬을 줄여 마음의 평정을 찾는 데 도움을 줍니다.'
+                        advice: `${exerciseData.completedSets}세트 완료! 숨트 저항 훈련으로 호흡근이 점점 강해지고 있습니다. 꾸준한 훈련으로 더 강한 호흡력을 기대하세요.`,
+                        effect: '숨트 저항 훈련은 흡기근과 호기근을 동시에 강화하여 폐활량 증가와 일상 활동 시 호흡 효율성을 크게 향상시킵니다.'
                     },
                     {
-                        advice: `${exerciseData.exerciseTime} 동안 집중해서 호흡하신 모습이 인상적이었어요. 이런 꾸준함이 건강한 습관을 만들어갑니다.`,
-                        effect: '규칙적인 호흡운동은 혈압을 안정시키고 집중력을 높이며, 수면의 질 향상에도 큰 도움이 됩니다.'
+                        advice: `${exerciseData.exerciseTime} 동안 집중적인 호흡근 훈련을 하셨네요. 숨트의 저항을 느끼며 근육이 강화되는 과정입니다.`,
+                        effect: '저항 호흡 훈련은 호흡근의 힘과 지구력을 향상시켜 계단 오르기, 운동 시 숨찬 증상을 줄이고 전반적인 체력을 증진시킵니다.'
                     },
                     {
-                        advice: '호흡에 온전히 집중하신 시간이 마음에 평안을 가져다주었길 바랍니다. 오늘 하루도 수고 많으셨어요!',
-                        effect: '의식적인 호흡은 뇌파를 안정시키고 창의성을 높이며, 감정 조절 능력을 크게 향상시킵니다.'
+                        advice: '숨트와 함께한 체계적인 호흡근 훈련이 완료되었습니다. 개인에 맞는 저항 단계로 안전하고 효과적인 훈련을 이어가세요.',
+                        effect: '정기적인 숨트 훈련은 폐기능 개선뿐만 아니라 스트레스 감소, 수면의 질 향상, 집중력 증진 등 다양한 건강상 이익을 제공합니다.'
                     }
                 ];
                 
-                const randomIndex = Math.floor(Math.random() * naturalAdvices.length);
-                return naturalAdvices[randomIndex];
+                const randomIndex = Math.floor(Math.random() * suumtAdvices.length);
+                return suumtAdvices[randomIndex];
             }
         }
 
@@ -818,14 +963,14 @@
             loadUserData();
         }
 
-        // 🔧 수정된 사용자 데이터 로드
+        // 사용자 데이터 로드
         function loadUserData() {
             const stats = getLocalStats();
             displayUserStats(stats);
             displayHistory();
         }
 
-        // 🔧 수정된 사용자 통계 표시
+        // 사용자 통계 표시
         function displayUserStats(stats) {
             document.getElementById('totalExercises').textContent = stats.totalExercises;
             document.getElementById('consecutiveDays').textContent = stats.consecutiveDays;
@@ -833,13 +978,13 @@
             document.getElementById('totalBreaths').textContent = stats.totalBreaths;
         }
 
-        // 🔧 새로 만든 히스토리 표시 함수
+        // 히스토리 표시 함수
         function displayHistory() {
             const historyList = document.getElementById('historyList');
             const history = getExerciseHistory();
             
             if (history.length === 0) {
-                historyList.innerHTML = '<p style="color: #999;">첫 운동을 시작해보세요!</p>';
+                historyList.innerHTML = '<p style="color: #999;">첫 호흡근 훈련을 시작해보세요!</p>';
                 return;
             }
 
@@ -903,7 +1048,7 @@
             }, 500);
         }
 
-        // 호흡 사이클 (4단계)
+        // 호흡 사이클 (4단계) - 숨트 호흡법 적용
         function breathingCycle() {
             if (isPaused || isAborted) return;
 
@@ -915,8 +1060,8 @@
             progressText.textContent = `3세트 중 ${currentSet}세트, 10회 중 ${currentBreath}회`;
 
             if (breathingPhase === 'inhale') {
-                statusText.textContent = '마시기';
-                circleText.textContent = '마시기';
+                statusText.textContent = '들숨 (4초)';
+                circleText.textContent = '들숨';
                 circle.className = 'breathing-circle inhale';
                 
                 breathingTimer = setTimeout(() => {
@@ -925,8 +1070,8 @@
                 }, 4000);
 
             } else if (breathingPhase === 'hold') {
-                statusText.textContent = '숨참기';
-                circleText.textContent = '숨참기';
+                statusText.textContent = '유지 (2초)';
+                circleText.textContent = '유지';
                 circle.className = 'breathing-circle hold';
                 
                 breathingTimer = setTimeout(() => {
@@ -935,8 +1080,8 @@
                 }, 2000);
 
             } else if (breathingPhase === 'exhale') {
-                statusText.textContent = '뱉기';
-                circleText.textContent = '뱉기';
+                statusText.textContent = '날숨 (4초)';
+                circleText.textContent = '날숨';
                 circle.className = 'breathing-circle exhale';
                 
                 breathingTimer = setTimeout(() => {
@@ -945,8 +1090,8 @@
                 }, 4000);
 
             } else if (breathingPhase === 'exhale-hold') {
-                statusText.textContent = '잠시 멈춤';
-                circleText.textContent = '잠시 멈춤';
+                statusText.textContent = '유지 (2초)';
+                circleText.textContent = '유지';
                 circle.className = 'breathing-circle exhale-hold';
                 
                 breathingTimer = setTimeout(() => {
@@ -1030,22 +1175,7 @@
             }
         }
 
-        // 🎯 운동 중단 - 커스텀 모달 사용
-        function stopExercise() {
-            showConfirmModal(
-                '운동 중단', 
-                '정말 운동을 중단하시겠습니까?', 
-                '중단', 
-                function() {
-                    isAborted = true;
-                    clearTimeout(breathingTimer);
-                    clearInterval(restTimer);
-                    completeExercise();
-                }
-            );
-        }
-
-        // 🎯 수정된 운동 완료 함수
+        // 운동 완료 함수
         async function completeExercise() {
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
@@ -1066,18 +1196,14 @@
             document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
             document.getElementById('completedSets').textContent = `${exerciseData.completedSets}/3`;
             
-            // 💪 자연스러운 트레이너 조언 요청
-            console.log('💪 트레이너가 운동을 분석중...');
-            document.getElementById('trainerAdvice').textContent = '트레이너가 당신의 운동을 분석하고 있습니다...';
-            document.getElementById('exerciseEffect').textContent = '오늘 운동의 효과를 정리해드릴게요...';
+            document.getElementById('trainerAdvice').textContent = 'AI 호흡 코치가 당신의 훈련을 분석하고 있습니다...';
+            document.getElementById('exerciseEffect').textContent = '오늘 호흡근 훈련의 효과를 정리해드릴게요...';
             
             const trainerResult = await getTrainerAdvice(exerciseData);
             
-            // 🔧 통계 업데이트 및 히스토리 추가
             const updatedStats = updateLocalStats(exerciseData);
             addExerciseHistory(exerciseData);
             
-            // 결과 표시
             handleExerciseResult({
                 success: true,
                 advice: trainerResult.advice,
@@ -1093,27 +1219,27 @@
             
             const stats = result.stats;
             document.getElementById('updatedStats').textContent = 
-                `총 운동 횟수: ${stats.totalExercises}, 연속 운동 일수: ${stats.consecutiveDays}일, 평균 완료 세트: ${stats.averageSets}`;
+                `총 훈련 횟수: ${stats.totalExercises}, 연속 훈련 일수: ${stats.consecutiveDays}일, 평균 완료 세트: ${stats.averageSets}`;
             
             displayAchievementBadges(result.stats);
         }
 
-        // 성취 배지 표시
+        // 성취 배지 표시 (숨트 훈련 전용)
         function displayAchievementBadges(stats) {
             const badgesContainer = document.getElementById('achievementBadges');
             const badges = [];
             
             if (stats.totalExercises === 1) {
-                badges.push('🎯 첫 운동 완료!');
+                badges.push('🎯 첫 호흡근 훈련 완료!');
             }
             if (stats.totalExercises === 10) {
-                badges.push('🏆 10회 달성!');
+                badges.push('🏆 숨트 마스터 10회!');
             }
             if (stats.consecutiveDays >= 7) {
-                badges.push('🔥 일주일 연속!');
+                badges.push('🔥 일주일 연속 훈련!');
             }
             if (stats.averageSets >= 2.5) {
-                badges.push('⭐ 꾸준한 운동러!');
+                badges.push('⭐ 꾸준한 호흡 운동가!');
             }
             
             badgesContainer.innerHTML = badges.map(badge => 
@@ -1135,13 +1261,6 @@
             document.getElementById('breathingSection').style.display = 'none';
             document.getElementById('restSection').style.display = 'none';
         }
-
-        // 🎯 모달 외부 클릭 시 닫기
-        document.getElementById('confirmModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                hideConfirmModal();
-            }
-        });
 
         // 페이지 로드 시 사용자 데이터 로드
         window.onload = function() {

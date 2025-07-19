@@ -157,55 +157,15 @@
             display: block;
         }
 
-        /* 📱 상단 상태바 & 헤더 */
-        .status-bar {
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            background: transparent;
-        }
-
-        .time-display {
-            font-size: 15px;
-            font-weight: 600;
-            color: #202021;
-            letter-spacing: -0.5px;
-        }
-
-        .battery-indicator {
-            width: 24px;
-            height: 12px;
-            border: 1.5px solid #202021;
-            border-radius: 2px;
-            position: relative;
-        }
-
-        .battery-indicator::after {
-            content: '';
-            position: absolute;
-            right: -3px;
-            top: 3px;
-            width: 1.5px;
-            height: 4px;
-            background: #202021;
-            border-radius: 0 1px 1px 0;
-        }
-
-        .battery-level {
-            position: absolute;
-            left: 1px;
-            top: 1px;
-            bottom: 1px;
-            width: 70%;
-            background: #202021;
-            border-radius: 1px;
+        /* 📱 헤더 섹션 */
+        .app-header {
+            padding: 20px 20px 0;
+            background: #F9FAFC;
         }
 
         /* 🎨 메인 헤더 */
         .main-header {
-            padding: 20px 20px 24px;
+            padding: 20px;
         }
 
         .user-greeting {
@@ -266,7 +226,6 @@
         .section-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             margin-bottom: 20px;
             padding: 0 20px;
         }
@@ -275,34 +234,6 @@
             font-size: 24px;
             font-weight: 500;
             color: #1E1E1E;
-        }
-
-        .time-filter {
-            padding: 8px;
-            border: 1px solid #E7E7E7;
-            border-radius: 24px;
-            background: white;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .time-filter:hover {
-            border-color: #667eea;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
-        }
-
-        .time-filter span {
-            font-size: 12px;
-            font-weight: 700;
-            color: #1E1E1E;
-        }
-
-        .time-filter .icon {
-            font-size: 14px;
-            color: #666;
         }
 
         /* 📱 통계 카드 그리드 */
@@ -366,6 +297,75 @@
             margin-bottom: 4px;
         }
 
+        /* 🔧 운동 가이드 카드 */
+        .guide-card {
+            background: white;
+            border: 1px solid #E7E7E7;
+            border-radius: 24px;
+            margin: 0 20px 24px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .guide-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .guide-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1E1E1E;
+        }
+
+        .important-notice {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: rgba(102, 126, 234, 0.08);
+            border-radius: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.15);
+        }
+
+        .important-icon {
+            color: #667eea;
+            font-size: 14px;
+            margin-right: 6px;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+        .important-text {
+            color: #1E1E1E;
+            font-weight: 500;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .guide-step {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .guide-step::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .guide-step:last-child {
+            margin-bottom: 0;
+        }
+
         /* 🎯 저항 설정 카드 */
         .resistance-card {
             background: white;
@@ -390,8 +390,8 @@
         }
 
         .resistance-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            flex-direction: column;
             gap: 16px;
             margin-bottom: 16px;
         }
@@ -494,9 +494,20 @@
             overflow: hidden;
         }
 
+        .chart-legend {
+            text-align: center;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
         .chart-area {
             position: relative;
-            height: 200px;
+            height: 150px;
             margin: 20px 0;
         }
 
@@ -524,7 +535,7 @@
             left: 50px;
             bottom: 0;
             right: 0;
-            height: 180px;
+            height: 130px;
             display: flex;
             align-items: end;
             justify-content: space-between;
@@ -566,7 +577,7 @@
 
         /* 🎯 트레이닝 시작 버튼 */
         .start-training-section {
-            padding: 0 20px 100px;
+            padding: 0 20px 40px;
         }
 
         .start-button {
@@ -594,33 +605,6 @@
 
         .start-button:active {
             transform: translateY(0);
-        }
-
-        /* 📱 하단 네비게이션 */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 375px;
-            height: 80px;
-            background: white;
-            border-top: 1px solid #E7E7E7;
-            border-radius: 32px 32px 0 0;
-            box-shadow: 0 -2px 50px rgba(31, 143, 246, 0.1);
-            padding: 20px 42px 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .home-indicator {
-            width: 134px;
-            height: 5px;
-            background: #1E1E1E;
-            border-radius: 100px;
-            margin-top: 14px;
         }
 
         /* 기존 화면들 스타일 유지 */
@@ -676,9 +660,13 @@
             background: white;
             border-radius: 20px;
             padding: 2rem;
-            margin: 2rem auto;
+            margin: 0 auto;
             max-width: 350px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .progress-container {
@@ -1041,7 +1029,7 @@
             }
 
             .start-training-section {
-                padding: 0 16px 100px;
+                padding: 0 16px 40px;
             }
 
             .resistance-controls {
@@ -1106,14 +1094,6 @@
     <div class="app-container">
         <!-- 메인 화면 -->
         <div id="mainScreen" class="screen active">
-            <!-- 상태바 -->
-            <div class="status-bar">
-                <div class="time-display" id="currentTime">9:41</div>
-                <div class="battery-indicator">
-                    <div class="battery-level"></div>
-                </div>
-            </div>
-
             <!-- 메인 헤더 -->
             <div class="main-header">
                 <div class="user-greeting">
@@ -1132,10 +1112,6 @@
             <div class="stats-section">
                 <div class="section-header">
                     <h2 class="section-title">오늘의 기록</h2>
-                    <div class="time-filter">
-                        <span>오늘</span>
-                        <span class="icon">📅</span>
-                    </div>
                 </div>
 
                 <div class="stats-grid">
@@ -1183,6 +1159,22 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- 운동 가이드 -->
+            <div class="guide-card">
+                <div class="guide-header">
+                    <div class="guide-title">📋 숨트 운동 가이드</div>
+                </div>
+                
+                <div class="important-notice">
+                    <span class="important-icon">💡</span>
+                    <span class="important-text">숨트를 통해서만 입으로 호흡하세요</span>
+                </div>
+                
+                <div class="guide-step">숨트의 저항 강도를 조절하세요</div>
+                <div class="guide-step">같은 저항 강도를 아래에 입력하세요</div>
+                <div class="guide-step">숨트를 입에 물고 준비하세요</div>
             </div>
 
             <!-- 저항 설정 -->
@@ -1235,30 +1227,26 @@
             <div class="chart-section">
                 <div class="section-header">
                     <h2 class="section-title">주간 활동</h2>
-                    <div class="time-filter">
-                        <span>지난 주</span>
-                        <span class="icon">📊</span>
-                    </div>
                 </div>
 
                 <div class="chart-container">
+                    <div class="chart-legend">완료한 세트 수 (일별)</div>
                     <div class="chart-area">
                         <div class="chart-y-axis">
-                            <div class="y-label">10</div>
-                            <div class="y-label">8</div>
-                            <div class="y-label">6</div>
                             <div class="y-label">4</div>
+                            <div class="y-label">3</div>
                             <div class="y-label">2</div>
+                            <div class="y-label">1</div>
                             <div class="y-label">0</div>
                         </div>
                         <div class="chart-bars" id="chartBars">
-                            <div class="chart-bar" style="height: 60%"></div>
-                            <div class="chart-bar highlight" style="height: 85%"></div>
-                            <div class="chart-bar" style="height: 70%"></div>
-                            <div class="chart-bar" style="height: 40%"></div>
-                            <div class="chart-bar" style="height: 90%"></div>
-                            <div class="chart-bar highlight" style="height: 100%"></div>
-                            <div class="chart-bar" style="height: 65%"></div>
+                            <div class="chart-bar" style="height: 0%" data-day="0"></div>
+                            <div class="chart-bar" style="height: 0%" data-day="1"></div>
+                            <div class="chart-bar" style="height: 0%" data-day="2"></div>
+                            <div class="chart-bar" style="height: 0%" data-day="3"></div>
+                            <div class="chart-bar" style="height: 0%" data-day="4"></div>
+                            <div class="chart-bar" style="height: 0%" data-day="5"></div>
+                            <div class="chart-bar" style="height: 0%" data-day="6"></div>
                         </div>
                     </div>
                     <div class="chart-x-axis">
@@ -1279,11 +1267,6 @@
                     <span>🚀</span>
                     <span>트레이닝 시작</span>
                 </button>
-            </div>
-
-            <!-- 하단 네비게이션 -->
-            <div class="bottom-nav">
-                <div class="home-indicator"></div>
             </div>
         </div>
 
@@ -1445,18 +1428,7 @@
         
         let userFeedback = null;
 
-        // 현재 시간 업데이트
-        function updateCurrentTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('ko-KR', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: false 
-            });
-            document.getElementById('currentTime').textContent = timeString;
-        }
-
-        // 차트 데이터 업데이트
+        // 차트 데이터 업데이트 (실제 데이터 연동)
         function updateChart() {
             const history = getExerciseHistory();
             const chartBars = document.getElementById('chartBars');
@@ -1476,16 +1448,19 @@
                 });
                 
                 const totalSets = dayData.reduce((sum, record) => sum + record.completedSets, 0);
-                const height = Math.min(100, (totalSets / 10) * 100); // 최대 10세트 기준
+                const height = Math.min(100, (totalSets / 4) * 100); // 최대 4세트 기준
                 
                 bar.style.height = `${height}%`;
                 
-                // 오늘과 어제는 하이라이트
-                if (index >= 5) {
+                // 데이터가 있는 날은 하이라이트
+                if (totalSets > 0) {
                     bar.classList.add('highlight');
                 } else {
                     bar.classList.remove('highlight');
                 }
+
+                // 툴팁 추가 (호버 시 정확한 수치 표시)
+                bar.title = `${last7Days[index].split(' ')[0]}: ${totalSets}세트 완료`;
             });
         }
 
@@ -2238,8 +2213,6 @@
         }
 
         window.onload = function() {
-            updateCurrentTime();
-            setInterval(updateCurrentTime, 1000);
             loadUserData();
             loadResistanceSettings();
         };

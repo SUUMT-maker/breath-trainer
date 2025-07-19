@@ -165,7 +165,6 @@
         .user-greeting {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             margin-bottom: 24px;
         }
 
@@ -205,35 +204,40 @@
             color: #1E1E1E;
         }
 
-        .notification-bell {
-            width: 24px;
-            height: 24px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: #1E1E1E;
-        }
-
         /* 📊 통계 섹션 */
         .stats-section {
             margin-bottom: 24px;
         }
 
+        /* 📊 섹션 헤더 개선 */
         .section-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 0 20px;
+            background: white;
+            border: 1px solid #E7E7E7;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin: 0 20px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #667eea;
         }
 
         .section-title {
-            font-size: 24px;
-            font-weight: 500;
+            font-size: 20px;
+            font-weight: 600;
             color: #1E1E1E;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            font-size: 22px;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+            font-weight: 400;
         }
 
         /* 📱 통계 카드 그리드 */
@@ -242,7 +246,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 16px;
             padding: 0 20px;
-            margin-bottom: 12px;
+            margin-bottom: 24px;
         }
 
         .stat-card {
@@ -489,7 +493,7 @@
             background: white;
             border: 1px solid #E7E7E7;
             border-radius: 24px;
-            margin: 0 20px;
+            margin: 0 20px 24px;
             padding: 20px;
             overflow: hidden;
         }
@@ -1139,7 +1143,7 @@
             }
 
             .chart-container {
-                margin: 0 16px;
+                margin: 0 16px 24px;
                 padding: 16px;
             }
 
@@ -1185,348 +1189,6 @@
             animation: spin 1s ease-in-out infinite;
         }
 
-        /* 🔔 알림 설정 모달 */
-        .notification-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1500;
-        }
-
-        .notification-modal.show {
-            display: flex;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .notification-content {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            max-width: 350px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            animation: scaleIn 0.3s ease-out;
-        }
-
-        .notification-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-        }
-
-        .notification-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background 0.2s;
-        }
-
-        .close-btn:hover {
-            background: #f0f0f0;
-        }
-
-        .notification-section {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 12px;
-            border-left: 4px solid #667eea;
-        }
-
-        .section-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .toggle-label {
-            font-size: 0.9rem;
-            color: #555;
-            font-weight: 500;
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 25px;
-            background: #ccc;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .toggle-switch.active {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-        }
-
-        .toggle-slider {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 21px;
-            height: 21px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .toggle-switch.active .toggle-slider {
-            transform: translateX(25px);
-        }
-
-        .time-setting {
-            margin-bottom: 1rem;
-        }
-
-        .time-label {
-            font-size: 0.85rem;
-            color: #666;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .time-input {
-            width: 100%;
-            padding: 0.7rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-
-        .time-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .notification-status {
-            text-align: center;
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-        }
-
-        .status-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .status-text {
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .permission-info {
-            background: rgba(255, 193, 7, 0.1);
-            border: 1px solid rgba(255, 193, 7, 0.3);
-            border-radius: 8px;
-            padding: 0.8rem;
-            margin-top: 1rem;
-        }
-
-        .permission-info-text {
-            font-size: 0.8rem;
-            color: #856404;
-            line-height: 1.4;
-        }
-
-        /* 🔔 알림 권한 가이드 모달 */
-        .permission-guide-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .permission-guide-modal.show {
-            display: flex;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .permission-guide-content {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            max-width: 380px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            animation: scaleIn 0.3s ease-out;
-            text-align: center;
-        }
-
-        .permission-guide-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .permission-guide-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 1rem;
-        }
-
-        .permission-guide-text {
-            font-size: 1rem;
-            color: #555;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .guide-steps {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 1.2rem;
-            margin: 1.5rem 0;
-            text-align: left;
-        }
-
-        .guide-step {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 0.8rem;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-
-        .guide-step:last-child {
-            margin-bottom: 0;
-        }
-
-        .step-number {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-right: 0.8rem;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .step-text {
-            color: #333;
-            flex: 1;
-        }
-
-        .browser-detection {
-            background: rgba(102, 126, 234, 0.1);
-            border: 1px solid rgba(102, 126, 234, 0.2);
-            border-radius: 10px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .browser-name {
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 0.5rem;
-        }
-
-        .permission-guide-buttons {
-            display: flex;
-            gap: 0.8rem;
-            justify-content: center;
-            margin-top: 1.5rem;
-        }
-
-        .guide-btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 100px;
-        }
-
-        .guide-btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .guide-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .guide-btn-secondary {
-            background: #f5f5f5;
-            color: #666;
-            border: 1px solid #ddd;
-        }
-
-        .guide-btn-secondary:hover {
-            background: #e9e9e9;
-            transform: translateY(-1px);
-        }
-
-        .retry-info {
-            background: rgba(40, 167, 69, 0.1);
-            border: 1px solid rgba(40, 167, 69, 0.2);
-            border-radius: 8px;
-            padding: 0.8rem;
-            margin-top: 1rem;
-            font-size: 0.85rem;
-            color: #155724;
-        }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -1547,88 +1209,6 @@
         </div>
         
         <div class="progress-bar"></div>
-    </div>
-
-    <!-- 🔔 알림 권한 가이드 모달 -->
-    <div id="permissionGuideModal" class="permission-guide-modal">
-        <div class="permission-guide-content">
-            <div class="permission-guide-icon">🔔</div>
-            <h3 class="permission-guide-title">알림 권한이 필요해요!</h3>
-            <p class="permission-guide-text">
-                AI 트레이너가 정시에 운동을 안내해드리려면<br>
-                브라우저 알림 권한이 필요합니다.
-            </p>
-
-            <div class="browser-detection" id="browserGuide">
-                <div class="browser-name" id="browserName">Chrome 브라우저</div>
-                <div class="guide-steps" id="guideSteps">
-                    <!-- 브라우저별 가이드가 여기에 삽입됩니다 -->
-                </div>
-            </div>
-
-            <div class="retry-info">
-                💡 아래 버튼을 눌러 알림 권한을 다시 요청할 수 있어요!
-            </div>
-
-            <div class="permission-guide-buttons">
-                <button class="guide-btn guide-btn-primary" onclick="retryNotificationPermission()">
-                    다시 시도하기
-                </button>
-                <button class="guide-btn guide-btn-secondary" onclick="closePermissionGuide()">
-                    나중에
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 🔔 알림 설정 모달 -->
-    <div id="notificationModal" class="notification-modal">
-        <div class="notification-content">
-            <div class="notification-header">
-                <h3 class="notification-title">
-                    <span>🔔</span>
-                    <span>트레이닝 알림</span>
-                </h3>
-                <button class="close-btn" onclick="closeNotificationModal()">×</button>
-            </div>
-
-            <div class="notification-status" id="notificationStatus">
-                <div class="status-icon" id="statusIcon">🔕</div>
-                <div class="status-text" id="statusText">알림이 꺼져있습니다</div>
-            </div>
-
-            <div class="notification-section">
-                <div class="section-title">
-                    <span>⚙️</span>
-                    <span>알림 설정</span>
-                </div>
-                
-                <div class="toggle-container">
-                    <span class="toggle-label">트레이닝 알림</span>
-                    <div class="toggle-switch" id="notificationToggle" onclick="toggleNotifications()">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-
-                <div id="timeSettings" style="display: none;">
-                    <div class="time-setting">
-                        <div class="time-label">🌅 오전 트레이닝 시간</div>
-                        <input type="time" class="time-input" id="morningTime" value="09:00" onchange="saveNotificationSettings()">
-                    </div>
-                    
-                    <div class="time-setting">
-                        <div class="time-label">🌆 오후 트레이닝 시간</div>
-                        <input type="time" class="time-input" id="eveningTime" value="18:00" onchange="saveNotificationSettings()">
-                    </div>
-                </div>
-            </div>
-
-            <div class="permission-info">
-                <div class="permission-info-text">
-                    💡 알림을 받으려면 브라우저에서 알림 권한을 허용해주세요. 설정한 시간에 트레이너가 운동을 안내해드립니다!
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- 🎯 커스텀 확인 모달 -->
@@ -1658,14 +1238,19 @@
                             <h3 id="userName">AI 숨트레이너</h3>
                         </div>
                     </div>
-                    <button class="notification-bell" onclick="openNotificationModal()">🔔</button>
                 </div>
             </div>
 
             <!-- 통계 섹션 -->
             <div class="stats-section">
                 <div class="section-header">
-                    <h2 class="section-title">오늘의 기록</h2>
+                    <div>
+                        <h2 class="section-title">
+                            <span class="section-icon">📊</span>
+                            <span>오늘의 기록</span>
+                        </h2>
+                        <div class="section-subtitle">오늘 하루 나의 호흡 트레이닝 현황</div>
+                    </div>
                 </div>
 
                 <div class="stats-grid">
@@ -1780,7 +1365,13 @@
             <!-- 차트 섹션 -->
             <div class="chart-section">
                 <div class="section-header">
-                    <h2 class="section-title">주간 활동</h2>
+                    <div>
+                        <h2 class="section-title">
+                            <span class="section-icon">📈</span>
+                            <span>주간 활동</span>
+                        </h2>
+                        <div class="section-subtitle">최근 7일간 트레이닝 성과를 한눈에</div>
+                    </div>
                 </div>
 
                 <div class="chart-container">
@@ -2780,355 +2371,9 @@
             document.getElementById('restSection').style.display = 'none';
         }
 
-        // 🔔 알림 기능 관련 변수 및 함수들
-        let notificationPermission = false;
-        let notificationsEnabled = false;
-        
-        // 다양한 트레이너 메시지
-        const trainerMessages = [
-            {
-                title: "🏋️ 트레이너가 기다리고 있어요!",
-                body: "숨트와 함께 호흡근육을 단련할 시간이에요!"
-            },
-            {
-                title: "🫁 호흡 트레이닝 시간!",
-                body: "AI 트레이너가 준비완료! 오늘도 건강한 호흡을 시작해요"
-            },
-            {
-                title: "💪 숨트레이닝 타임!",
-                body: "꾸준한 호흡근육 강화로 더 건강해져요!"
-            },
-            {
-                title: "🚀 트레이닝 준비 완료!",
-                body: "숨트를 준비하고 AI 트레이너와 함께해요!"
-            },
-            {
-                title: "⏰ 운동 시간 알림",
-                body: "규칙적인 호흡 트레이닝으로 폐활량을 키워보세요!"
-            }
-        ];
-
-        // 알림 모달 열기
-        function openNotificationModal() {
-            document.getElementById('notificationModal').classList.add('show');
-            loadNotificationSettings();
-            updateNotificationStatus();
-        }
-
-        // 알림 모달 닫기
-        function closeNotificationModal() {
-            document.getElementById('notificationModal').classList.remove('show');
-        }
-
-        // 알림 권한 요청
-        async function requestNotificationPermission() {
-            if ('Notification' in window) {
-                const permission = await Notification.requestPermission();
-                notificationPermission = permission === 'granted';
-                return notificationPermission;
-            }
-            return false;
-        }
-
-        // 브라우저별 설정 가이드
-        const browserGuides = {
-            chrome: {
-                name: "Chrome 브라우저",
-                steps: [
-                    "주소창 왼쪽의 🔒 아이콘을 클릭하세요",
-                    "'알림'을 찾아 '허용'으로 변경하세요", 
-                    "페이지를 새로고침하고 다시 시도해보세요"
-                ]
-            },
-            firefox: {
-                name: "Firefox 브라우저", 
-                steps: [
-                    "주소창 왼쪽의 🛡️ 아이콘을 클릭하세요",
-                    "'권한' → '알림'을 허용으로 설정하세요",
-                    "페이지를 새로고침하고 다시 시도해보세요"
-                ]
-            },
-            safari: {
-                name: "Safari 브라우저",
-                steps: [
-                    "Safari → 환경설정 → 웹사이트를 열어주세요",
-                    "'알림' 탭에서 현재 사이트를 찾으세요",
-                    "'허용'으로 설정하고 페이지를 새로고침하세요"
-                ]
-            },
-            edge: {
-                name: "Edge 브라우저",
-                steps: [
-                    "주소창 왼쪽의 🔒 아이콘을 클릭하세요",
-                    "'알림'을 찾아 '허용'으로 변경하세요",
-                    "페이지를 새로고침하고 다시 시도해보세요"
-                ]
-            },
-            default: {
-                name: "브라우저",
-                steps: [
-                    "주소창 근처의 자물쇠 아이콘을 찾아 클릭하세요",
-                    "'알림' 또는 'Notifications' 설정을 찾으세요",
-                    "'허용' 또는 'Allow'로 변경하고 새로고침하세요"
-                ]
-            }
-        };
-
-        // 브라우저 감지
-        function detectBrowser() {
-            const userAgent = navigator.userAgent.toLowerCase();
-            if (userAgent.includes('chrome') && !userAgent.includes('edge')) return 'chrome';
-            if (userAgent.includes('firefox')) return 'firefox';
-            if (userAgent.includes('safari') && !userAgent.includes('chrome')) return 'safari';
-            if (userAgent.includes('edge')) return 'edge';
-            return 'default';
-        }
-
-        // 권한 가이드 모달 열기
-        function showPermissionGuide() {
-            const browser = detectBrowser();
-            const guide = browserGuides[browser];
-            
-            document.getElementById('browserName').textContent = guide.name;
-            
-            const stepsContainer = document.getElementById('guideSteps');
-            stepsContainer.innerHTML = guide.steps.map((step, index) => `
-                <div class="guide-step">
-                    <div class="step-number">${index + 1}</div>
-                    <div class="step-text">${step}</div>
-                </div>
-            `).join('');
-            
-            document.getElementById('permissionGuideModal').classList.add('show');
-        }
-
-        // 권한 가이드 모달 닫기
-        function closePermissionGuide() {
-            document.getElementById('permissionGuideModal').classList.remove('show');
-        }
-
-        // 알림 권한 재시도
-        async function retryNotificationPermission() {
-            closePermissionGuide();
-            
-            // 잠시 대기 후 권한 요청
-            setTimeout(async () => {
-                const permission = await requestNotificationPermission();
-                if (permission) {
-                    // 성공 시 알림 활성화
-                    notificationsEnabled = true;
-                    document.getElementById('notificationToggle').classList.add('active');
-                    document.getElementById('timeSettings').style.display = 'block';
-                    saveNotificationSettings();
-                    scheduleNotifications();
-                    updateNotificationStatus();
-                    
-                    // 성공 알림
-                    showSuccessMessage();
-                } else {
-                    // 실패 시 다시 가이드 표시
-                    setTimeout(() => showPermissionGuide(), 500);
-                }
-            }, 300);
-        }
-
-        // 성공 메시지 표시
-        function showSuccessMessage() {
-            const statusDiv = document.getElementById('notificationStatus');
-            statusDiv.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
-            statusDiv.innerHTML = `
-                <div class="status-icon">🎉</div>
-                <div class="status-text">알림이 성공적으로 활성화되었습니다!</div>
-            `;
-            
-            // 3초 후 원래 상태로 복원
-            setTimeout(() => {
-                statusDiv.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                updateNotificationStatus();
-            }, 3000);
-        }
-
-        // 알림 토글 (수정된 버전)
-        async function toggleNotifications() {
-            const toggle = document.getElementById('notificationToggle');
-            const timeSettings = document.getElementById('timeSettings');
-            
-            if (!notificationsEnabled) {
-                // 알림 켜기
-                const permission = await requestNotificationPermission();
-                if (permission) {
-                    notificationsEnabled = true;
-                    toggle.classList.add('active');
-                    timeSettings.style.display = 'block';
-                    saveNotificationSettings();
-                    scheduleNotifications();
-                    showSuccessMessage();
-                } else {
-                    // 권한이 거부되면 가이드 모달 표시
-                    showPermissionGuide();
-                }
-            } else {
-                // 알림 끄기
-                notificationsEnabled = false;
-                toggle.classList.remove('active');
-                timeSettings.style.display = 'none';
-                saveNotificationSettings();
-                clearNotifications();
-            }
-            
-            updateNotificationStatus();
-        }
-
-        // 알림 설정 저장
-        function saveNotificationSettings() {
-            const settings = {
-                enabled: notificationsEnabled,
-                morningTime: document.getElementById('morningTime').value,
-                eveningTime: document.getElementById('eveningTime').value
-            };
-            localStorage.setItem('notificationSettings', JSON.stringify(settings));
-            
-            if (notificationsEnabled) {
-                scheduleNotifications();
-            }
-        }
-
-        // 알림 설정 불러오기
-        function loadNotificationSettings() {
-            const settings = JSON.parse(localStorage.getItem('notificationSettings') || '{}');
-            
-            notificationsEnabled = settings.enabled || false;
-            document.getElementById('morningTime').value = settings.morningTime || '09:00';
-            document.getElementById('eveningTime').value = settings.eveningTime || '18:00';
-            
-            const toggle = document.getElementById('notificationToggle');
-            const timeSettings = document.getElementById('timeSettings');
-            
-            if (notificationsEnabled) {
-                toggle.classList.add('active');
-                timeSettings.style.display = 'block';
-            } else {
-                toggle.classList.remove('active');
-                timeSettings.style.display = 'none';
-            }
-        }
-
-        // 알림 상태 업데이트
-        function updateNotificationStatus() {
-            const statusIcon = document.getElementById('statusIcon');
-            const statusText = document.getElementById('statusText');
-            
-            if (notificationsEnabled) {
-                statusIcon.textContent = '🔔';
-                statusText.textContent = '트레이닝 알림이 활성화되었습니다';
-            } else {
-                statusIcon.textContent = '🔕';
-                statusText.textContent = '알림이 꺼져있습니다';
-            }
-        }
-
-        // 알림 스케줄링
-        function scheduleNotifications() {
-            if (!notificationsEnabled) return;
-            
-            // 기존 알림 제거
-            clearNotifications();
-            
-            const settings = JSON.parse(localStorage.getItem('notificationSettings') || '{}');
-            const morningTime = settings.morningTime || '09:00';
-            const eveningTime = settings.eveningTime || '18:00';
-            
-            scheduleTimeBasedNotification(morningTime, 'morning');
-            scheduleTimeBasedNotification(eveningTime, 'evening');
-        }
-
-        // 시간 기반 알림 스케줄링
-        function scheduleTimeBasedNotification(timeString, period) {
-            const [hours, minutes] = timeString.split(':').map(Number);
-            const now = new Date();
-            const scheduledTime = new Date();
-            scheduledTime.setHours(hours, minutes, 0, 0);
-            
-            // 오늘 시간이 지났으면 내일로 설정
-            if (scheduledTime <= now) {
-                scheduledTime.setDate(scheduledTime.getDate() + 1);
-            }
-            
-            const timeUntilNotification = scheduledTime - now;
-            
-            const timeoutId = setTimeout(() => {
-                showTrainerNotification(period);
-                // 24시간 후 다음 알림 스케줄링
-                setTimeout(() => scheduleTimeBasedNotification(timeString, period), 24 * 60 * 60 * 1000);
-            }, timeUntilNotification);
-            
-            // 타임아웃 ID 저장 (나중에 취소용)
-            localStorage.setItem(`${period}NotificationId`, timeoutId);
-        }
-
-        // 트레이너 알림 표시
-        function showTrainerNotification(period) {
-            if (!notificationsEnabled || !notificationPermission) return;
-            
-            const randomMessage = trainerMessages[Math.floor(Math.random() * trainerMessages.length)];
-            const periodText = period === 'morning' ? '오전' : '오후';
-            
-            const notification = new Notification(randomMessage.title, {
-                body: `${periodText} ${randomMessage.body}`,
-                icon: './icons/icon-180x180.png',
-                badge: './icons/icon-180x180.png',
-                tag: 'breath-training',
-                requireInteraction: true,
-                actions: [
-                    {
-                        action: 'start',
-                        title: '트레이닝 시작'
-                    },
-                    {
-                        action: 'later',
-                        title: '나중에'
-                    }
-                ]
-            });
-
-            notification.onclick = function() {
-                window.focus();
-                notification.close();
-                // 앱으로 이동
-                if (window.location.pathname !== '/') {
-                    window.location.href = '/';
-                }
-            };
-        }
-
-        // 알림 제거
-        function clearNotifications() {
-            const morningId = localStorage.getItem('morningNotificationId');
-            const eveningId = localStorage.getItem('eveningNotificationId');
-            
-            if (morningId) {
-                clearTimeout(parseInt(morningId));
-                localStorage.removeItem('morningNotificationId');
-            }
-            
-            if (eveningId) {
-                clearTimeout(parseInt(eveningId));
-                localStorage.removeItem('eveningNotificationId');
-            }
-        }
-
         window.onload = function() {
             loadUserData();
             loadResistanceSettings();
-            
-            // 🔔 알림 설정 초기화
-            if ('Notification' in window) {
-                notificationPermission = Notification.permission === 'granted';
-                loadNotificationSettings();
-                if (notificationsEnabled && notificationPermission) {
-                    scheduleNotifications();
-                }
-            }
         };
 
         // Service Worker 등록

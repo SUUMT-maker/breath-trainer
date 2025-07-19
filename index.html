@@ -1881,35 +1881,62 @@
             }, 1000);
         }
 
-        // 🆕 결과 화면 표시 및 AI 분석 시작
+        // 🆕 결과 화면 표시 및 AI 분석 시작 (에러 수정)
         async function showResultScreen() {
-            showScreen('resultScreen');
-            
-            const timeData = window.exerciseData.exerciseTime.split(':');
-            const minutes = parseInt(timeData[0]);
-            const seconds = parseInt(timeData[1]);
-            
-            document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
-            document.getElementById('completedSets').textContent = `${window.exerciseData.completedSets}/2`;
-            
-            document.getElementById('intensityAdvice').textContent = '강도 조절 조언을 분석하고 있습니다...';
-            document.getElementById('comprehensiveAdvice').textContent = 'AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...';
-            
-            // AI 조언 생성 (피드백 포함)
-            const aiAdvice = await getTrainerAdvice({
-                ...window.exerciseData,
-                userFeedback: userFeedback
-            });
-            
-            const updatedStats = updateLocalStats(window.exerciseData);
-            addExerciseHistory(window.exerciseData);
-            
-            handleExerciseResult({
-                success: true,
-                intensityAdvice: aiAdvice.intensityAdvice,
-                comprehensiveAdvice: aiAdvice.comprehensiveAdvice,
-                stats: updatedStats
-            });
+            try {
+                console.log('📋 결과 화면 표시 시작');
+                console.log('📊 운동 데이터 확인:', window.exerciseData);
+                
+                showScreen('resultScreen');
+                
+                const timeData = window.exerciseData.exerciseTime.split(':');
+                const minutes = parseInt(timeData[0]);
+                const seconds = parseInt(timeData[1]);
+                
+                document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
+                document.getElementById('completedSets').textContent = `${window.exerciseData.completedSets}/2`;
+                
+                document.getElementById('intensityAdvice').textContent = '강도 조절 조언을 분석하고 있습니다...';
+                document.getElementById('comprehensiveAdvice').textContent = 'AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...';
+                
+                // 🔧 운동 데이터에 사용자 피드백 추가
+                const exerciseDataWithFeedback = {
+                    ...window.exerciseData,
+                    userFeedback: userFeedback
+                };
+                
+                console.log('🎯 AI 분석용 최종 데이터:', exerciseDataWithFeedback);
+                
+                // AI 조언 생성 (피드백 포함)
+                const aiAdvice = await getTrainerAdvice(exerciseDataWithFeedback);
+                
+                console.log('🤖 AI 조언 결과:', aiAdvice);
+                
+                // 통계 업데이트
+                const updatedStats = updateLocalStats(window.exerciseData);
+                addExerciseHistory(window.exerciseData);
+                
+                handleExerciseResult({
+                    success: true,
+                    intensityAdvice: aiAdvice.intensityAdvice,
+                    comprehensiveAdvice: aiAdvice.comprehensiveAdvice,
+                    stats: updatedStats
+                });
+                
+                console.log('✅ 결과 화면 처리 완료');
+                
+            } catch (error) {
+                console.error('❌ showResultScreen 오류:', error);
+                
+                // 에러 발생 시 기본 메시지 표시
+                document.getElementById('intensityAdvice').textContent = '조언을 불러오는 중 문제가 발생했습니다. 기본 조언을 표시합니다.';
+                document.getElementById('comprehensiveAdvice').textContent = '네트워크 연결을 확인하고 다시 시도해주세요.';
+                
+                // 기본 통계 업데이트는 계속 진행
+                const updatedStats = updateLocalStats(window.exerciseData);
+                addExerciseHistory(window.exerciseData);
+                displayAchievementBadges(updatedStats);
+            }
         }
 
         // 운동 결과 처리 (두 부분의 조언으로 분리)

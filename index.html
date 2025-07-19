@@ -104,7 +104,7 @@
             height: 3px;
             background: linear-gradient(90deg, #667eea, #764ba2);
             width: 0;
-            animation: progressFill 3s linear;
+            animation: progressFill 5s linear;
             z-index: 2001;
         }
 
@@ -1048,12 +1048,12 @@
                 <p>• 편안한 자세로 앉거나 서서 트레이닝하세요</p>
             </div>
 
-            <!-- 🆕 저항 강도 설정 섹션 -->
+            <!-- 🆕 저항 강도 설정 섹션 (영어 표기 추가) -->
             <div class="resistance-settings">
                 <h4>🫁 저항 강도 설정</h4>
                 <div class="resistance-controls">
                     <div class="resistance-control">
-                        <label>들숨 저항</label>
+                        <label>들숨 (Inhale) 저항</label>
                         <div class="resistance-selector">
                             <button onclick="adjustResistance('inhale', -1)">−</button>
                             <span id="inhaleLevel">1</span>
@@ -1071,7 +1071,7 @@
                         </div>
                     </div>
                     <div class="resistance-control">
-                        <label>날숨 저항</label>
+                        <label>날숨 (Exhale) 저항</label>
                         <div class="resistance-selector">
                             <button onclick="adjustResistance('exhale', -1)">−</button>
                             <span id="exhaleLevel">1</span>
@@ -1124,22 +1124,10 @@
                 <div id="historyList">
                     <p style="color: #999;">첫 호흡근육 트레이닝을 시작해보세요!</p>
                 </div>
-                
-                <!-- 🔧 개발용 캐시 정리 버튼 (숨겨진 기능) -->
-                <div style="margin-top: 2rem; text-align: center;">
-                    <button onclick="clearAppCache()" 
-                            style="background: #ff6b6b; color: white; border: none; padding: 8px 16px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; opacity: 0.7;">
-                        🧹 캐시 정리 (개발용)
-                    </button>
-                    <button onclick="forceHardRefresh()" 
-                            style="background: #4ecdc4; color: white; border: none; padding: 8px 16px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; opacity: 0.7; margin-left: 8px;">
-                        🔄 강제 새로고침
-                    </button>
-                </div>
             </div>
         </div>
 
-        <!-- 운동 화면 -->
+        <!-- 운동 화면 (기존 그대로 - 들숨/날숨만 표기) -->
         <div id="exerciseScreen" class="screen">
             <div id="countdownSection">
                 <h2>트레이닝을 시작할게요</h2>
@@ -1217,7 +1205,7 @@
             </div>
         </div>
 
-        <!-- 결과 화면 (트레이닝 효과 섹션 제거) -->
+        <!-- 결과 화면 -->
         <div id="resultScreen" class="screen">
             <div class="celebration">🎉</div>
             <h2>트레이닝 완료!</h2>
@@ -1236,7 +1224,7 @@
             <div id="achievementBadges"></div>
 
             <div class="result-content">
-                <!-- 🎯 저항 강도 조절 분석 -->
+                <!-- 🎯 저항 강도 분석 (백엔드에서 영어 표기 포함되어 옴) -->
                 <div class="result-section intensity-advice">
                     <h4>💪 저항 강도 분석</h4>
                     <p id="intensityAdvice">강도 조절 분석을 진행하고 있습니다...</p>
@@ -1263,7 +1251,7 @@
 
     <script>
         // Apps Script URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7Rof9cG_2VX0rqtLxhlJ_BbSPMna5Dcz3TGJLw96XomkzliIYF0etwtAHzI3Sw3yO/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyfcVufAVNV9JhNx4YfzZSzb4Dr5Il-uMompWJT6Hh7EbN7JAlOEsIFovJF13Clo061DA/exec';
 
         // 전역 변수
         let currentSet = 1;
@@ -1712,7 +1700,7 @@
             }, 500);
         }
 
-        // 호흡 사이클 (의료 프로토콜 적용: 2-3초)
+        // 호흡 사이클 (숨트 프로토콜 적용: 3초-1초)
         function breathingCycle() {
             if (isPaused || isAborted) return;
 
@@ -1729,7 +1717,7 @@
                 breathingTimer = setTimeout(() => {
                     breathingPhase = 'hold';
                     breathingCycle();
-                }, 3000); // 3초로 변경
+                }, 3000); // 3초
 
             } else if (breathingPhase === 'hold') {
                 circleText.textContent = '멈춤 (1초)';
@@ -1738,7 +1726,7 @@
                 breathingTimer = setTimeout(() => {
                     breathingPhase = 'exhale';
                     breathingCycle();
-                }, 1000); // 1초로 변경
+                }, 1000); // 1초
 
             } else if (breathingPhase === 'exhale') {
                 circleText.textContent = '날숨 (3초)';
@@ -1747,7 +1735,7 @@
                 breathingTimer = setTimeout(() => {
                     breathingPhase = 'exhale-hold';
                     breathingCycle();
-                }, 3000); // 3초로 변경
+                }, 3000); // 3초
 
             } else if (breathingPhase === 'exhale-hold') {
                 circleText.textContent = '멈춤 (1초)';
@@ -1769,7 +1757,7 @@
                     } else {
                         breathingCycle();
                     }
-                }, 1000); // 1초로 변경
+                }, 1000); // 1초
             }
         }
 
@@ -1991,103 +1979,18 @@
             loadResistanceSettings(); // 🆕 저항 설정 로드
         };
 
-        // 🔧 개선된 Service Worker 등록 및 캐시 관리
+        // 🔧 Service Worker 등록
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js')
                     .then(function(registration) {
                         console.log('✅ ServiceWorker 등록 성공:', registration.scope);
-                        
-                        // 🆕 업데이트 체크
-                        registration.addEventListener('updatefound', function() {
-                            console.log('🔄 새 Service Worker 버전 발견!');
-                            const newWorker = registration.installing;
-                            
-                            newWorker.addEventListener('statechange', function() {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    console.log('💡 새 버전 준비됨 - 캐시 정리 시작');
-                                    
-                                    // 🧹 이전 캐시 정리 요청
-                                    navigator.serviceWorker.controller.postMessage({
-                                        action: 'clearOldCache'
-                                    });
-                                    
-                                    // 🔄 강제 업데이트 적용
-                                    setTimeout(() => {
-                                        navigator.serviceWorker.controller.postMessage({
-                                            action: 'forceUpdate'
-                                        });
-                                        
-                                        // 페이지 새로고침으로 새 버전 적용
-                                        window.location.reload(true);
-                                    }, 1000);
-                                }
-                            });
-                        });
-                        
-                        // 🔄 기존 SW가 있으면 즉시 업데이트 체크
                         registration.update();
-                        
                     })
                     .catch(function(error) {
                         console.log('❌ ServiceWorker 등록 실패:', error);
                     });
-                
-                // 🆕 Service Worker 메시지 수신
-                navigator.serviceWorker.addEventListener('message', function(event) {
-                    if (event.data.type === 'SW_UPDATED') {
-                        console.log('🎉 새 버전 적용:', event.data.version);
-                        
-                        // 선택적: 사용자에게 업데이트 알림
-                        // showUpdateNotification(event.data.message);
-                    }
-                });
             });
-        }
-
-        // 🆕 수동 캐시 정리 함수 (디버깅용)
-        function clearAppCache() {
-            if ('serviceWorker' in navigator && 'caches' in window) {
-                console.log('🧹 수동 캐시 정리 시작...');
-                
-                // Service Worker에 캐시 정리 요청
-                navigator.serviceWorker.controller?.postMessage({
-                    action: 'clearOldCache'
-                });
-                
-                // 브라우저 캐시도 정리
-                caches.keys().then(function(cacheNames) {
-                    return Promise.all(
-                        cacheNames.map(function(cacheName) {
-                            console.log('🗑️ 캐시 삭제:', cacheName);
-                            return caches.delete(cacheName);
-                        })
-                    );
-                }).then(function() {
-                    console.log('✅ 모든 캐시 정리 완료');
-                    // 강제 새로고침
-                    window.location.reload(true);
-                }).catch(function(error) {
-                    console.error('❌ 캐시 정리 실패:', error);
-                });
-            }
-        }
-
-        // 🆕 강제 새로고침 함수 (개발자용)
-        function forceHardRefresh() {
-            console.log('💥 강제 새로고침 실행');
-            
-            // 1. localStorage 임시 백업 (필요시)
-            const userStats = localStorage.getItem('breathTrainerStats');
-            const userHistory = localStorage.getItem('breathTrainerHistory');
-            
-            // 2. 모든 캐시 삭제
-            clearAppCache();
-            
-            // 3. 강제 리로드
-            setTimeout(() => {
-                window.location.href = window.location.href + '?v=' + Date.now();
-            }, 500);
         }
     </script>
 </body>

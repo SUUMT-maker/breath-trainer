@@ -286,6 +286,123 @@
             margin-bottom: 0.3rem;
         }
 
+        /* 🆕 저항 강도 설정 스타일 */
+        .resistance-settings {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #4facfe;
+        }
+
+        .resistance-settings h4 {
+            color: #333 !important;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .resistance-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .resistance-control {
+            text-align: center;
+        }
+
+        .resistance-control label {
+            display: block;
+            color: #555 !important;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+
+        .resistance-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .resistance-selector button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(45deg, #667eea, #764ba2) !important;
+            color: white !important;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .resistance-selector button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .resistance-selector button:disabled {
+            background: #ccc !important;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .resistance-selector span {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea !important;
+            min-width: 40px;
+        }
+
+        .resistance-scale {
+            display: flex;
+            justify-content: center;
+        }
+
+        .scale-dots {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            transform: scale(1.2);
+        }
+
+        .dot:hover {
+            transform: scale(1.1);
+            background: rgba(102, 126, 234, 0.4);
+        }
+
+        .resistance-tip {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666 !important;
+            background: rgba(79, 172, 254, 0.1);
+            padding: 0.8rem;
+            border-radius: 10px;
+            border: 1px solid rgba(79, 172, 254, 0.2);
+        }
+
         .user-stats {
             background: rgba(255, 255, 255, 0.8) !important;
             border-radius: 15px;
@@ -554,6 +671,23 @@
             line-height: 1.6;
         }
 
+        /* 🆕 조언 섹션별 스타일 */
+        .intensity-advice {
+            border-left-color: #4facfe;
+        }
+
+        .intensity-advice h4 {
+            color: #4facfe !important;
+        }
+
+        .comprehensive-advice {
+            border-left-color: #667eea;
+        }
+
+        .comprehensive-advice h4 {
+            color: #667eea !important;
+        }
+
         .celebration {
             font-size: 3rem;
             margin: 1rem 0;
@@ -651,6 +785,70 @@
             to { transform: scale(1); opacity: 1; }
         }
 
+        /* 🆕 피드백 모달 스타일 */
+        .feedback-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .feedback-btn {
+            padding: 1.2rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feedback-btn span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .feedback-btn.easy {
+            border-color: #4facfe;
+            color: #4facfe;
+        }
+
+        .feedback-btn.easy:hover {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .feedback-btn.perfect {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .feedback-btn.perfect:hover {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .feedback-btn.hard {
+            border-color: #f093fb;
+            color: #f093fb;
+        }
+
+        .feedback-btn.hard:hover {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
+        }
+
         /* 🌙 다크모드 미디어 쿼리 무시 */
         @media (prefers-color-scheme: dark) {
             * {
@@ -716,6 +914,36 @@
                 width: 10px;
                 height: 10px;
             }
+
+            /* 🆕 저항 설정 모바일 최적화 */
+            .resistance-controls {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .resistance-selector button {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+
+            .resistance-selector span {
+                font-size: 1.5rem;
+            }
+
+            .dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            .feedback-buttons {
+                gap: 0.8rem;
+            }
+
+            .feedback-btn {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
         }
 
         .loading {
@@ -767,6 +995,25 @@
         </div>
     </div>
 
+    <!-- 🆕 운동 후 피드백 모달 -->
+    <div id="feedbackModal" class="modal-overlay">
+        <div class="modal">
+            <h3>🤖 지금 호흡하는 느낌이 어떠세요?</h3>
+            <p>방금 완료한 트레이닝의 강도는 어떠셨나요?</p>
+            <div class="feedback-buttons">
+                <button class="feedback-btn easy" onclick="selectFeedback('easy')">
+                    😌<br><span>너무 편해요</span>
+                </button>
+                <button class="feedback-btn perfect" onclick="selectFeedback('perfect')">
+                    💪<br><span>딱 좋아요</span>
+                </button>
+                <button class="feedback-btn hard" onclick="selectFeedback('hard')">
+                    😤<br><span>너무 힘들어요</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- 메인 화면 -->
         <div id="mainScreen" class="screen active">
@@ -779,18 +1026,53 @@
             </div>
 
             <div class="device-guide">
+                <p><strong>🚨 중요:</strong> 숨트 기구를 통해서만 입으로 호흡하세요</p>
                 <p>• 숨트 기구를 입에 물고 준비하세요</p>
-                <p>• 개인에 맞는 저항 단계를 설정하세요</p>
                 <p>• 편안한 자세로 앉거나 서서 트레이닝하세요</p>
-                <div class="resistance-info">
-                    <div class="resistance-item">
-                        <strong>들숨 저항</strong>
-                        <span>1~6단계</span>
+            </div>
+
+            <!-- 🆕 저항 강도 설정 섹션 -->
+            <div class="resistance-settings">
+                <h4>🫁 저항 강도 설정</h4>
+                <div class="resistance-controls">
+                    <div class="resistance-control">
+                        <label>들숨 저항</label>
+                        <div class="resistance-selector">
+                            <button onclick="adjustResistance('inhale', -1)">−</button>
+                            <span id="inhaleLevel">1</span>
+                            <button onclick="adjustResistance('inhale', 1)">+</button>
+                        </div>
+                        <div class="resistance-scale">
+                            <div class="scale-dots" id="inhaleScale">
+                                <div class="dot active" data-level="1"></div>
+                                <div class="dot" data-level="2"></div>
+                                <div class="dot" data-level="3"></div>
+                                <div class="dot" data-level="4"></div>
+                                <div class="dot" data-level="5"></div>
+                                <div class="dot" data-level="6"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="resistance-item">
-                        <strong>날숨 저항</strong>
-                        <span>1~5단계</span>
+                    <div class="resistance-control">
+                        <label>날숨 저항</label>
+                        <div class="resistance-selector">
+                            <button onclick="adjustResistance('exhale', -1)">−</button>
+                            <span id="exhaleLevel">1</span>
+                            <button onclick="adjustResistance('exhale', 1)">+</button>
+                        </div>
+                        <div class="resistance-scale">
+                            <div class="scale-dots" id="exhaleScale">
+                                <div class="dot active" data-level="1"></div>
+                                <div class="dot" data-level="2"></div>
+                                <div class="dot" data-level="3"></div>
+                                <div class="dot" data-level="4"></div>
+                                <div class="dot" data-level="5"></div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                <div class="resistance-tip">
+                    💡 처음이시면 1단계 추천 | 적당히 힘든 강도가 최적이에요!
                 </div>
             </div>
             
@@ -825,6 +1107,18 @@
                 <div id="historyList">
                     <p style="color: #999;">첫 호흡근육 트레이닝을 시작해보세요!</p>
                 </div>
+                
+                <!-- 🔧 개발용 캐시 정리 버튼 (숨겨진 기능) -->
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button onclick="clearAppCache()" 
+                            style="background: #ff6b6b; color: white; border: none; padding: 8px 16px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; opacity: 0.7;">
+                        🧹 캐시 정리 (개발용)
+                    </button>
+                    <button onclick="forceHardRefresh()" 
+                            style="background: #4ecdc4; color: white; border: none; padding: 8px 16px; border-radius: 15px; font-size: 0.8rem; cursor: pointer; opacity: 0.7; margin-left: 8px;">
+                        🔄 강제 새로고침
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -847,9 +1141,8 @@
                         <div class="sets-indicators" id="setsIndicators">
                             <div class="set-indicator"></div>
                             <div class="set-indicator"></div>
-                            <div class="set-indicator"></div>
                         </div>
-                        <div class="progress-numbers" id="setNumbers">1 / 3 세트</div>
+                        <div class="progress-numbers" id="setNumbers">1 / 2 세트</div>
                     </div>
                     
                     <div class="breaths-progress">
@@ -891,7 +1184,7 @@
                     <div class="stat-label">총 시간</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value" id="completedSets">0/3</div>
+                    <div class="stat-value" id="completedSets">0/2</div>
                     <div class="stat-label">완료 세트</div>
                 </div>
             </div>
@@ -899,10 +1192,16 @@
             <div id="achievementBadges"></div>
 
             <div class="result-content">
-                <!-- 🎯 AI 조언에만 집중, 트레이닝 효과 섹션 제거 -->
-                <div class="result-section">
-                    <h4>💪 AI 숨트레이너 조언</h4>
-                    <p id="trainerAdvice">AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...</p>
+                <!-- 🎯 저항 강도 조절 조언 -->
+                <div class="result-section intensity-advice">
+                    <h4>💪 저항 강도 분석</h4>
+                    <p id="intensityAdvice">AI 숨트레이너가 당신의 저항 강도를 분석하고 있습니다...</p>
+                </div>
+
+                <!-- 🏆 종합 트레이닝 조언 -->
+                <div class="result-section comprehensive-advice">
+                    <h4>🏆 종합평가</h4>
+                    <p id="comprehensiveAdvice">AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...</p>
                 </div>
 
                 <div class="result-section">
@@ -931,8 +1230,105 @@
         let isPaused = false;
         let isAborted = false;
         let breathingPhase = 'inhale';
+        
+        // 🆕 저항 설정 변수
+        let resistanceSettings = {
+            inhale: 1,
+            exhale: 1
+        };
+        
+        // 🆕 사용자 피드백 변수
+        let userFeedback = null;
 
-        // 🎯 3초 후 자동으로 메인 앱으로 이동
+        // 🆕 저항 설정 관리 함수들
+        function loadResistanceSettings() {
+            const saved = JSON.parse(localStorage.getItem('resistanceSettings') || '{"inhale": 1, "exhale": 1}');
+            resistanceSettings = saved;
+            updateResistanceUI();
+        }
+
+        function saveResistanceSettings() {
+            localStorage.setItem('resistanceSettings', JSON.stringify(resistanceSettings));
+        }
+
+        function adjustResistance(type, change) {
+            const maxLevels = { inhale: 6, exhale: 5 };
+            const newLevel = resistanceSettings[type] + change;
+            
+            if (newLevel >= 1 && newLevel <= maxLevels[type]) {
+                resistanceSettings[type] = newLevel;
+                saveResistanceSettings();
+                updateResistanceUI();
+            }
+        }
+
+        function updateResistanceUI() {
+            // 숫자 업데이트
+            document.getElementById('inhaleLevel').textContent = resistanceSettings.inhale;
+            document.getElementById('exhaleLevel').textContent = resistanceSettings.exhale;
+            
+            // 스케일 점들 업데이트
+            updateResistanceScale('inhale', resistanceSettings.inhale);
+            updateResistanceScale('exhale', resistanceSettings.exhale);
+            
+            // 버튼 상태 업데이트
+            updateResistanceButtons();
+        }
+
+        function updateResistanceScale(type, level) {
+            const scale = document.getElementById(type + 'Scale');
+            const dots = scale.querySelectorAll('.dot');
+            
+            dots.forEach((dot, index) => {
+                if (index < level) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function updateResistanceButtons() {
+            const inhaleMinusBtn = document.querySelector('.resistance-control:first-child .resistance-selector button:first-child');
+            const inhalePlusBtn = document.querySelector('.resistance-control:first-child .resistance-selector button:last-child');
+            const exhaleMinusBtn = document.querySelector('.resistance-control:last-child .resistance-selector button:first-child');
+            const exhalePlusBtn = document.querySelector('.resistance-control:last-child .resistance-selector button:last-child');
+            
+            inhaleMinusBtn.disabled = resistanceSettings.inhale <= 1;
+            inhalePlusBtn.disabled = resistanceSettings.inhale >= 6;
+            exhaleMinusBtn.disabled = resistanceSettings.exhale <= 1;
+            exhalePlusBtn.disabled = resistanceSettings.exhale >= 5;
+        }
+
+        // 🆕 피드백 모달 관리
+        function showFeedbackModal() {
+            document.getElementById('feedbackModal').classList.add('show');
+        }
+
+        function hideFeedbackModal() {
+            document.getElementById('feedbackModal').classList.remove('show');
+        }
+
+        // 🆕 중단된 경우 피드백 모달 메시지 변경
+        function updateFeedbackModalForAborted() {
+            const modal = document.getElementById('feedbackModal');
+            const title = modal.querySelector('h3');
+            const description = modal.querySelector('p');
+            
+            if (isAborted) {
+                title.textContent = '🤖 중단하신 이유를 알려주세요';
+                description.textContent = '트레이닝을 중단하기 전까지의 강도는 어떠셨나요?';
+            } else {
+                title.textContent = '🤖 지금 호흡하는 느낌이 어떠세요?';
+                description.textContent = '방금 완료한 트레이닝의 강도는 어떠셨나요?';
+            }
+        }
+
+        function selectFeedback(feedback) {
+            userFeedback = feedback;
+            hideFeedbackModal();
+            processExerciseComplete();
+        }
         let autoProgressTimer = setTimeout(() => {
             hideIntro();
         }, 3000);
@@ -980,7 +1376,7 @@
             console.log('🎬 스플래시 화면 로딩 완료');
         });
 
-        // 🎯 진행도 표시 초기화
+        // 🎯 진행도 표시 초기화 (2세트로 변경)
         function initializeProgressIndicators() {
             // 호흡 점들 생성
             const breathsContainer = document.getElementById('breathsIndicators');
@@ -996,7 +1392,7 @@
             updateProgressIndicators();
         }
 
-        // 🎯 진행도 표시 업데이트
+        // 🎯 진행도 표시 업데이트 (2세트로 변경)
         function updateProgressIndicators() {
             // 세트 진행도 업데이트
             const setIndicators = document.querySelectorAll('.set-indicator');
@@ -1020,8 +1416,8 @@
                 }
             });
             
-            // 숫자 업데이트
-            document.getElementById('setNumbers').textContent = `${currentSet} / 3 세트`;
+            // 숫자 업데이트 (2세트로 변경)
+            document.getElementById('setNumbers').textContent = `${currentSet} / 2 세트`;
             document.getElementById('breathNumbers').textContent = `${currentBreath} / 10 회`;
         }
 
@@ -1296,7 +1692,7 @@
             }, 500);
         }
 
-        // 호흡 사이클 (4단계) - 숨트 호흡법 적용
+        // 호흡 사이클 (의료 프로토콜 적용: 2-3초)
         function breathingCycle() {
             if (isPaused || isAborted) return;
 
@@ -1307,34 +1703,34 @@
             updateProgressIndicators();
 
             if (breathingPhase === 'inhale') {
-                circleText.textContent = '들숨 (4초)';
+                circleText.textContent = '들숨 (3초)';
                 circle.className = 'breathing-circle inhale';
                 
                 breathingTimer = setTimeout(() => {
                     breathingPhase = 'hold';
                     breathingCycle();
-                }, 4000);
+                }, 3000); // 3초로 변경
 
             } else if (breathingPhase === 'hold') {
-                circleText.textContent = '유지 (2초)';
+                circleText.textContent = '멈춤 (1초)';
                 circle.className = 'breathing-circle hold';
                 
                 breathingTimer = setTimeout(() => {
                     breathingPhase = 'exhale';
                     breathingCycle();
-                }, 2000);
+                }, 1000); // 1초로 변경
 
             } else if (breathingPhase === 'exhale') {
-                circleText.textContent = '날숨 (4초)';
+                circleText.textContent = '날숨 (3초)';
                 circle.className = 'breathing-circle exhale';
                 
                 breathingTimer = setTimeout(() => {
                     breathingPhase = 'exhale-hold';
                     breathingCycle();
-                }, 4000);
+                }, 3000); // 3초로 변경
 
             } else if (breathingPhase === 'exhale-hold') {
-                circleText.textContent = '유지 (2초)';
+                circleText.textContent = '멈춤 (1초)';
                 circle.className = 'breathing-circle exhale-hold';
                 
                 breathingTimer = setTimeout(() => {
@@ -1345,7 +1741,7 @@
                         currentSet++;
                         currentBreath = 1;
                         
-                        if (currentSet > 3) {
+                        if (currentSet > 2) { // 2세트로 변경
                             completeExercise();
                         } else {
                             startRest();
@@ -1353,7 +1749,7 @@
                     } else {
                         breathingCycle();
                     }
-                }, 2000);
+                }, 1000); // 1초로 변경
             }
         }
 
@@ -1421,7 +1817,7 @@
             }
         }
 
-        // 운동 완료 함수
+        // 운동 완료 함수 (피드백 모달 먼저 표시)
         async function completeExercise() {
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
@@ -1430,35 +1826,53 @@
             const minutes = Math.floor(exerciseTime / 60);
             const seconds = exerciseTime % 60;
             
-            const exerciseData = {
+            // 운동 데이터 저장
+            window.exerciseData = {
                 exerciseTime: `${minutes}:${seconds.toString().padStart(2, '0')}`,
-                completedSets: isAborted ? Math.max(0, currentSet - 1) : 3,
-                completedBreaths: isAborted ? Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1)) : 30,
-                isAborted: isAborted
+                completedSets: isAborted ? Math.max(0, currentSet - 1) : 2, // 2세트로 변경
+                completedBreaths: isAborted ? Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1)) : 20, // 20회로 변경
+                isAborted: isAborted,
+                resistanceSettings: { ...resistanceSettings } // 저항 설정 포함
             };
 
             showScreen('resultScreen');
             
             document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
-            document.getElementById('completedSets').textContent = `${exerciseData.completedSets}/3`;
+            document.getElementById('completedSets').textContent = `${window.exerciseData.completedSets}/2`; // 2세트로 변경
             
-            document.getElementById('trainerAdvice').textContent = 'AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...';
+            // 🔧 모든 경우에 피드백 모달 표시 (중단된 경우에도!)
+            setTimeout(() => {
+                updateFeedbackModalForAborted(); // 중단 시 모달 메시지 변경
+                showFeedbackModal();
+            }, 1000);
+        }
+
+        // 🆕 운동 완료 처리 (피드백 받은 후)
+        async function processExerciseComplete() {
+            document.getElementById('intensityAdvice').textContent = '강도 조절 조언을 분석하고 있습니다...';
+            document.getElementById('comprehensiveAdvice').textContent = 'AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...';
             
-            const trainerAdvice = await getTrainerAdvice(exerciseData);
+            // AI 조언 생성 (피드백 포함)
+            const aiAdvice = await getTrainerAdvice({
+                ...window.exerciseData,
+                userFeedback: userFeedback
+            });
             
-            const updatedStats = updateLocalStats(exerciseData);
-            addExerciseHistory(exerciseData);
+            const updatedStats = updateLocalStats(window.exerciseData);
+            addExerciseHistory(window.exerciseData);
             
             handleExerciseResult({
                 success: true,
-                advice: trainerAdvice,
+                intensityAdvice: aiAdvice.intensityAdvice,
+                comprehensiveAdvice: aiAdvice.comprehensiveAdvice,
                 stats: updatedStats
             });
         }
 
-        // 운동 결과 처리 (트레이닝 효과 제거)
+        // 운동 결과 처리 (두 부분의 조언으로 분리)
         function handleExerciseResult(result) {
-            document.getElementById('trainerAdvice').textContent = result.advice;
+            document.getElementById('intensityAdvice').textContent = result.intensityAdvice;
+            document.getElementById('comprehensiveAdvice').textContent = result.comprehensiveAdvice;
             
             const stats = result.stats;
             document.getElementById('updatedStats').textContent = 
@@ -1467,7 +1881,7 @@
             displayAchievementBadges(result.stats);
         }
 
-        // 성취 배지 표시 (숨트 트레이닝 전용)
+        // 성취 배지 표시 (2세트 기준으로 수정)
         function displayAchievementBadges(stats) {
             const badgesContainer = document.getElementById('achievementBadges');
             const badges = [];
@@ -1481,7 +1895,7 @@
             if (stats.consecutiveDays >= 7) {
                 badges.push('🔥 일주일 연속 트레이닝!');
             }
-            if (stats.averageSets >= 2.5) {
+            if (stats.averageSets >= 1.5) { // 2세트 기준으로 조정
                 badges.push('⭐ 꾸준한 호흡 트레이너!');
             }
             
@@ -1490,13 +1904,14 @@
             ).join('');
         }
 
-        // 운동 상태 초기화
+        // 운동 상태 초기화 (2세트로 수정)
         function resetExercise() {
             currentSet = 1;
             currentBreath = 1;
             isPaused = false;
             isAborted = false;
             breathingPhase = 'inhale';
+            userFeedback = null;
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
             
@@ -1505,9 +1920,10 @@
             document.getElementById('restSection').style.display = 'none';
         }
 
-        // 페이지 로드 시 사용자 데이터 로드
+        // 페이지 로드 시 사용자 데이터 및 저항 설정 로드
         window.onload = function() {
             loadUserData();
+            loadResistanceSettings(); // 🆕 저항 설정 로드
         };
 
         // 🔧 개선된 Service Worker 등록 및 캐시 관리

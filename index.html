@@ -785,68 +785,86 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        /* 🆕 피드백 모달 스타일 */
-        .feedback-buttons {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .feedback-btn {
-            padding: 1.2rem;
-            border: none;
-            border-radius: 15px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid transparent;
+        /* 🆕 피드백 페이지 스타일 */
+        .feedback-options {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            max-width: 350px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .feedback-btn span {
-            font-size: 0.9rem;
-            font-weight: 500;
+        .feedback-option {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .feedback-btn.easy {
+        .feedback-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .feedback-option.easy {
             border-color: #4facfe;
-            color: #4facfe;
         }
 
-        .feedback-btn.easy:hover {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+        .feedback-option.easy:hover {
+            background: linear-gradient(45deg, #4facfe, #00f2fe) !important;
+            color: white !important;
         }
 
-        .feedback-btn.perfect {
+        .feedback-option.perfect {
             border-color: #667eea;
-            color: #667eea;
         }
 
-        .feedback-btn.perfect:hover {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        .feedback-option.perfect:hover {
+            background: linear-gradient(45deg, #667eea, #764ba2) !important;
+            color: white !important;
         }
 
-        .feedback-btn.hard {
+        .feedback-option.hard {
             border-color: #f093fb;
-            color: #f093fb;
         }
 
-        .feedback-btn.hard:hover {
-            background: linear-gradient(45deg, #f093fb, #f5576c);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
+        .feedback-option.hard:hover {
+            background: linear-gradient(45deg, #f093fb, #f5576c) !important;
+            color: white !important;
+        }
+
+        .feedback-emoji {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333 !important;
+        }
+
+        .feedback-option:hover .feedback-text {
+            color: white !important;
+        }
+
+        .feedback-desc {
+            font-size: 0.9rem;
+            color: #666 !important;
+            line-height: 1.4;
+        }
+
+        .feedback-option:hover .feedback-desc {
+            color: rgba(255, 255, 255, 0.9) !important;
         }
 
         /* 🌙 다크모드 미디어 쿼리 무시 */
@@ -940,9 +958,27 @@
                 gap: 0.8rem;
             }
 
-            .feedback-btn {
-                padding: 1rem;
-                font-size: 0.9rem;
+            /* 🆕 피드백 페이지 모바일 최적화 */
+            .feedback-options {
+                gap: 1rem;
+                max-width: 100%;
+            }
+
+            .feedback-option {
+                padding: 1.2rem;
+                gap: 0.6rem;
+            }
+
+            .feedback-emoji {
+                font-size: 2.5rem;
+            }
+
+            .feedback-text {
+                font-size: 1.1rem;
+            }
+
+            .feedback-desc {
+                font-size: 0.8rem;
             }
         }
 
@@ -991,25 +1027,6 @@
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-cancel" onclick="hideModal()">취소</button>
                 <button class="modal-btn modal-btn-confirm" onclick="confirmStop()">중단</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 🆕 운동 후 피드백 모달 -->
-    <div id="feedbackModal" class="modal-overlay">
-        <div class="modal">
-            <h3>🤖 지금 호흡하는 느낌이 어떠세요?</h3>
-            <p>방금 완료한 트레이닝의 강도는 어떠셨나요?</p>
-            <div class="feedback-buttons">
-                <button class="feedback-btn easy" onclick="selectFeedback('easy')">
-                    😌<br><span>너무 편해요</span>
-                </button>
-                <button class="feedback-btn perfect" onclick="selectFeedback('perfect')">
-                    💪<br><span>딱 좋아요</span>
-                </button>
-                <button class="feedback-btn hard" onclick="selectFeedback('hard')">
-                    😤<br><span>너무 힘들어요</span>
-                </button>
             </div>
         </div>
     </div>
@@ -1173,6 +1190,33 @@
             </div>
         </div>
 
+        <!-- 🆕 피드백 페이지 -->
+        <div id="feedbackScreen" class="screen">
+            <div class="celebration">🤖</div>
+            <h2 id="feedbackTitle">지금 호흡하는 느낌이 어떠세요?</h2>
+            <p class="subtitle" id="feedbackDescription">방금 완료한 트레이닝의 강도는 어떠셨나요?</p>
+            
+            <div class="feedback-options">
+                <button class="feedback-option easy" onclick="selectFeedback('easy')">
+                    <div class="feedback-emoji">😌</div>
+                    <div class="feedback-text">너무 편해요</div>
+                    <div class="feedback-desc">더 강한 강도로 도전할 수 있어요</div>
+                </button>
+                
+                <button class="feedback-option perfect" onclick="selectFeedback('perfect')">
+                    <div class="feedback-emoji">💪</div>
+                    <div class="feedback-text">딱 좋아요</div>
+                    <div class="feedback-desc">적당히 힘들면서 완주할 수 있었어요</div>
+                </button>
+                
+                <button class="feedback-option hard" onclick="selectFeedback('hard')">
+                    <div class="feedback-emoji">😤</div>
+                    <div class="feedback-text">너무 힘들어요</div>
+                    <div class="feedback-desc">강도를 낮춰서 안전하게 운동하고 싶어요</div>
+                </button>
+            </div>
+        </div>
+
         <!-- 결과 화면 (트레이닝 효과 섹션 제거) -->
         <div id="resultScreen" class="screen">
             <div class="celebration">🎉</div>
@@ -1194,13 +1238,13 @@
             <div class="result-content">
                 <!-- 🎯 저항 강도 조절 조언 -->
                 <div class="result-section intensity-advice">
-                    <h4>💪 저항 강도 분석</h4>
-                    <p id="intensityAdvice">AI 숨트레이너가 당신의 저항 강도를 분석하고 있습니다...</p>
+                    <h4>💪 저항 강도 조언</h4>
+                    <p id="intensityAdvice">강도 조절 조언을 분석하고 있습니다...</p>
                 </div>
 
                 <!-- 🏆 종합 트레이닝 조언 -->
                 <div class="result-section comprehensive-advice">
-                    <h4>🏆 종합평가</h4>
+                    <h4>🏆 AI 숨트레이너 종합평가</h4>
                     <p id="comprehensiveAdvice">AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...</p>
                 </div>
 
@@ -1300,34 +1344,30 @@
             exhalePlusBtn.disabled = resistanceSettings.exhale >= 5;
         }
 
-        // 🆕 피드백 모달 관리
-        function showFeedbackModal() {
-            document.getElementById('feedbackModal').classList.add('show');
+        // 🆕 피드백 페이지 관리
+        function showFeedbackScreen() {
+            // 상황에 따라 메시지 변경
+            updateFeedbackScreenContent();
+            showScreen('feedbackScreen');
         }
 
-        function hideFeedbackModal() {
-            document.getElementById('feedbackModal').classList.remove('show');
-        }
-
-        // 🆕 중단된 경우 피드백 모달 메시지 변경
-        function updateFeedbackModalForAborted() {
-            const modal = document.getElementById('feedbackModal');
-            const title = modal.querySelector('h3');
-            const description = modal.querySelector('p');
+        function updateFeedbackScreenContent() {
+            const title = document.getElementById('feedbackTitle');
+            const description = document.getElementById('feedbackDescription');
             
             if (isAborted) {
-                title.textContent = '🤖 중단하신 이유를 알려주세요';
+                title.textContent = '중단하신 이유를 알려주세요';
                 description.textContent = '트레이닝을 중단하기 전까지의 강도는 어떠셨나요?';
             } else {
-                title.textContent = '🤖 지금 호흡하는 느낌이 어떠세요?';
+                title.textContent = '지금 호흡하는 느낌이 어떠세요?';
                 description.textContent = '방금 완료한 트레이닝의 강도는 어떠셨나요?';
             }
         }
 
         function selectFeedback(feedback) {
             userFeedback = feedback;
-            hideFeedbackModal();
-            processExerciseComplete();
+            // 피드백 선택 후 결과 화면으로 이동
+            showResultScreen();
         }
         let autoProgressTimer = setTimeout(() => {
             hideIntro();
@@ -1817,7 +1857,7 @@
             }
         }
 
-        // 운동 완료 함수 (피드백 모달 먼저 표시)
+        // 운동 완료 함수 (피드백 페이지로 이동)
         async function completeExercise() {
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
@@ -1829,26 +1869,29 @@
             // 운동 데이터 저장
             window.exerciseData = {
                 exerciseTime: `${minutes}:${seconds.toString().padStart(2, '0')}`,
-                completedSets: isAborted ? Math.max(0, currentSet - 1) : 2, // 2세트로 변경
-                completedBreaths: isAborted ? Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1)) : 20, // 20회로 변경
+                completedSets: isAborted ? Math.max(0, currentSet - 1) : 2,
+                completedBreaths: isAborted ? Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1)) : 20,
                 isAborted: isAborted,
-                resistanceSettings: { ...resistanceSettings } // 저항 설정 포함
+                resistanceSettings: { ...resistanceSettings }
             };
 
-            showScreen('resultScreen');
-            
-            document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
-            document.getElementById('completedSets').textContent = `${window.exerciseData.completedSets}/2`; // 2세트로 변경
-            
-            // 🔧 모든 경우에 피드백 모달 표시 (중단된 경우에도!)
+            // 🔧 피드백 페이지로 이동 (모든 경우)
             setTimeout(() => {
-                updateFeedbackModalForAborted(); // 중단 시 모달 메시지 변경
-                showFeedbackModal();
+                showFeedbackScreen();
             }, 1000);
         }
 
-        // 🆕 운동 완료 처리 (피드백 받은 후)
-        async function processExerciseComplete() {
+        // 🆕 결과 화면 표시 및 AI 분석 시작
+        async function showResultScreen() {
+            showScreen('resultScreen');
+            
+            const timeData = window.exerciseData.exerciseTime.split(':');
+            const minutes = parseInt(timeData[0]);
+            const seconds = parseInt(timeData[1]);
+            
+            document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
+            document.getElementById('completedSets').textContent = `${window.exerciseData.completedSets}/2`;
+            
             document.getElementById('intensityAdvice').textContent = '강도 조절 조언을 분석하고 있습니다...';
             document.getElementById('comprehensiveAdvice').textContent = 'AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...';
             

@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>숨트레이너</title>
     
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    
     <!-- 🌙 다크모드 문제 해결: 색상 스키마 고정 -->
     <meta name="color-scheme" content="light">
     <meta name="supported-color-schemes" content="light">
@@ -80,20 +89,6 @@
             object-position: center;
         }
 
-        .splash-logo-overlay {
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2001;
-        }
-
-        .splash-logo {
-            width: 120px;
-            height: auto;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-        }
-
         .progress-bar {
             position: absolute;
             bottom: 0;
@@ -134,31 +129,6 @@
             opacity: 0.9;
         }
 
-        @media (orientation: landscape) {
-            .splash-image {
-                object-fit: contain;
-                background: #000;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .splash-logo {
-                width: 80px;
-            }
-
-            .fallback-title {
-                font-size: 2.5rem;
-            }
-
-            .fallback-subtitle {
-                font-size: 1.1rem;
-            }
-
-            .fallback-logo {
-                font-size: 3rem;
-            }
-        }
-
         @keyframes progressFill {
             0% { width: 0%; }
             100% { width: 100%; }
@@ -192,7 +162,6 @@
             display: block;
         }
 
-        /* 🔧 글씨 문제 수정 */
         h1 {
             font-size: 2.2rem;
             margin-bottom: 1rem;
@@ -945,24 +914,6 @@
                 font-size: 3rem;
             }
 
-            /* 📱 모바일에서 단일 컬럼으로 변경 */
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 0.6rem;
-            }
-
-            .stat-item {
-                padding: 0.6rem;
-            }
-
-            .stat-value {
-                font-size: 1.1rem;
-            }
-
-            .stat-label {
-                font-size: 0.7rem;
-            }
-
             .resistance-controls {
                 gap: 1rem;
             }
@@ -1290,8 +1241,8 @@
     </div>
 
     <script>
-        // 🔧 Apps Script URL (데이터 기록 문제 해결)
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHhbZzV2_A4f-8cqyXSIDND3UagUVmZssjt7TQpAN1lmm1loH_-2eXWqD6q9OURjhd7A/exec';
+        // Apps Script URL (AI 조언만 사용)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqrXjUSto2eKrbhZWk44HnZw90iGJC06ZIu1ZBSiJE3jaOfHE0BOTVFfttOaGNR2RbYg/exec';
 
         // 전역 변수
         let currentSet = 1;
@@ -1387,6 +1338,14 @@
 
         function selectFeedback(feedback) {
             userFeedback = feedback;
+            
+            // 📊 Google Analytics 이벤트 전송
+            gtag('event', 'feedback_selected', {
+                feedback_type: feedback,
+                completed_sets: window.exerciseData ? window.exerciseData.completedSets : 0,
+                is_aborted: isAborted
+            });
+            
             showResultScreen();
         }
 
@@ -1410,7 +1369,6 @@
             
             mainImage.addEventListener('error', function() {
                 console.log('⚠️ 메인 스플래시 이미지 로드 실패');
-                
                 this.src = './images/suumt-splash-wide.png';
                 
                 this.addEventListener('error', function() {
@@ -1475,9 +1433,17 @@
             isAborted = true;
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
+            
+            // 📊 Google Analytics 이벤트 전송
+            gtag('event', 'exercise_aborted', {
+                completed_sets: Math.max(0, currentSet - 1),
+                completed_breaths: Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1))
+            });
+            
             completeExercise();
         }
 
+        // 로컬 스토리지 기반 통계 관리
         function getLocalStats() {
             const stats = JSON.parse(localStorage.getItem('breathTrainerStats') || '{}');
             return {
@@ -1542,55 +1508,12 @@
             return stats;
         }
 
-        // 🔧 데이터 기록 문제 해결: Apps Script로 데이터 전송
-        async function saveToSheets(exerciseData) {
-            try {
-                console.log('📊 Google Sheets에 데이터 저장 시작');
-                console.log('📋 전송할 데이터:', exerciseData);
-
-                // Apps Script로 운동 완료 데이터 전송
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        function: 'completeExercise',
-                        parameters: exerciseData
-                    })
-                });
-
-                console.log('🌐 응답 상태:', response.status);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                console.log('📦 Sheets 저장 결과:', result);
-
-                if (result.success) {
-                    console.log('✅ Google Sheets 저장 성공');
-                    return result;
-                } else {
-                    console.error('❌ Sheets 저장 실패:', result.message);
-                    throw new Error(result.message || 'Sheets 저장 실패');
-                }
-
-            } catch (error) {
-                console.error('🚨 Sheets 저장 오류:', error);
-                // 에러가 발생해도 로컬 저장은 계속 진행
-                return { success: false, error: error.message };
-            }
-        }
-
-        // 🔧 수정된 AI 조언 함수 (CORS 문제 해결)
+        // 🔧 AI 조언 요청 (기존 잘 되던 방식 유지)
         async function getTrainerAdvice(exerciseData) {
             try {
                 console.log('🤖 AI 조언 요청 시작');
                 console.log('📊 전달할 운동 데이터:', exerciseData);
                 
-                // CORS 문제 해결을 위해 GET 방식으로 변경
                 const params = new URLSearchParams({
                     function: 'getAIAdvice',
                     exerciseTime: exerciseData.exerciseTime,
@@ -1604,19 +1527,14 @@
                 
                 console.log('🌐 요청 파라미터:', params.toString());
                 
-                const response = await fetch(`${SCRIPT_URL}?${params}`, {
-                    method: 'GET',
-                    mode: 'cors'
-                });
-                
-                console.log('📡 응답 상태:', response.status);
+                const response = await fetch(`${SCRIPT_URL}?${params}`);
                 
                 if (!response.ok) {
                     throw new Error(`연결 오류: ${response.status}`);
                 }
                 
                 const result = await response.json();
-                console.log('📦 AI 조언 응답:', result);
+                console.log('📦 Apps Script 응답:', result);
                 
                 if (result.success) {
                     if (result.advice && typeof result.advice === 'object') {
@@ -1637,7 +1555,7 @@
             } catch (error) {
                 console.error('🚨 AI 조언 요청 오류:', error);
                 
-                // 네트워크 오류 시 기본 조언 반환
+                // 기본 조언 반환
                 const defaultAdvices = [
                     `${exerciseData.completedSets}세트 완주! 숨트의 저항을 이겨내며 호흡근이 한층 강해졌습니다.`,
                     `${exerciseData.exerciseTime} 동안의 집중적인 호흡 트레이닝, 수고하셨습니다!`,
@@ -1712,6 +1630,13 @@
         function startExercise() {
             resetExercise();
             showScreen('exerciseScreen');
+            
+            // 📊 Google Analytics 이벤트 전송
+            gtag('event', 'exercise_start', {
+                inhale_resistance: resistanceSettings.inhale,
+                exhale_resistance: resistanceSettings.exhale
+            });
+            
             startCountdown();
         }
 
@@ -1907,25 +1832,23 @@
                     userFeedback: userFeedback
                 };
                 
-                console.log('🎯 최종 운동 데이터:', exerciseDataWithFeedback);
+                console.log('🎯 AI 분석용 최종 데이터:', exerciseDataWithFeedback);
                 
-                // 🔧 Google Sheets에 데이터 저장 (백그라운드에서 실행)
-                saveToSheets(exerciseDataWithFeedback).then(sheetsResult => {
-                    if (sheetsResult.success) {
-                        console.log('✅ Google Sheets 저장 완료');
-                    } else {
-                        console.log('⚠️ Google Sheets 저장 실패, 로컬만 저장됨');
-                    }
-                }).catch(error => {
-                    console.error('🚨 Sheets 저장 에러:', error);
+                // 📊 Google Analytics 이벤트 전송
+                gtag('event', 'exercise_complete', {
+                    exercise_duration: exerciseDataWithFeedback.exerciseTime,
+                    completed_sets: exerciseDataWithFeedback.completedSets,
+                    completed_breaths: exerciseDataWithFeedback.completedBreaths,
+                    is_aborted: exerciseDataWithFeedback.isAborted,
+                    user_feedback: exerciseDataWithFeedback.userFeedback,
+                    inhale_resistance: exerciseDataWithFeedback.resistanceSettings.inhale,
+                    exhale_resistance: exerciseDataWithFeedback.resistanceSettings.exhale
                 });
                 
-                // AI 조언 생성
                 const aiAdvice = await getTrainerAdvice(exerciseDataWithFeedback);
                 
                 console.log('🤖 AI 조언 결과:', aiAdvice);
                 
-                // 통계 업데이트
                 const updatedStats = updateLocalStats(window.exerciseData);
                 addExerciseHistory(exerciseDataWithFeedback);
                 

@@ -51,7 +51,7 @@
             overflow-x: hidden;
         }
 
-        /* 🎬 숨트 제품 노출 스플래시 화면 (기존 인트로 교체) */
+        /* 🎬 숨트 제품 노출 스플래시 화면 */
         #introScreen {
             position: fixed;
             top: 0;
@@ -73,7 +73,6 @@
             pointer-events: none;
         }
 
-        /* 메인 제품 이미지 */
         .splash-image {
             width: 100%;
             height: 100%;
@@ -81,7 +80,6 @@
             object-position: center;
         }
 
-        /* 로고 오버레이 */
         .splash-logo-overlay {
             position: absolute;
             top: 50px;
@@ -96,7 +94,6 @@
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
         }
 
-        /* 자동 진행 프로그레스 바 */
         .progress-bar {
             position: absolute;
             bottom: 0;
@@ -108,7 +105,6 @@
             z-index: 2001;
         }
 
-        /* 이미지 로딩 실패 시 대체 화면 */
         .fallback-splash {
             display: none;
             flex-direction: column;
@@ -138,7 +134,6 @@
             opacity: 0.9;
         }
 
-        /* 반응형 처리 */
         @media (orientation: landscape) {
             .splash-image {
                 object-fit: contain;
@@ -164,7 +159,6 @@
             }
         }
 
-        /* 애니메이션 */
         @keyframes progressFill {
             0% { width: 0%; }
             100% { width: 100%; }
@@ -175,18 +169,19 @@
             50% { transform: scale(1.1); }
         }
 
-        /* 기존 스타일들은 모두 그대로 유지 */
+        /* 📱 모바일 최적화된 컨테이너 */
         .container {
             background: rgba(255, 255, 255, 0.95) !important;
             backdrop-filter: blur(10px);
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            max-width: 400px;
-            width: 90%;
+            padding: 1.5rem;
+            max-width: 420px;
+            width: 95%;
             text-align: center;
             transition: all 0.3s ease;
             color-scheme: light !important;
+            margin: 1rem auto;
         }
 
         .screen {
@@ -197,9 +192,9 @@
             display: block;
         }
 
-        /* 🔧 글씨 문제 수정: 그라디언트 제거하고 일반 텍스트로 */
+        /* 🔧 글씨 문제 수정 */
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             margin-bottom: 1rem;
             color: #333 !important;
             font-weight: bold;
@@ -207,8 +202,9 @@
 
         .subtitle {
             color: #666 !important;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.4;
         }
 
         .start-button {
@@ -216,14 +212,14 @@
             color: white !important;
             border: none;
             border-radius: 50%;
-            width: 200px;
-            height: 200px;
-            font-size: 1.5rem;
+            width: 160px;
+            height: 160px;
+            font-size: 1.3rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-            margin-bottom: 2rem;
+            margin: 1.5rem auto;
         }
 
         .start-button:hover {
@@ -250,93 +246,110 @@
             margin-bottom: 0.5rem;
         }
 
+        /* 🔧 중요 안내 정렬 개선 */
         .device-guide {
-            background: rgba(255, 255, 255, 0.8) !important;
+            background: rgba(255, 255, 255, 0.9) !important;
             border-radius: 15px;
-            padding: 1.5rem;
+            padding: 1.2rem;
             margin-bottom: 1.5rem;
             border-left: 4px solid #667eea;
             text-align: left;
+        }
+
+        .device-guide .important-notice {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem;
+            background: rgba(255, 59, 48, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        .device-guide .important-icon {
+            color: #ff3b30;
+            font-size: 1.1rem;
+            margin-right: 0.5rem;
+            margin-top: 0.1rem;
+            flex-shrink: 0;
+        }
+
+        .device-guide .important-text {
+            color: #333 !important;
+            font-weight: 600;
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
 
         .device-guide p {
             color: #555 !important;
             line-height: 1.5;
             margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            padding-left: 1rem;
         }
 
-        .resistance-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 1rem;
+        .device-guide p:last-child {
+            margin-bottom: 0;
         }
 
-        .resistance-item {
-            background: rgba(255, 255, 255, 0.8) !important;
-            padding: 0.8rem;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .resistance-item strong {
-            color: #667eea !important;
-            display: block;
-            margin-bottom: 0.3rem;
-        }
-
-        /* 🆕 저항 강도 설정 스타일 */
+        /* 🆕 모바일 최적화된 저항 강도 설정 */
         .resistance-settings {
             background: rgba(255, 255, 255, 0.9) !important;
             border-radius: 15px;
-            padding: 1.5rem;
+            padding: 1.2rem;
             margin-bottom: 1.5rem;
             border-left: 4px solid #4facfe;
         }
 
         .resistance-settings h4 {
             color: #333 !important;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            font-weight: 600;
         }
 
+        /* 📱 모바일에서 세로 배치로 변경 */
         .resistance-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
             margin-bottom: 1rem;
         }
 
         .resistance-control {
-            text-align: center;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(102, 126, 234, 0.1);
         }
 
         .resistance-control label {
             display: block;
-            color: #555 !important;
+            color: #333 !important;
             font-size: 0.9rem;
             margin-bottom: 0.8rem;
-            font-weight: 500;
+            font-weight: 600;
+            text-align: center;
         }
 
         .resistance-selector {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 1.2rem;
+            margin-bottom: 0.8rem;
         }
 
         .resistance-selector button {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border: none;
             background: linear-gradient(45deg, #667eea, #764ba2) !important;
             color: white !important;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -357,10 +370,11 @@
         }
 
         .resistance-selector span {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: bold;
             color: #667eea !important;
-            min-width: 40px;
+            min-width: 50px;
+            text-align: center;
         }
 
         .resistance-scale {
@@ -370,12 +384,12 @@
 
         .scale-dots {
             display: flex;
-            gap: 0.3rem;
+            gap: 0.4rem;
         }
 
         .dot {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
             background: rgba(102, 126, 234, 0.2);
             transition: all 0.3s ease;
@@ -393,71 +407,90 @@
             background: rgba(102, 126, 234, 0.4);
         }
 
+        /* 🔧 안내 문구 정렬 개선 */
         .resistance-tip {
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #666 !important;
             background: rgba(79, 172, 254, 0.1);
             padding: 0.8rem;
             border-radius: 10px;
             border: 1px solid rgba(79, 172, 254, 0.2);
+            line-height: 1.4;
         }
 
+        .resistance-tip .tip-line {
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .resistance-tip .tip-line:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 📱 모바일 최적화된 사용자 통계 */
         .user-stats {
-            background: rgba(255, 255, 255, 0.8) !important;
+            background: rgba(255, 255, 255, 0.9) !important;
             border-radius: 15px;
-            padding: 1.5rem;
+            padding: 1.2rem;
             margin-bottom: 1.5rem;
         }
 
         .user-stats h3 {
             margin-bottom: 1rem;
             color: #333 !important;
+            font-size: 1rem;
+            font-weight: 600;
         }
 
+        /* 📱 모바일에서 2x2 그리드로 변경 */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            gap: 0.8rem;
             margin-bottom: 1rem;
         }
 
         .stat-item {
             background: rgba(255, 255, 255, 0.8) !important;
             border-radius: 12px;
-            padding: 1rem;
+            padding: 0.8rem;
             text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.1);
         }
 
         .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: #667eea !important;
+            margin-bottom: 0.3rem;
         }
 
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             color: #666 !important;
-            margin-top: 0.5rem;
+            line-height: 1.2;
         }
 
         .history {
-            background: rgba(255, 255, 255, 0.8) !important;
+            background: rgba(255, 255, 255, 0.9) !important;
             border-radius: 15px;
-            padding: 1.5rem;
+            padding: 1.2rem;
             margin-top: 1.5rem;
         }
 
         .history h3 {
             margin-bottom: 1rem;
             color: #333 !important;
+            font-size: 1rem;
+            font-weight: 600;
         }
 
         .history-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.8rem 0;
+            padding: 0.6rem 0;
             border-bottom: 1px solid #eee;
         }
 
@@ -466,27 +499,27 @@
         }
 
         .history-date {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #666 !important;
         }
 
         .history-stats {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #333 !important;
             font-weight: 500;
         }
 
         .breathing-circle {
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             background: linear-gradient(45deg, #667eea, #764ba2) !important;
-            margin: 2rem auto;
+            margin: 1.5rem auto;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white !important;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
             transform: scale(0.7);
@@ -517,44 +550,46 @@
         }
 
         .countdown {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: bold;
             color: #667eea !important;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
 
-        /* 🎯 직관적인 진행도 표시 */
+        /* 🎯 진행도 표시 크기 확대 */
         .progress-container {
             margin: 2rem 0;
             padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.9) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
             border-radius: 15px;
             border-left: 4px solid #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
         }
 
         .sets-progress {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .progress-label {
-            font-size: 0.9rem;
-            color: #666 !important;
-            margin-bottom: 0.8rem;
-            font-weight: 500;
+            font-size: 1rem;
+            color: #333 !important;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            text-align: center;
         }
 
         .sets-indicators {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
+            gap: 1.5rem;
+            margin-bottom: 0.8rem;
         }
 
         .set-indicator {
-            width: 60px;
-            height: 8px;
+            width: 80px;
+            height: 12px;
             background: rgba(102, 126, 234, 0.2);
-            border-radius: 4px;
+            border-radius: 6px;
             position: relative;
             overflow: hidden;
         }
@@ -576,14 +611,14 @@
         .breaths-indicators {
             display: flex;
             justify-content: center;
-            gap: 0.3rem;
+            gap: 0.4rem;
             flex-wrap: wrap;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
         }
 
         .breath-indicator {
-            width: 12px;
-            height: 12px;
+            width: 16px;
+            height: 16px;
             background: rgba(102, 126, 234, 0.2);
             border-radius: 50%;
             transition: all 0.3s ease;
@@ -603,8 +638,9 @@
 
         .progress-numbers {
             text-align: center;
-            font-size: 0.8rem;
-            color: #888 !important;
+            font-size: 0.9rem;
+            color: #666 !important;
+            font-weight: 500;
         }
 
         @keyframes setGlow {
@@ -618,7 +654,7 @@
         }
 
         .control-buttons {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
         }
 
         .btn {
@@ -626,11 +662,11 @@
             color: white !important;
             border: none;
             border-radius: 25px;
-            padding: 12px 24px;
-            font-size: 1rem;
+            padding: 12px 20px;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin: 0.5rem;
+            margin: 0.4rem;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
@@ -653,9 +689,9 @@
         }
 
         .result-section {
-            background: rgba(255, 255, 255, 0.8) !important;
+            background: rgba(255, 255, 255, 0.9) !important;
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1.2rem;
             margin: 1rem 0;
             border-left: 4px solid #667eea;
         }
@@ -663,15 +699,15 @@
         .result-section h4 {
             color: #333 !important;
             margin-bottom: 0.8rem;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .result-section p {
             color: #555 !important;
             line-height: 1.6;
+            font-size: 0.9rem;
         }
 
-        /* 🆕 조언 섹션별 스타일 */
         .intensity-advice {
             border-left-color: #4facfe;
         }
@@ -689,17 +725,17 @@
         }
 
         .celebration {
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin: 1rem 0;
         }
 
         .achievement-badge {
             background: linear-gradient(45deg, #4facfe, #00f2fe) !important;
             color: white !important;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 20px;
-            font-size: 0.9rem;
-            margin: 0.5rem;
+            font-size: 0.8rem;
+            margin: 0.3rem;
             display: inline-block;
         }
 
@@ -725,8 +761,8 @@
         .modal {
             background: white !important;
             border-radius: 20px;
-            padding: 2rem;
-            max-width: 320px;
+            padding: 1.5rem;
+            max-width: 300px;
             width: 90%;
             text-align: center;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
@@ -736,29 +772,30 @@
         .modal h3 {
             color: #333 !important;
             margin-bottom: 1rem;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
 
         .modal p {
             color: #666 !important;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             line-height: 1.5;
+            font-size: 0.9rem;
         }
 
         .modal-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
             justify-content: center;
         }
 
         .modal-btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
             border-radius: 25px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-width: 80px;
+            min-width: 70px;
         }
 
         .modal-btn-cancel {
@@ -789,30 +826,28 @@
         .feedback-options {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-            margin: 2rem 0;
-            max-width: 350px;
-            margin-left: auto;
-            margin-right: auto;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            max-width: 100%;
         }
 
         .feedback-option {
             background: rgba(255, 255, 255, 0.9) !important;
             border: 2px solid transparent;
-            border-radius: 20px;
-            padding: 1.5rem;
+            border-radius: 15px;
+            padding: 1.2rem;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 0.8rem;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            gap: 0.6rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
 
         .feedback-option:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
 
         .feedback-option.easy {
@@ -843,12 +878,12 @@
         }
 
         .feedback-emoji {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            margin-bottom: 0.3rem;
         }
 
         .feedback-text {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #333 !important;
         }
@@ -858,9 +893,9 @@
         }
 
         .feedback-desc {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #666 !important;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         .feedback-option:hover .feedback-desc {
@@ -883,102 +918,107 @@
             }
         }
 
+        /* 📱 모바일 최적화 미디어 쿼리 */
         @media (max-width: 480px) {
             .container {
-                width: 95%;
-                padding: 1.5rem;
+                width: 98%;
+                padding: 1.2rem;
+                margin: 0.5rem auto;
             }
 
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
 
             .start-button {
-                width: 150px;
-                height: 150px;
-                font-size: 1.2rem;
+                width: 140px;
+                height: 140px;
+                font-size: 1.1rem;
             }
 
             .breathing-circle {
-                width: 150px;
-                height: 150px;
+                width: 160px;
+                height: 160px;
             }
 
             .countdown {
                 font-size: 3rem;
             }
 
+            /* 📱 모바일에서 단일 컬럼으로 변경 */
             .stats-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.6rem;
             }
 
-            .resistance-info {
-                grid-template-columns: 1fr;
+            .stat-item {
+                padding: 0.6rem;
             }
 
-            .sets-indicators {
-                gap: 0.8rem;
+            .stat-value {
+                font-size: 1.1rem;
             }
 
-            .set-indicator {
-                width: 50px;
+            .stat-label {
+                font-size: 0.7rem;
             }
 
-            .breaths-indicators {
-                gap: 0.2rem;
-            }
-
-            .breath-indicator {
-                width: 10px;
-                height: 10px;
-            }
-
-            /* 🆕 저항 설정 모바일 최적화 */
             .resistance-controls {
-                grid-template-columns: 1fr;
                 gap: 1rem;
             }
 
             .resistance-selector button {
-                width: 32px;
-                height: 32px;
-                font-size: 1rem;
-            }
-
-            .resistance-selector span {
-                font-size: 1.5rem;
-            }
-
-            .dot {
-                width: 10px;
-                height: 10px;
-            }
-
-            .feedback-buttons {
-                gap: 0.8rem;
-            }
-
-            /* 🆕 피드백 페이지 모바일 최적화 */
-            .feedback-options {
-                gap: 1rem;
-                max-width: 100%;
-            }
-
-            .feedback-option {
-                padding: 1.2rem;
-                gap: 0.6rem;
-            }
-
-            .feedback-emoji {
-                font-size: 2.5rem;
-            }
-
-            .feedback-text {
+                width: 36px;
+                height: 36px;
                 font-size: 1.1rem;
             }
 
+            .resistance-selector span {
+                font-size: 1.8rem;
+            }
+
+            .dot {
+                width: 12px;
+                height: 12px;
+            }
+
+            .sets-indicators {
+                gap: 1rem;
+            }
+
+            .set-indicator {
+                width: 60px;
+                height: 10px;
+            }
+
+            .breaths-indicators {
+                gap: 0.3rem;
+            }
+
+            .breath-indicator {
+                width: 14px;
+                height: 14px;
+            }
+
+            .feedback-options {
+                gap: 0.8rem;
+            }
+
+            .feedback-option {
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .feedback-emoji {
+                font-size: 2.2rem;
+            }
+
+            .feedback-text {
+                font-size: 1rem;
+            }
+
             .feedback-desc {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
         }
 
@@ -998,24 +1038,19 @@
     </style>
 </head>
 <body>
-    <!-- 🎬 숨트 제품 노출 스플래시 화면 (기존 인트로 교체) -->
+    <!-- 🎬 숨트 제품 노출 스플래시 화면 -->
     <div id="introScreen" onclick="hideIntro()">
-        <!-- 메인 제품 이미지 -->
         <img src="./images/suumt-splash-main.jpg" 
              alt="숨트 호흡운동기구" 
              class="splash-image"
              id="mainSplashImage">
-
-        </div>
         
-        <!-- 이미지 로딩 실패 시 대체 화면 -->
         <div class="fallback-splash" id="fallbackSplash">
             <div class="fallback-logo">🫁</div>
             <h1 class="fallback-title">숨트레이너</h1>
             <p class="fallback-subtitle">숨트 호흡운동기구 전용 가이드 앱</p>
         </div>
         
-        <!-- 자동 진행 프로그레스 바 -->
         <div class="progress-bar"></div>
     </div>
 
@@ -1042,18 +1077,22 @@
                 <div>호흡근육 트레이닝 가이드</div>
             </div>
 
+            <!-- 🔧 중요 안내 정렬 개선 -->
             <div class="device-guide">
-                <p><strong>🚨 중요:</strong> 숨트 기구를 통해서만 입으로 호흡하세요</p>
+                <div class="important-notice">
+                    <span class="important-icon">🚨</span>
+                    <span class="important-text">숨트 기구를 통해서만 입으로 호흡하세요</span>
+                </div>
                 <p>• 숨트 기구를 입에 물고 준비하세요</p>
                 <p>• 편안한 자세로 앉거나 서서 트레이닝하세요</p>
             </div>
 
-            <!-- 🆕 저항 강도 설정 섹션 (영어 표기 추가) -->
+            <!-- 🆕 모바일 최적화된 저항 강도 설정 -->
             <div class="resistance-settings">
                 <h4>🫁 저항 강도 설정</h4>
                 <div class="resistance-controls">
                     <div class="resistance-control">
-                        <label>들숨 (Inhale) 저항</label>
+                        <label>들숨(Inhale)</label>
                         <div class="resistance-selector">
                             <button onclick="adjustResistance('inhale', -1)">−</button>
                             <span id="inhaleLevel">1</span>
@@ -1071,7 +1110,7 @@
                         </div>
                     </div>
                     <div class="resistance-control">
-                        <label>날숨 (Exhale) 저항</label>
+                        <label>날숨(Exhale)</label>
                         <div class="resistance-selector">
                             <button onclick="adjustResistance('exhale', -1)">−</button>
                             <span id="exhaleLevel">1</span>
@@ -1088,8 +1127,10 @@
                         </div>
                     </div>
                 </div>
+                <!-- 🔧 안내 문구 정렬 개선 -->
                 <div class="resistance-tip">
-                    💡 처음이시면 1단계 추천 | 적당히 힘든 강도가 최적이에요!
+                    <span class="tip-line">💡 처음이시면 1단계 추천</span>
+                    <span class="tip-line">적당히 힘든 강도가 최적이에요!</span>
                 </div>
             </div>
             
@@ -1097,6 +1138,7 @@
                 트레이닝 시작
             </button>
             
+            <!-- 📱 모바일 최적화된 사용자 통계 -->
             <div class="user-stats">
                 <h3>나의 호흡근육 트레이닝 통계</h3>
                 <div class="stats-grid">
@@ -1127,7 +1169,7 @@
             </div>
         </div>
 
-        <!-- 운동 화면 (기존 그대로 - 들숨/날숨만 표기) -->
+        <!-- 운동 화면 -->
         <div id="exerciseScreen" class="screen">
             <div id="countdownSection">
                 <h2>트레이닝을 시작할게요</h2>
@@ -1139,7 +1181,7 @@
                     <span id="circleText">준비</span>
                 </div>
                 
-                <!-- 🎯 새로운 직관적인 진행도 표시 -->
+                <!-- 🎯 크기 확대된 진행도 표시 -->
                 <div class="progress-container">
                     <div class="sets-progress">
                         <div class="progress-label">세트 진행도</div>
@@ -1224,13 +1266,11 @@
             <div id="achievementBadges"></div>
 
             <div class="result-content">
-                <!-- 🎯 저항 강도 분석 (백엔드에서 영어 표기 포함되어 옴) -->
                 <div class="result-section intensity-advice">
                     <h4>💪 저항 강도 분석</h4>
                     <p id="intensityAdvice">강도 조절 분석을 진행하고 있습니다...</p>
                 </div>
 
-                <!-- 🏆 종합 트레이닝 조언 -->
                 <div class="result-section comprehensive-advice">
                     <h4>🏆 AI 숨트레이너 종합평가</h4>
                     <p id="comprehensiveAdvice">AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...</p>
@@ -1250,8 +1290,8 @@
     </div>
 
     <script>
-        // Apps Script URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyfcVufAVNV9JhNx4YfzZSzb4Dr5Il-uMompWJT6Hh7EbN7JAlOEsIFovJF13Clo061DA/exec';
+        // 🔧 Apps Script URL (데이터 기록 문제 해결)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzjOQSeEIOc0TAWFnnU5W7q9Nz7F9rWr4kfPMJUTkVhZV6qJ6BqhuK7UthiHUcmq_ZK4g/exec';
 
         // 전역 변수
         let currentSet = 1;
@@ -1263,16 +1303,14 @@
         let isAborted = false;
         let breathingPhase = 'inhale';
         
-        // 🆕 저항 설정 변수
         let resistanceSettings = {
             inhale: 1,
             exhale: 1
         };
         
-        // 🆕 사용자 피드백 변수
         let userFeedback = null;
 
-        // 🆕 저항 설정 관리 함수들
+        // 저항 설정 관리 함수들
         function loadResistanceSettings() {
             const saved = JSON.parse(localStorage.getItem('resistanceSettings') || '{"inhale": 1, "exhale": 1}');
             resistanceSettings = saved;
@@ -1295,15 +1333,12 @@
         }
 
         function updateResistanceUI() {
-            // 숫자 업데이트
             document.getElementById('inhaleLevel').textContent = resistanceSettings.inhale;
             document.getElementById('exhaleLevel').textContent = resistanceSettings.exhale;
             
-            // 스케일 점들 업데이트
             updateResistanceScale('inhale', resistanceSettings.inhale);
             updateResistanceScale('exhale', resistanceSettings.exhale);
             
-            // 버튼 상태 업데이트
             updateResistanceButtons();
         }
 
@@ -1332,9 +1367,7 @@
             exhalePlusBtn.disabled = resistanceSettings.exhale >= 5;
         }
 
-        // 🆕 피드백 페이지 관리
         function showFeedbackScreen() {
-            // 상황에 따라 메시지 변경
             updateFeedbackScreenContent();
             showScreen('feedbackScreen');
         }
@@ -1354,16 +1387,15 @@
 
         function selectFeedback(feedback) {
             userFeedback = feedback;
-            // 피드백 선택 후 결과 화면으로 이동
             showResultScreen();
         }
+
         let autoProgressTimer = setTimeout(() => {
             hideIntro();
         }, 3000);
 
-        // 🎬 스플래시 화면 관리 (기존 hideIntro 함수 수정)
         function hideIntro() {
-            clearTimeout(autoProgressTimer); // 자동 타이머 취소
+            clearTimeout(autoProgressTimer);
             
             const introScreen = document.getElementById('introScreen');
             introScreen.classList.add('hidden');
@@ -1372,41 +1404,26 @@
             }, 800);
         }
 
-        // 🖼️ 이미지 로드 처리
         window.addEventListener('load', function() {
             const mainImage = document.getElementById('mainSplashImage');
-            const logoImage = document.getElementById('logoImage');
             const fallbackSplash = document.getElementById('fallbackSplash');
             
-            // 메인 이미지 로드 실패 시 처리
             mainImage.addEventListener('error', function() {
                 console.log('⚠️ 메인 스플래시 이미지 로드 실패');
                 
-                // 백업 이미지 시도
                 this.src = './images/suumt-splash-wide.png';
                 
-                // 백업 이미지도 실패하면 대체 화면 표시
                 this.addEventListener('error', function() {
                     console.log('⚠️ 모든 이미지 로드 실패, 대체 화면 표시');
                     this.style.display = 'none';
                     fallbackSplash.style.display = 'flex';
                 });
             });
-            
-            // 로고 이미지 로드 실패 시 숨김
-            if (logoImage) {
-                logoImage.addEventListener('error', function() {
-                    console.log('⚠️ 로고 이미지 로드 실패');
-                    this.style.display = 'none';
-                });
-            }
 
             console.log('🎬 스플래시 화면 로딩 완료');
         });
 
-        // 🎯 진행도 표시 초기화 (2세트로 변경)
         function initializeProgressIndicators() {
-            // 호흡 점들 생성
             const breathsContainer = document.getElementById('breathsIndicators');
             breathsContainer.innerHTML = '';
             
@@ -1420,9 +1437,7 @@
             updateProgressIndicators();
         }
 
-        // 🎯 진행도 표시 업데이트 (2세트로 변경)
         function updateProgressIndicators() {
-            // 세트 진행도 업데이트
             const setIndicators = document.querySelectorAll('.set-indicator');
             setIndicators.forEach((indicator, index) => {
                 indicator.classList.remove('active', 'current');
@@ -1433,7 +1448,6 @@
                 }
             });
             
-            // 호흡 진행도 업데이트
             const breathIndicators = document.querySelectorAll('.breath-indicator');
             breathIndicators.forEach((indicator, index) => {
                 indicator.classList.remove('completed', 'current');
@@ -1444,12 +1458,10 @@
                 }
             });
             
-            // 숫자 업데이트 (2세트로 변경)
             document.getElementById('setNumbers').textContent = `${currentSet} / 2 세트`;
             document.getElementById('breathNumbers').textContent = `${currentBreath} / 10 회`;
         }
 
-        // 🎯 커스텀 모달 관리
         function showStopModal() {
             document.getElementById('confirmModal').classList.add('show');
         }
@@ -1466,7 +1478,6 @@
             completeExercise();
         }
 
-        // 로컬 스토리지 기반 통계 관리
         function getLocalStats() {
             const stats = JSON.parse(localStorage.getItem('breathTrainerStats') || '{}');
             return {
@@ -1479,7 +1490,6 @@
             };
         }
 
-        // 히스토리 관리
         function getExerciseHistory() {
             return JSON.parse(localStorage.getItem('breathTrainerHistory') || '[]');
         }
@@ -1491,7 +1501,9 @@
                 exerciseTime: exerciseData.exerciseTime,
                 completedSets: exerciseData.completedSets,
                 completedBreaths: exerciseData.completedBreaths,
-                isAborted: exerciseData.isAborted
+                isAborted: exerciseData.isAborted,
+                userFeedback: exerciseData.userFeedback,
+                resistanceSettings: exerciseData.resistanceSettings
             };
             
             history.unshift(newRecord);
@@ -1530,46 +1542,93 @@
             return stats;
         }
 
-        // 🔧 수정된 AI 숨트레이너 조언 (Apps Script URL 호출 + 저항설정/피드백 전달)
+        // 🔧 데이터 기록 문제 해결: Apps Script로 데이터 전송
+        async function saveToSheets(exerciseData) {
+            try {
+                console.log('📊 Google Sheets에 데이터 저장 시작');
+                console.log('📋 전송할 데이터:', exerciseData);
+
+                // Apps Script로 운동 완료 데이터 전송
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        function: 'completeExercise',
+                        parameters: exerciseData
+                    })
+                });
+
+                console.log('🌐 응답 상태:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('📦 Sheets 저장 결과:', result);
+
+                if (result.success) {
+                    console.log('✅ Google Sheets 저장 성공');
+                    return result;
+                } else {
+                    console.error('❌ Sheets 저장 실패:', result.message);
+                    throw new Error(result.message || 'Sheets 저장 실패');
+                }
+
+            } catch (error) {
+                console.error('🚨 Sheets 저장 오류:', error);
+                // 에러가 발생해도 로컬 저장은 계속 진행
+                return { success: false, error: error.message };
+            }
+        }
+
+        // 🔧 수정된 AI 조언 함수 (CORS 문제 해결)
         async function getTrainerAdvice(exerciseData) {
             try {
-                console.log('🤖 AI 조언 요청 시작 - Apps Script 호출');
+                console.log('🤖 AI 조언 요청 시작');
                 console.log('📊 전달할 운동 데이터:', exerciseData);
                 
-                // 🔧 Apps Script로 GET 요청 (저항 설정과 사용자 피드백 포함)
+                // CORS 문제 해결을 위해 GET 방식으로 변경
                 const params = new URLSearchParams({
                     function: 'getAIAdvice',
                     exerciseTime: exerciseData.exerciseTime,
                     completedSets: exerciseData.completedSets.toString(),
                     completedBreaths: exerciseData.completedBreaths.toString(),
                     isAborted: exerciseData.isAborted.toString(),
-                    userFeedback: exerciseData.userFeedback || '', // 🆕 사용자 피드백 추가
-                    inhaleResistance: exerciseData.resistanceSettings ? exerciseData.resistanceSettings.inhale.toString() : '1', // 🆕 들숨 저항 추가
-                    exhaleResistance: exerciseData.resistanceSettings ? exerciseData.resistanceSettings.exhale.toString() : '1' // 🆕 날숨 저항 추가
+                    userFeedback: exerciseData.userFeedback || '',
+                    inhaleResistance: exerciseData.resistanceSettings ? exerciseData.resistanceSettings.inhale.toString() : '1',
+                    exhaleResistance: exerciseData.resistanceSettings ? exerciseData.resistanceSettings.exhale.toString() : '1'
                 });
                 
                 console.log('🌐 요청 파라미터:', params.toString());
                 
-                const response = await fetch(`${SCRIPT_URL}?${params}`);
+                const response = await fetch(`${SCRIPT_URL}?${params}`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                
+                console.log('📡 응답 상태:', response.status);
                 
                 if (!response.ok) {
                     throw new Error(`연결 오류: ${response.status}`);
                 }
                 
                 const result = await response.json();
-                console.log('📦 Apps Script 응답:', result);
+                console.log('📦 AI 조언 응답:', result);
                 
                 if (result.success) {
-                    // 🔧 Apps Script에서 객체 구조로 반환된 경우
-                    if (result.intensityAdvice && result.comprehensiveAdvice) {
+                    if (result.advice && typeof result.advice === 'object') {
                         return {
-                            intensityAdvice: result.intensityAdvice,
-                            comprehensiveAdvice: result.comprehensiveAdvice
+                            intensityAdvice: result.advice.intensityAdvice || result.advice,
+                            comprehensiveAdvice: result.advice.comprehensiveAdvice || "AI 트레이너가 당신의 꾸준한 노력을 응원합니다!"
                         };
-                    }
-                    // 🔧 단일 문자열로 반환된 경우 (기존 호환성)
-                    else if (result.advice) {
-                        return result.advice;
+                    } else if (typeof result.advice === 'string') {
+                        return {
+                            intensityAdvice: result.advice,
+                            comprehensiveAdvice: "AI 트레이너가 당신의 꾸준한 노력을 응원합니다!"
+                        };
                     }
                 } 
                 
@@ -1578,26 +1637,21 @@
             } catch (error) {
                 console.error('🚨 AI 조언 요청 오류:', error);
                 
-                // 🔧 네트워크 오류 시 기본 조언 반환
-                const enhancedAdvices = [
-                    `${exerciseData.completedSets}세트 완주! 숨트의 저항을 이겨내며 호흡근이 한층 강해졌습니다. 매번 기구를 통한 깊은 호흡으로 폐활량이 늘어나고 있어요. 꾸준히 도전하는 의지가 정말 대단해요!`,
-                    
-                    `${exerciseData.exerciseTime} 동안의 집중적인 호흡 트레이닝, 수고하셨습니다! 숨트의 양방향 저항 시스템으로 흡기근과 호기근이 균형있게 발달하고 있어요. 개인 맞춤 저항 단계로 꾸준히 진행하시면 더 큰 변화를 경험하실 거예요.`,
-                    
-                    `호흡근육 강화 여정에서 또 한 걸음 전진하셨네요! 숨트만의 특별한 저항 트레이닝으로 일상의 숨가쁨이 줄어들고 체력이 향상되고 있습니다. 지금까지의 경험이 쌓이며 호흡 효율성이 크게 개선되었어요.`,
-                    
-                    `${exerciseData.completedBreaths}번의 의식적인 호흡으로 몸과 마음이 한층 건강해졌습니다. 숨트의 과학적 설계가 당신의 호흡 패턴을 최적화하고 있어요. 지금까지의 꾸준함이 앞으로 더 큰 성과로 이어질 것입니다!`,
-                    
-                    `완벽한 세션이었습니다! 기구를 통한 체계적인 호흡 훈련으로 폐기능이 점진적으로 향상되고 있어요. 성실한 도전이 호흡근육의 힘과 지구력을 크게 끌어올렸습니다. 자신감 있게 다음 단계로 나아가세요!`
+                // 네트워크 오류 시 기본 조언 반환
+                const defaultAdvices = [
+                    `${exerciseData.completedSets}세트 완주! 숨트의 저항을 이겨내며 호흡근이 한층 강해졌습니다.`,
+                    `${exerciseData.exerciseTime} 동안의 집중적인 호흡 트레이닝, 수고하셨습니다!`,
+                    `호흡근육 강화 여정에서 또 한 걸음 전진하셨네요!`
                 ];
                 
-                // 랜덤하게 조언 선택
-                const randomIndex = Math.floor(Math.random() * enhancedAdvices.length);
-                return enhancedAdvices[randomIndex];
+                const randomIndex = Math.floor(Math.random() * defaultAdvices.length);
+                return {
+                    intensityAdvice: defaultAdvices[randomIndex],
+                    comprehensiveAdvice: "꾸준히 도전하는 의지가 정말 대단해요!"
+                };
             }
         }
 
-        // 화면 전환
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
@@ -1605,21 +1659,18 @@
             document.getElementById(screenId).classList.add('active');
         }
 
-        // 메인 화면으로 이동
         function goToMain() {
             showScreen('mainScreen');
             resetExercise();
             loadUserData();
         }
 
-        // 사용자 데이터 로드
         function loadUserData() {
             const stats = getLocalStats();
             displayUserStats(stats);
             displayHistory();
         }
 
-        // 사용자 통계 표시
         function displayUserStats(stats) {
             document.getElementById('totalExercises').textContent = stats.totalExercises;
             document.getElementById('consecutiveDays').textContent = stats.consecutiveDays;
@@ -1627,7 +1678,6 @@
             document.getElementById('totalBreaths').textContent = stats.totalBreaths;
         }
 
-        // 히스토리 표시 함수
         function displayHistory() {
             const historyList = document.getElementById('historyList');
             const history = getExerciseHistory();
@@ -1659,14 +1709,12 @@
             }).join('');
         }
 
-        // 운동 시작
         function startExercise() {
             resetExercise();
             showScreen('exerciseScreen');
             startCountdown();
         }
 
-        // 카운트다운 시작
         function startCountdown() {
             let count = 3;
             const countdownEl = document.getElementById('countdown');
@@ -1682,7 +1730,6 @@
             }, 1000);
         }
 
-        // 호흡운동 시작
         function startBreathing() {
             document.getElementById('countdownSection').style.display = 'none';
             document.getElementById('breathingSection').style.display = 'block';
@@ -1690,7 +1737,6 @@
             const circle = document.getElementById('breathingCircle');
             circle.className = 'breathing-circle exhale';
             
-            // 진행도 초기화
             initializeProgressIndicators();
             
             exerciseStartTime = new Date();
@@ -1700,14 +1746,12 @@
             }, 500);
         }
 
-        // 호흡 사이클 (숨트 프로토콜 적용: 3초-1초)
         function breathingCycle() {
             if (isPaused || isAborted) return;
 
             const circle = document.getElementById('breathingCircle');
             const circleText = document.getElementById('circleText');
 
-            // 진행도 업데이트
             updateProgressIndicators();
 
             if (breathingPhase === 'inhale') {
@@ -1717,7 +1761,7 @@
                 breathingTimer = setTimeout(() => {
                     breathingPhase = 'hold';
                     breathingCycle();
-                }, 3000); // 3초
+                }, 3000);
 
             } else if (breathingPhase === 'hold') {
                 circleText.textContent = '멈춤 (1초)';
@@ -1726,7 +1770,7 @@
                 breathingTimer = setTimeout(() => {
                     breathingPhase = 'exhale';
                     breathingCycle();
-                }, 1000); // 1초
+                }, 1000);
 
             } else if (breathingPhase === 'exhale') {
                 circleText.textContent = '날숨 (3초)';
@@ -1735,7 +1779,7 @@
                 breathingTimer = setTimeout(() => {
                     breathingPhase = 'exhale-hold';
                     breathingCycle();
-                }, 3000); // 3초
+                }, 3000);
 
             } else if (breathingPhase === 'exhale-hold') {
                 circleText.textContent = '멈춤 (1초)';
@@ -1749,7 +1793,7 @@
                         currentSet++;
                         currentBreath = 1;
                         
-                        if (currentSet > 2) { // 2세트로 변경
+                        if (currentSet > 2) {
                             completeExercise();
                         } else {
                             startRest();
@@ -1757,11 +1801,10 @@
                     } else {
                         breathingCycle();
                     }
-                }, 1000); // 1초
+                }, 1000);
             }
         }
 
-        // 휴식 시간 시작
         function startRest() {
             document.getElementById('breathingSection').style.display = 'none';
             document.getElementById('restSection').style.display = 'block';
@@ -1788,13 +1831,11 @@
             }, 1000);
         }
 
-        // 휴식 건너뛰기
         function skipRest() {
             clearInterval(restTimer);
             startNextSet();
         }
 
-        // 다음 세트 시작
         function startNextSet() {
             document.getElementById('restSection').style.display = 'none';
             document.getElementById('breathingSection').style.display = 'block';
@@ -1802,7 +1843,6 @@
             const circle = document.getElementById('breathingCircle');
             circle.className = 'breathing-circle exhale';
             
-            // 진행도 다시 초기화
             initializeProgressIndicators();
             
             setTimeout(() => {
@@ -1810,7 +1850,6 @@
             }, 500);
         }
 
-        // 운동 일시정지
         function pauseExercise() {
             isPaused = !isPaused;
             const button = event.target;
@@ -1825,7 +1864,6 @@
             }
         }
 
-        // 운동 완료 함수 (피드백 페이지로 이동)
         async function completeExercise() {
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
@@ -1834,27 +1872,23 @@
             const minutes = Math.floor(exerciseTime / 60);
             const seconds = exerciseTime % 60;
             
-            // 🔧 운동 데이터 저장 (저항 설정과 사용자 피드백 포함)
             window.exerciseData = {
                 exerciseTime: `${minutes}:${seconds.toString().padStart(2, '0')}`,
                 completedSets: isAborted ? Math.max(0, currentSet - 1) : 2,
                 completedBreaths: isAborted ? Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1)) : 20,
                 isAborted: isAborted,
-                resistanceSettings: { ...resistanceSettings }, // 🆕 저항 설정 포함
-                userFeedback: userFeedback // 🆕 사용자 피드백 포함 (나중에 설정됨)
+                resistanceSettings: { ...resistanceSettings },
+                userFeedback: userFeedback
             };
 
-            // 🔧 피드백 페이지로 이동 (모든 경우)
             setTimeout(() => {
                 showFeedbackScreen();
             }, 1000);
         }
 
-        // 🔧 결과 화면 표시 및 AI 분석 시작 (저항설정 + 피드백 포함)
         async function showResultScreen() {
             try {
                 console.log('📋 결과 화면 표시 시작');
-                console.log('📊 운동 데이터 확인:', window.exerciseData);
                 
                 showScreen('resultScreen');
                 
@@ -1868,26 +1902,34 @@
                 document.getElementById('intensityAdvice').textContent = '강도 조절 분석을 진행하고 있습니다...';
                 document.getElementById('comprehensiveAdvice').textContent = 'AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...';
                 
-                // 🔧 운동 데이터에 사용자 피드백 추가
                 const exerciseDataWithFeedback = {
                     ...window.exerciseData,
-                    userFeedback: userFeedback // 🆕 선택된 피드백 추가
+                    userFeedback: userFeedback
                 };
                 
-                console.log('🎯 AI 분석용 최종 데이터:', exerciseDataWithFeedback);
+                console.log('🎯 최종 운동 데이터:', exerciseDataWithFeedback);
                 
-                // 🔧 AI 조언 생성 (저항 설정과 피드백 포함)
+                // 🔧 Google Sheets에 데이터 저장 (백그라운드에서 실행)
+                saveToSheets(exerciseDataWithFeedback).then(sheetsResult => {
+                    if (sheetsResult.success) {
+                        console.log('✅ Google Sheets 저장 완료');
+                    } else {
+                        console.log('⚠️ Google Sheets 저장 실패, 로컬만 저장됨');
+                    }
+                }).catch(error => {
+                    console.error('🚨 Sheets 저장 에러:', error);
+                });
+                
+                // AI 조언 생성
                 const aiAdvice = await getTrainerAdvice(exerciseDataWithFeedback);
                 
                 console.log('🤖 AI 조언 결과:', aiAdvice);
                 
                 // 통계 업데이트
                 const updatedStats = updateLocalStats(window.exerciseData);
-                addExerciseHistory(window.exerciseData);
+                addExerciseHistory(exerciseDataWithFeedback);
                 
-                // 🔧 AI 조언 구조에 따른 처리
                 if (typeof aiAdvice === 'object' && aiAdvice.intensityAdvice && aiAdvice.comprehensiveAdvice) {
-                    // 객체 구조인 경우
                     handleExerciseResult({
                         success: true,
                         intensityAdvice: aiAdvice.intensityAdvice,
@@ -1895,7 +1937,6 @@
                         stats: updatedStats
                     });
                 } else if (typeof aiAdvice === 'string') {
-                    // 단일 문자열인 경우 (기존 호환성)
                     handleExerciseResult({
                         success: true,
                         intensityAdvice: aiAdvice,
@@ -1911,18 +1952,15 @@
             } catch (error) {
                 console.error('❌ showResultScreen 오류:', error);
                 
-                // 에러 발생 시 기본 메시지 표시
-                document.getElementById('intensityAdvice').textContent = '분석을 불러오는 중 문제가 발생했습니다. 기본 조언을 표시합니다.';
+                document.getElementById('intensityAdvice').textContent = '분석을 불러오는 중 문제가 발생했습니다.';
                 document.getElementById('comprehensiveAdvice').textContent = '네트워크 연결을 확인하고 다시 시도해주세요.';
                 
-                // 기본 통계 업데이트는 계속 진행
                 const updatedStats = updateLocalStats(window.exerciseData);
                 addExerciseHistory(window.exerciseData);
                 displayAchievementBadges(updatedStats);
             }
         }
 
-        // 운동 결과 처리 (두 부분의 조언으로 분리)
         function handleExerciseResult(result) {
             document.getElementById('intensityAdvice').textContent = result.intensityAdvice;
             document.getElementById('comprehensiveAdvice').textContent = result.comprehensiveAdvice;
@@ -1934,7 +1972,6 @@
             displayAchievementBadges(result.stats);
         }
 
-        // 성취 배지 표시 (2세트 기준으로 수정)
         function displayAchievementBadges(stats) {
             const badgesContainer = document.getElementById('achievementBadges');
             const badges = [];
@@ -1948,7 +1985,7 @@
             if (stats.consecutiveDays >= 7) {
                 badges.push('🔥 일주일 연속 트레이닝!');
             }
-            if (stats.averageSets >= 1.5) { // 2세트 기준으로 조정
+            if (stats.averageSets >= 1.5) {
                 badges.push('⭐ 꾸준한 호흡 트레이너!');
             }
             
@@ -1957,7 +1994,6 @@
             ).join('');
         }
 
-        // 운동 상태 초기화 (2세트로 수정)
         function resetExercise() {
             currentSet = 1;
             currentBreath = 1;
@@ -1973,13 +2009,12 @@
             document.getElementById('restSection').style.display = 'none';
         }
 
-        // 페이지 로드 시 사용자 데이터 및 저항 설정 로드
         window.onload = function() {
             loadUserData();
-            loadResistanceSettings(); // 🆕 저항 설정 로드
+            loadResistanceSettings();
         };
 
-        // 🔧 Service Worker 등록
+        // Service Worker 등록
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js')

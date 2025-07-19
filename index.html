@@ -1032,22 +1032,23 @@
     <div class="container">
         <!-- 메인 화면 -->
         <div id="mainScreen" class="screen active">
-            <h1>숨트레이너</h1>
-            <p class="subtitle">숨트와 함께하는 호흡근육 트레이닝</p>
+            <h2>숨트레이너</h2>
+            <p class="subtitle">숨트와 함께하는 숨 트레이닝</p>
             
             <div class="user-info">
                 <div class="user-badge">💪 AI 숨트레이너</div>
-                <div>호흡근육 트레이닝 가이드</div>
             </div>
 
             <!-- 🔧 중요 안내 정렬 개선 -->
             <div class="device-guide">
                 <div class="important-notice">
                     <span class="important-icon">🚨</span>
-                    <span class="important-text">숨트 기구를 통해서만 입으로 호흡하세요</span>
+                    <span class="important-text">숨트를 통해서만 입으로 호흡하세요</span>
                 </div>
-                <p>• 숨트 기구를 입에 물고 준비하세요</p>
-                <p>• 편안한 자세로 앉거나 서서 트레이닝하세요</p>
+                <p>1. 숨트의 저항 강도를 조절하세요 </p>
+                <p>2. 같은 저항 강도를 아래 입력하세요 </p>
+                <p>3. 숨트를 입에 물고 준비하세요</p>
+                <p>4. 편안한 자세로 앉거나 서서 트레이닝하세요</p>
             </div>
 
             <!-- 🆕 모바일 최적화된 저항 강도 설정 -->
@@ -1055,7 +1056,7 @@
                 <h4>🫁 저항 강도 설정</h4>
                 <div class="resistance-controls">
                     <div class="resistance-control">
-                        <label>들숨(Inhale)</label>
+                        <label>들숨 (Inhale)</label>
                         <div class="resistance-selector">
                             <button onclick="adjustResistance('inhale', -1)">−</button>
                             <span id="inhaleLevel">1</span>
@@ -1073,7 +1074,7 @@
                         </div>
                     </div>
                     <div class="resistance-control">
-                        <label>날숨(Exhale)</label>
+                        <label>날숨 (Exhale)</label>
                         <div class="resistance-selector">
                             <button onclick="adjustResistance('exhale', -1)">−</button>
                             <span id="exhaleLevel">1</span>
@@ -1103,7 +1104,7 @@
             
             <!-- 📱 모바일 최적화된 사용자 통계 -->
             <div class="user-stats">
-                <h3>나의 호흡근육 트레이닝 통계</h3>
+                <h3>나의 숨 트레이닝 통계</h3>
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-value" id="totalExercises">0</div>

@@ -1263,7 +1263,7 @@
 
     <script>
         // Apps Script URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkLR2QmvJKlfN-OLFOPPk_0gGz4BdqBAO2Fi1f0QNHff3cN0WooUNvV_2w-KjfM921rQ/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytZjJJB6d7az0VPZhVbKMiGJmhvhNB4pAA05w1AHruKL35_nH-dnGlzr-6xSXyiyh4oQ/exec';
 
         // 전역 변수
         let currentSet = 1;
@@ -1542,56 +1542,25 @@
             return stats;
         }
 
-        // 🔧 수정된 AI 숨트레이너 조언 (숨트 전용)
+        // 🔧 수정된 AI 숨트레이너 조언 (Apps Script URL 호출 + 저항설정/피드백 전달)
         async function getTrainerAdvice(exerciseData) {
             try {
-                const userStats = getLocalStats();
+                console.log('🤖 AI 조언 요청 시작 - Apps Script 호출');
+                console.log('📊 전달할 운동 데이터:', exerciseData);
                 
-                // 🔧 개선된 숨트 전용 AI 프롬프트 (창의성 증대, 글자 수 확장)
-                const suumtPrompt = `당신은 숨트레이너 앱의 전문 AI 호흡 코치입니다. 사용자의 개별 트레이닝 결과를 바탕으로 창의적이고 개인화된 조언을 해주세요.
-
-### 🏋️‍♂️ 숨트(SUUMT) 호흡운동기구 정보:
-- 들숨과 날숨을 동시에 트레이닝할 수 있는 세계 유일한 호흡운동기구
-- 저항 조절 가능 (들숨 6단계, 날숨 5단계)
-- 올바른 호흡법: 반드시 기구를 통한 입 호흡만 허용 (코 호흡 절대 금지)
-- 표준 루틴: 들숨 4초 → 유지 2초 → 날숨 4초 → 유지 2초
-- 권장 세션: 3세트 × 10회, 세트간 120초 휴식
-
-### 📊 오늘의 트레이닝 결과:
-- 완료 세트: ${exerciseData.completedSets}/3세트
-- 완료 호흡 횟수: ${exerciseData.completedBreaths}/30회  
-- 소요 시간: ${exerciseData.exerciseTime}
-- 완주 여부: ${exerciseData.isAborted ? '중간 중단' : '완주 성공'}
-
-### 👤 사용자 프로필:
-- 총 트레이닝 경험: ${userStats.totalExercises}회
-- 연속 트레이닝: ${userStats.consecutiveDays}일 스트릭
-- 평균 완주율: ${userStats.averageSets}/3 세트
-
-### 💬 조언 가이드라인:
-1. **개인화**: 사용자의 구체적인 성과와 히스토리를 반영
-2. **격려**: 성취한 부분을 구체적으로 칭찬  
-3. **실용성**: 다음 트레이닝을 위한 구체적인 팁이나 개선점
-4. **동기부여**: 장기적 목표나 호흡근 강화 여정의 의미
-5. **다양성**: 매번 새로운 관점과 표현으로 접근
-6. **적절한 길이**: 150-250자 내외의 충분히 상세한 조언
-
-⚠️ 주의사항: 
-- 절대 "코로 호흡", "코 호흡"을 언급하지 마세요
-- 숨트는 반드시 입으로만 호흡하는 기구입니다
-- 창의적이고 다양한 표현을 사용하세요
-- 뻔한 상투적 문구는 피하세요
-
-개인화되고 창의적인 조언을 200자 내외로 제공해주세요.`;
-
+                // 🔧 Apps Script로 GET 요청 (저항 설정과 사용자 피드백 포함)
                 const params = new URLSearchParams({
                     function: 'getAIAdvice',
                     exerciseTime: exerciseData.exerciseTime,
                     completedSets: exerciseData.completedSets.toString(),
                     completedBreaths: exerciseData.completedBreaths.toString(),
                     isAborted: exerciseData.isAborted.toString(),
-                    customPrompt: suumtPrompt
+                    userFeedback: exerciseData.userFeedback || '', // 🆕 사용자 피드백 추가
+                    inhaleResistance: exerciseData.resistanceSettings ? exerciseData.resistanceSettings.inhale.toString() : '1', // 🆕 들숨 저항 추가
+                    exhaleResistance: exerciseData.resistanceSettings ? exerciseData.resistanceSettings.exhale.toString() : '1' // 🆕 날숨 저항 추가
                 });
+                
+                console.log('🌐 요청 파라미터:', params.toString());
                 
                 const response = await fetch(`${SCRIPT_URL}?${params}`);
                 
@@ -1600,32 +1569,43 @@
                 }
                 
                 const result = await response.json();
+                console.log('📦 Apps Script 응답:', result);
                 
-                if (result.success && result.advice) {
-                    return result.advice;
-                } else {
-                    throw new Error(result.message || '조언 생성 실패');
-                }
+                if (result.success) {
+                    // 🔧 Apps Script에서 객체 구조로 반환된 경우
+                    if (result.intensityAdvice && result.comprehensiveAdvice) {
+                        return {
+                            intensityAdvice: result.intensityAdvice,
+                            comprehensiveAdvice: result.comprehensiveAdvice
+                        };
+                    }
+                    // 🔧 단일 문자열로 반환된 경우 (기존 호환성)
+                    else if (result.advice) {
+                        return result.advice;
+                    }
+                } 
+                
+                throw new Error(result.message || 'AI 조언 생성 실패');
                 
             } catch (error) {
-                console.error('AI 조언 생성 오류:', error);
+                console.error('🚨 AI 조언 요청 오류:', error);
                 
-                // 🔧 수정된 다양한 기본 조언 (코 호흡 언급 제거, 창의성 증대)
+                // 🔧 네트워크 오류 시 기본 조언 반환
                 const enhancedAdvices = [
-                    `${exerciseData.completedSets}세트 완주! 숨트의 저항을 이겨내며 호흡근이 한층 강해졌습니다. 매번 기구를 통한 깊은 호흡으로 폐활량이 늘어나고 있어요. ${userStats.consecutiveDays}일 연속 도전하는 의지가 정말 대단해요!`,
+                    `${exerciseData.completedSets}세트 완주! 숨트의 저항을 이겨내며 호흡근이 한층 강해졌습니다. 매번 기구를 통한 깊은 호흡으로 폐활량이 늘어나고 있어요. 꾸준히 도전하는 의지가 정말 대단해요!`,
                     
                     `${exerciseData.exerciseTime} 동안의 집중적인 호흡 트레이닝, 수고하셨습니다! 숨트의 양방향 저항 시스템으로 흡기근과 호기근이 균형있게 발달하고 있어요. 개인 맞춤 저항 단계로 꾸준히 진행하시면 더 큰 변화를 경험하실 거예요.`,
                     
-                    `호흡근육 강화 여정에서 또 한 걸음 전진하셨네요! 숨트만의 특별한 저항 트레이닝으로 일상의 숨가쁨이 줄어들고 체력이 향상되고 있습니다. 총 ${userStats.totalExercises}회의 경험이 쌓이며 호흡 효율성이 크게 개선되었어요.`,
+                    `호흡근육 강화 여정에서 또 한 걸음 전진하셨네요! 숨트만의 특별한 저항 트레이닝으로 일상의 숨가쁨이 줄어들고 체력이 향상되고 있습니다. 지금까지의 경험이 쌓이며 호흡 효율성이 크게 개선되었어요.`,
                     
                     `${exerciseData.completedBreaths}번의 의식적인 호흡으로 몸과 마음이 한층 건강해졌습니다. 숨트의 과학적 설계가 당신의 호흡 패턴을 최적화하고 있어요. 지금까지의 꾸준함이 앞으로 더 큰 성과로 이어질 것입니다!`,
                     
-                    `완벽한 세션이었습니다! 기구를 통한 체계적인 호흡 훈련으로 폐기능이 점진적으로 향상되고 있어요. ${userStats.consecutiveDays}일간의 성실한 도전이 호흡근육의 힘과 지구력을 크게 끌어올렸습니다. 자신감 있게 다음 단계로 나아가세요!`
+                    `완벽한 세션이었습니다! 기구를 통한 체계적인 호흡 훈련으로 폐기능이 점진적으로 향상되고 있어요. 성실한 도전이 호흡근육의 힘과 지구력을 크게 끌어올렸습니다. 자신감 있게 다음 단계로 나아가세요!`
                 ];
                 
-                // 사용자 상황에 따른 인덱스 계산으로 다양성 확보
-                const index = (userStats.totalExercises + exerciseData.completedSets) % enhancedAdvices.length;
-                return enhancedAdvices[index];
+                // 랜덤하게 조언 선택
+                const randomIndex = Math.floor(Math.random() * enhancedAdvices.length);
+                return enhancedAdvices[randomIndex];
             }
         }
 
@@ -1866,13 +1846,14 @@
             const minutes = Math.floor(exerciseTime / 60);
             const seconds = exerciseTime % 60;
             
-            // 운동 데이터 저장
+            // 🔧 운동 데이터 저장 (저항 설정과 사용자 피드백 포함)
             window.exerciseData = {
                 exerciseTime: `${minutes}:${seconds.toString().padStart(2, '0')}`,
                 completedSets: isAborted ? Math.max(0, currentSet - 1) : 2,
                 completedBreaths: isAborted ? Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1)) : 20,
                 isAborted: isAborted,
-                resistanceSettings: { ...resistanceSettings }
+                resistanceSettings: { ...resistanceSettings }, // 🆕 저항 설정 포함
+                userFeedback: userFeedback // 🆕 사용자 피드백 포함 (나중에 설정됨)
             };
 
             // 🔧 피드백 페이지로 이동 (모든 경우)
@@ -1881,7 +1862,7 @@
             }, 1000);
         }
 
-        // 🆕 결과 화면 표시 및 AI 분석 시작 (에러 수정)
+        // 🔧 결과 화면 표시 및 AI 분석 시작 (저항설정 + 피드백 포함)
         async function showResultScreen() {
             try {
                 console.log('📋 결과 화면 표시 시작');
@@ -1902,12 +1883,12 @@
                 // 🔧 운동 데이터에 사용자 피드백 추가
                 const exerciseDataWithFeedback = {
                     ...window.exerciseData,
-                    userFeedback: userFeedback
+                    userFeedback: userFeedback // 🆕 선택된 피드백 추가
                 };
                 
                 console.log('🎯 AI 분석용 최종 데이터:', exerciseDataWithFeedback);
                 
-                // AI 조언 생성 (피드백 포함)
+                // 🔧 AI 조언 생성 (저항 설정과 피드백 포함)
                 const aiAdvice = await getTrainerAdvice(exerciseDataWithFeedback);
                 
                 console.log('🤖 AI 조언 결과:', aiAdvice);
@@ -1916,12 +1897,26 @@
                 const updatedStats = updateLocalStats(window.exerciseData);
                 addExerciseHistory(window.exerciseData);
                 
-                handleExerciseResult({
-                    success: true,
-                    intensityAdvice: aiAdvice.intensityAdvice,
-                    comprehensiveAdvice: aiAdvice.comprehensiveAdvice,
-                    stats: updatedStats
-                });
+                // 🔧 AI 조언 구조에 따른 처리
+                if (typeof aiAdvice === 'object' && aiAdvice.intensityAdvice && aiAdvice.comprehensiveAdvice) {
+                    // 객체 구조인 경우
+                    handleExerciseResult({
+                        success: true,
+                        intensityAdvice: aiAdvice.intensityAdvice,
+                        comprehensiveAdvice: aiAdvice.comprehensiveAdvice,
+                        stats: updatedStats
+                    });
+                } else if (typeof aiAdvice === 'string') {
+                    // 단일 문자열인 경우 (기존 호환성)
+                    handleExerciseResult({
+                        success: true,
+                        intensityAdvice: aiAdvice,
+                        comprehensiveAdvice: "AI 트레이너가 당신의 꾸준한 노력을 응원합니다!",
+                        stats: updatedStats
+                    });
+                } else {
+                    throw new Error('AI 조언 형식 오류');
+                }
                 
                 console.log('✅ 결과 화면 처리 완료');
                 

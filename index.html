@@ -1371,6 +1371,162 @@
             line-height: 1.4;
         }
 
+        /* 🔔 알림 권한 가이드 모달 */
+        .permission-guide-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .permission-guide-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .permission-guide-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 380px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: scaleIn 0.3s ease-out;
+            text-align: center;
+        }
+
+        .permission-guide-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .permission-guide-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .permission-guide-text {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .guide-steps {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .guide-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .guide-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 0.8rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .step-text {
+            color: #333;
+            flex: 1;
+        }
+
+        .browser-detection {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .browser-name {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .permission-guide-buttons {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .guide-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .guide-btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .guide-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .guide-btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .guide-btn-secondary:hover {
+            background: #e9e9e9;
+            transform: translateY(-1px);
+        }
+
+        .retry-info {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #155724;
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -1391,6 +1547,38 @@
         </div>
         
         <div class="progress-bar"></div>
+    </div>
+
+    <!-- 🔔 알림 권한 가이드 모달 -->
+    <div id="permissionGuideModal" class="permission-guide-modal">
+        <div class="permission-guide-content">
+            <div class="permission-guide-icon">🔔</div>
+            <h3 class="permission-guide-title">알림 권한이 필요해요!</h3>
+            <p class="permission-guide-text">
+                AI 트레이너가 정시에 운동을 안내해드리려면<br>
+                브라우저 알림 권한이 필요합니다.
+            </p>
+
+            <div class="browser-detection" id="browserGuide">
+                <div class="browser-name" id="browserName">Chrome 브라우저</div>
+                <div class="guide-steps" id="guideSteps">
+                    <!-- 브라우저별 가이드가 여기에 삽입됩니다 -->
+                </div>
+            </div>
+
+            <div class="retry-info">
+                💡 아래 버튼을 눌러 알림 권한을 다시 요청할 수 있어요!
+            </div>
+
+            <div class="permission-guide-buttons">
+                <button class="guide-btn guide-btn-primary" onclick="retryNotificationPermission()">
+                    다시 시도하기
+                </button>
+                <button class="guide-btn guide-btn-secondary" onclick="closePermissionGuide()">
+                    나중에
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- 🔔 알림 설정 모달 -->
@@ -2642,7 +2830,125 @@
             return false;
         }
 
-        // 알림 토글
+        // 브라우저별 설정 가이드
+        const browserGuides = {
+            chrome: {
+                name: "Chrome 브라우저",
+                steps: [
+                    "주소창 왼쪽의 🔒 아이콘을 클릭하세요",
+                    "'알림'을 찾아 '허용'으로 변경하세요", 
+                    "페이지를 새로고침하고 다시 시도해보세요"
+                ]
+            },
+            firefox: {
+                name: "Firefox 브라우저", 
+                steps: [
+                    "주소창 왼쪽의 🛡️ 아이콘을 클릭하세요",
+                    "'권한' → '알림'을 허용으로 설정하세요",
+                    "페이지를 새로고침하고 다시 시도해보세요"
+                ]
+            },
+            safari: {
+                name: "Safari 브라우저",
+                steps: [
+                    "Safari → 환경설정 → 웹사이트를 열어주세요",
+                    "'알림' 탭에서 현재 사이트를 찾으세요",
+                    "'허용'으로 설정하고 페이지를 새로고침하세요"
+                ]
+            },
+            edge: {
+                name: "Edge 브라우저",
+                steps: [
+                    "주소창 왼쪽의 🔒 아이콘을 클릭하세요",
+                    "'알림'을 찾아 '허용'으로 변경하세요",
+                    "페이지를 새로고침하고 다시 시도해보세요"
+                ]
+            },
+            default: {
+                name: "브라우저",
+                steps: [
+                    "주소창 근처의 자물쇠 아이콘을 찾아 클릭하세요",
+                    "'알림' 또는 'Notifications' 설정을 찾으세요",
+                    "'허용' 또는 'Allow'로 변경하고 새로고침하세요"
+                ]
+            }
+        };
+
+        // 브라우저 감지
+        function detectBrowser() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            if (userAgent.includes('chrome') && !userAgent.includes('edge')) return 'chrome';
+            if (userAgent.includes('firefox')) return 'firefox';
+            if (userAgent.includes('safari') && !userAgent.includes('chrome')) return 'safari';
+            if (userAgent.includes('edge')) return 'edge';
+            return 'default';
+        }
+
+        // 권한 가이드 모달 열기
+        function showPermissionGuide() {
+            const browser = detectBrowser();
+            const guide = browserGuides[browser];
+            
+            document.getElementById('browserName').textContent = guide.name;
+            
+            const stepsContainer = document.getElementById('guideSteps');
+            stepsContainer.innerHTML = guide.steps.map((step, index) => `
+                <div class="guide-step">
+                    <div class="step-number">${index + 1}</div>
+                    <div class="step-text">${step}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('permissionGuideModal').classList.add('show');
+        }
+
+        // 권한 가이드 모달 닫기
+        function closePermissionGuide() {
+            document.getElementById('permissionGuideModal').classList.remove('show');
+        }
+
+        // 알림 권한 재시도
+        async function retryNotificationPermission() {
+            closePermissionGuide();
+            
+            // 잠시 대기 후 권한 요청
+            setTimeout(async () => {
+                const permission = await requestNotificationPermission();
+                if (permission) {
+                    // 성공 시 알림 활성화
+                    notificationsEnabled = true;
+                    document.getElementById('notificationToggle').classList.add('active');
+                    document.getElementById('timeSettings').style.display = 'block';
+                    saveNotificationSettings();
+                    scheduleNotifications();
+                    updateNotificationStatus();
+                    
+                    // 성공 알림
+                    showSuccessMessage();
+                } else {
+                    // 실패 시 다시 가이드 표시
+                    setTimeout(() => showPermissionGuide(), 500);
+                }
+            }, 300);
+        }
+
+        // 성공 메시지 표시
+        function showSuccessMessage() {
+            const statusDiv = document.getElementById('notificationStatus');
+            statusDiv.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+            statusDiv.innerHTML = `
+                <div class="status-icon">🎉</div>
+                <div class="status-text">알림이 성공적으로 활성화되었습니다!</div>
+            `;
+            
+            // 3초 후 원래 상태로 복원
+            setTimeout(() => {
+                statusDiv.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                updateNotificationStatus();
+            }, 3000);
+        }
+
+        // 알림 토글 (수정된 버전)
         async function toggleNotifications() {
             const toggle = document.getElementById('notificationToggle');
             const timeSettings = document.getElementById('timeSettings');
@@ -2656,8 +2962,10 @@
                     timeSettings.style.display = 'block';
                     saveNotificationSettings();
                     scheduleNotifications();
+                    showSuccessMessage();
                 } else {
-                    alert('알림 권한이 필요합니다. 브라우저 설정에서 알림을 허용해주세요.');
+                    // 권한이 거부되면 가이드 모달 표시
+                    showPermissionGuide();
                 }
             } else {
                 // 알림 끄기

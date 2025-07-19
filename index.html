@@ -478,11 +478,11 @@
             font-weight: 500;
         }
 
+        /* 🌊 개선된 호흡 원 애니메이션 */
         .breathing-circle {
             width: 180px;
             height: 180px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #667eea, #764ba2) !important;
             margin: 1.5rem auto;
             display: flex;
             align-items: center;
@@ -490,32 +490,174 @@
             color: white !important;
             font-size: 1.1rem;
             font-weight: bold;
-            box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: visible;
             transform: scale(0.7);
+            
+            /* 🎨 기본 그라데이션 (날숨 상태) */
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #667eea 100%);
+            box-shadow: 0 0 30px rgba(79, 172, 254, 0.4);
+            
+            /* 🌊 부드러운 트랜지션 */
+            transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* 🌊 파동 효과 - 첫 번째 링 */
+        .breathing-circle::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+
+        /* 🌊 파동 효과 - 두 번째 링 */
+        .breathing-circle::after {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: -40px;
+            right: -40px;
+            bottom: -40px;
+            border-radius: 50%;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transform: scale(0.6);
+            pointer-events: none;
+        }
+
+        /* 🫁 들숨 애니메이션 - 파란색에서 따뜻한 색으로 */
         .breathing-circle.inhale {
             transform: scale(1.2);
-            box-shadow: 0 0 50px rgba(102, 126, 234, 0.6);
-            transition: all 4s ease;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 30%, #ce4d7a 60%, #a855f7 100%);
+            box-shadow: 
+                0 0 50px rgba(255, 107, 107, 0.6),
+                0 0 100px rgba(238, 90, 111, 0.3);
+            transition: all 4s cubic-bezier(0.2, 0, 0.2, 1);
         }
 
-        .breathing-circle.hold {
+        /* 🌊 들숨 시 파동 효과 */
+        .breathing-circle.inhale::before {
+            opacity: 0.8;
             transform: scale(1.2);
-            box-shadow: 0 0 50px rgba(102, 126, 234, 0.6);
-            transition: none;
+            border-color: rgba(255, 107, 107, 0.5);
+            animation: breatheRipple1 4s ease-out;
         }
 
+        .breathing-circle.inhale::after {
+            opacity: 0.6;
+            transform: scale(1.4);
+            border-color: rgba(238, 90, 111, 0.3);
+            animation: breatheRipple2 4s ease-out 0.3s;
+        }
+
+        /* 🫁 날숨 애니메이션 - 따뜻한 색에서 파란색으로 */
         .breathing-circle.exhale {
             transform: scale(0.7);
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
-            transition: all 4s ease;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #667eea 100%);
+            box-shadow: 
+                0 0 20px rgba(79, 172, 254, 0.4),
+                0 0 40px rgba(0, 242, 254, 0.2);
+            transition: all 4s cubic-bezier(0.4, 0, 0.8, 1);
+        }
+
+        /* 🌊 날숨 시 파동 효과 */
+        .breathing-circle.exhale::before {
+            opacity: 0.6;
+            transform: scale(0.9);
+            border-color: rgba(79, 172, 254, 0.4);
+            animation: exhaleRipple1 4s ease-in;
+        }
+
+        .breathing-circle.exhale::after {
+            opacity: 0.4;
+            transform: scale(0.7);
+            border-color: rgba(0, 242, 254, 0.2);
+            animation: exhaleRipple2 4s ease-in 0.2s;
+        }
+
+        /* 🛑 멈춤 상태 - 고요한 느낌 */
+        .breathing-circle.hold {
+            transform: scale(1.2);
+            background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 50%, #7c3aed 100%);
+            box-shadow: 
+                0 0 60px rgba(168, 85, 247, 0.7),
+                inset 0 0 30px rgba(139, 92, 246, 0.3);
+            transition: none;
         }
 
         .breathing-circle.exhale-hold {
             transform: scale(0.7);
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
+            box-shadow: 
+                0 0 15px rgba(14, 165, 233, 0.5),
+                inset 0 0 20px rgba(2, 132, 199, 0.3);
             transition: none;
+        }
+
+        /* 🌊 파동 애니메이션 키프레임 */
+        @keyframes breatheRipple1 {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        @keyframes breatheRipple2 {
+            0% {
+                transform: scale(0.6);
+                opacity: 0;
+            }
+            40% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        @keyframes exhaleRipple1 {
+            0% {
+                transform: scale(1.1);
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+        }
+
+        @keyframes exhaleRipple2 {
+            0% {
+                transform: scale(1.3);
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
         }
 
         .countdown {
@@ -668,13 +810,15 @@
         .result-section h4 {
             color: #333 !important;
             margin-bottom: 0.8rem;
-            font-size: 1.1rem;
+            font-size: 1.2rem; /* 🎯 개선: 1.1rem → 1.2rem */
+            font-weight: 600;
         }
 
         .result-section p {
             color: #555 !important;
             line-height: 1.6;
-            font-size: 0.9rem;
+            font-size: 1.1rem; /* 🎯 개선: 0.9rem → 1.1rem */
+            font-weight: 500;
         }
 
         .intensity-advice {
@@ -887,6 +1031,16 @@
             }
         }
 
+        /* 🎨 접근성 - 애니메이션 민감성 사용자용 */
+        @media (prefers-reduced-motion: reduce) {
+            .breathing-circle,
+            .breathing-circle::before,
+            .breathing-circle::after {
+                animation: none !important;
+                transition: transform 0.3s ease !important;
+            }
+        }
+
         /* 📱 모바일 최적화 미디어 쿼리 */
         @media (max-width: 480px) {
             .container {
@@ -970,6 +1124,14 @@
 
             .feedback-desc {
                 font-size: 0.75rem;
+            }
+
+            .result-section p {
+                font-size: 1rem; /* 모바일에서도 읽기 쉽게 */
+            }
+            
+            .result-section h4 {
+                font-size: 1.1rem;
             }
         }
 
@@ -1242,7 +1404,7 @@
 
     <script>
         // Apps Script URL (AI 조언만 사용)
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqrXjUSto2eKrbhZWk44HnZw90iGJC06ZIu1ZBSiJE3jaOfHE0BOTVFfttOaGNR2RbYg/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxQAG3BUMoVhyDqoNmwUGGcrAbh0QK5xQSJX04brSmv56uP-5Lfdfr9wsveNyHuJ4EbA/exec';
 
         // 전역 변수
         let currentSet = 1;
@@ -1260,6 +1422,46 @@
         };
         
         let userFeedback = null;
+
+        // 🎯 AI 조언 텍스트 단축 함수 (즉시 개선)
+        function shortenAdviceText(longText) {
+            // 긴 텍스트를 핵심 메시지로 단축
+            const shortPatterns = {
+                // 강도 관련
+                '들숨.*날숨.*1단계.*올려|올려.*1단계': '💪 다음엔 강도를 1단계씩 올려보세요!',
+                '들숨.*날숨.*낮춰|낮춰.*강도': '🛡️ 강도를 1단계 낮춰서 안전하게!',
+                '현재.*강도.*적절|딱.*좋|적당': '✅ 현재 강도가 딱 좋아요!',
+                '무리하지.*마시고|안전': '😌 무리하지 마시고 천천히!',
+                '꾸준함이.*중요|꾸준': '🎯 꾸준함이 가장 중요해요!',
+                
+                // 완주 관련
+                '완주.*수고|완료.*축하': '🎉 완주 성공! 정말 멋져요!',
+                '중단.*괜찮|포기.*마음': '💙 중단해도 괜찮아요. 다음에 도전!',
+                '호흡근.*강해|발달': '💪 호흡근이 점점 강해지고 있어요!',
+                '꾸준히.*트레이닝': '🏃‍♂️ 꾸준한 트레이닝이 최고예요!',
+                
+                // 격려 메시지
+                '대단.*발전': '🌟 정말 대단한 발전이에요!',
+                '의지.*멋져': '💪 도전하는 의지가 멋져요!',
+                '효과적': '✨ 효과적인 트레이닝이었어요!',
+                '발전.*경험': '📈 꾸준한 발전을 경험하세요!',
+            };
+            
+            // 패턴 매칭으로 단축
+            for (const [pattern, shortMsg] of Object.entries(shortPatterns)) {
+                if (new RegExp(pattern, 'i').test(longText)) {
+                    return shortMsg;
+                }
+            }
+            
+            // 매칭되지 않으면 첫 30자 + 이모지
+            if (longText.length > 50) {
+                const truncated = longText.substring(0, 30).trim();
+                return '💪 ' + truncated + '...';
+            }
+            
+            return '🎯 ' + longText;
+        }
 
         // 저항 설정 관리 함수들
         function loadResistanceSettings() {
@@ -1885,8 +2087,12 @@
         }
 
         function handleExerciseResult(result) {
-            document.getElementById('intensityAdvice').textContent = result.intensityAdvice;
-            document.getElementById('comprehensiveAdvice').textContent = result.comprehensiveAdvice;
+            // 🎯 AI 조언 단축 적용
+            const shortIntensityAdvice = shortenAdviceText(result.intensityAdvice);
+            const shortComprehensiveAdvice = shortenAdviceText(result.comprehensiveAdvice);
+            
+            document.getElementById('intensityAdvice').textContent = shortIntensityAdvice;
+            document.getElementById('comprehensiveAdvice').textContent = shortComprehensiveAdvice;
             
             const stats = result.stats;
             document.getElementById('updatedStats').textContent = 

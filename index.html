@@ -671,10 +671,22 @@
             font-size: 1.2rem;
         }
 
+        /* 🎯 AI 조언 가독성 개선 */
         .result-section p {
             color: #555 !important;
-            line-height: 1.6;
-            font-size: 1.1rem;
+            line-height: 1.8 !important;
+            font-size: 1rem !important;
+            font-weight: 400 !important;
+        }
+
+        .result-section strong {
+            color: #333 !important;
+            font-weight: 600 !important;
+        }
+
+        /* 이모지와 텍스트 간격 조정 */
+        .result-section p::first-line {
+            font-weight: 500;
         }
 
         .intensity-advice {
@@ -1242,7 +1254,7 @@
 
     <script>
         // Apps Script URL (AI 조언만 사용)
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqrXjUSto2eKrbhZWk44HnZw90iGJC06ZIu1ZBSiJE3jaOfHE0BOTVFfttOaGNR2RbYg/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_2xzbQ_X3HRCmBv5PBjk9edD14QF1AVja4U1eDf1sAbQKFUUPJA5rYamWVtuz6E_hMQ/exec';
 
         // 전역 변수
         let currentSet = 1;
@@ -1260,6 +1272,116 @@
         };
         
         let userFeedback = null;
+
+        // 🎯 피드백 히스토리 관리 함수 (스마트 분석용)
+        function getFeedbackHistory() {
+            return JSON.parse(localStorage.getItem('feedbackHistory') || '[]');
+        }
+
+        function addFeedbackHistory(feedback, resistanceSettings) {
+            const history = getFeedbackHistory();
+            const today = new Date().toDateString();
+            const currentHour = new Date().getHours();
+            const timeOfDay = currentHour < 14 ? 'morning' : 'afternoon'; // 오전(14시 이전)/오후 구분
+            
+            const newRecord = {
+                date: today,
+                timeOfDay: timeOfDay,
+                feedback: feedback,
+                inhaleLevel: resistanceSettings.inhale,
+                exhaleLevel: resistanceSettings.exhale,
+                timestamp: new Date().toISOString()
+            };
+            
+            history.unshift(newRecord);
+            
+            // 최근 60개 기록만 유지 (하루 2번 × 30일)
+            if (history.length > 60) {
+                history.splice(60);
+            }
+            
+            localStorage.setItem('feedbackHistory', JSON.stringify(history));
+            return history;
+        }
+
+        // 🎯 스마트 피드백 패턴 분석
+        function analyzeFeedbackPattern(currentFeedback, resistanceSettings) {
+            const history = getFeedbackHistory();
+            
+            // 최근 연속 피드백 카운트
+            let consecutivePerfectCount = 0;
+            let consecutiveEasyCount = 0;
+            let consecutiveHardCount = 0;
+            
+            // 현재 피드백 포함해서 연속성 체크
+            if (currentFeedback === 'perfect') {
+                consecutivePerfectCount = 1;
+            } else if (currentFeedback === 'easy') {
+                consecutiveEasyCount = 1;
+            } else if (currentFeedback === 'hard') {
+                consecutiveHardCount = 1;
+            }
+            
+            // 히스토리 기반 연속성 체크
+            for (let record of history) {
+                if (currentFeedback === 'perfect' && record.feedback === 'perfect') {
+                    consecutivePerfectCount++;
+                } else if (currentFeedback === 'easy' && record.feedback === 'easy') {
+                    consecutiveEasyCount++;
+                } else if (currentFeedback === 'hard' && record.feedback === 'hard') {
+                    consecutiveHardCount++;
+                } else {
+                    break; // 연속성 끊김
+                }
+            }
+            
+            // 이전 피드백과 비교 (변화 감지)
+            const previousFeedback = history.length > 0 ? history[0].feedback : null;
+            
+            return {
+                consecutivePerfectCount: consecutivePerfectCount,
+                consecutiveEasyCount: consecutiveEasyCount,
+                consecutiveHardCount: consecutiveHardCount,
+                previousFeedback: previousFeedback,
+                
+                // 분석 결과
+                hasImproved: previousFeedback === 'hard' && currentFeedback === 'perfect',
+                hasProgressed: previousFeedback === 'perfect' && currentFeedback === 'easy',
+                readyForChallenge: consecutivePerfectCount >= 14, // 1주일(14번) 이상 perfect
+                shouldIncrease: consecutiveEasyCount >= 3, // 3번 연속 easy
+                needsDecrease: consecutiveHardCount >= 2, // 2번 연속 hard
+                
+                // 전체 히스토리 길이
+                totalHistory: history.length
+            };
+        }
+
+        // 🎯 스마트 조언 생성 (로컬 분석 + 서버 AI 결합)
+        function generateLocalAdviceAddition(analysis, currentFeedback, isAborted) {
+            let additionalAdvice = '';
+            
+            if (!isAborted) {
+                // 완주한 경우의 추가 분석
+                if (analysis.readyForChallenge) {
+                    additionalAdvice += '<br><br><strong>🚀 장기 분석</strong><br>1주일간 꾸준히 적당한 강도를 유지하셨네요!<br>이제 한 단계 도전해보시겠어요?';
+                } else if (analysis.shouldIncrease) {
+                    additionalAdvice += '<br><br><strong>⬆️ 진행 단계</strong><br>연속으로 쉬우셨으니 저항을 올려보세요!';
+                } else if (analysis.hasProgressed) {
+                    additionalAdvice += '<br><br><strong>🌟 실력 향상</strong><br>적당했던 강도가 이제 쉬워졌네요!<br>성장하고 계십니다!';
+                } else if (analysis.hasImproved) {
+                    additionalAdvice += '<br><br><strong>💪 회복 완료</strong><br>힘들던 강도가 이제 적당해졌어요!<br>좋은 적응력이네요!';
+                }
+            } else {
+                // 중단한 경우의 추가 격려
+                if (analysis.needsDecrease) {
+                    additionalAdvice += '<br><br><strong>🛡️ 안전 우선</strong><br>무리하지 마시고 강도를 낮춰보세요.<br>꾸준함이 더 중요해요!';
+                } else if (analysis.totalHistory >= 5) {
+                    additionalAdvice += '<br><br><strong>💙 계속 도전</strong><br>그동안 꾸준히 하신 모습이 멋져요!<br>컨디션 좋을 때 다시 해봐요!';
+                }
+            }
+            
+            return additionalAdvice;
+        }
 
         // 저항 설정 관리 함수들
         function loadResistanceSettings() {
@@ -1884,9 +2006,27 @@
             }
         }
 
+        // 🎯 개선된 결과 처리 함수 (스마트 분석 적용)
         function handleExerciseResult(result) {
-            document.getElementById('intensityAdvice').textContent = result.intensityAdvice;
-            document.getElementById('comprehensiveAdvice').textContent = result.comprehensiveAdvice;
+            // 🎯 피드백 히스토리 저장 및 분석
+            addFeedbackHistory(userFeedback, resistanceSettings);
+            const analysis = analyzeFeedbackPattern(userFeedback, resistanceSettings);
+            
+            console.log('🧠 스마트 분석 결과:', analysis);
+            
+            // 🎯 서버 AI 조언 + 로컬 분석 결합
+            let finalIntensityAdvice = result.intensityAdvice;
+            let finalComprehensiveAdvice = result.comprehensiveAdvice;
+            
+            // 로컬 분석 기반 추가 조언 생성
+            const additionalAdvice = generateLocalAdviceAddition(analysis, userFeedback, window.exerciseData.isAborted);
+            if (additionalAdvice) {
+                finalIntensityAdvice += additionalAdvice;
+            }
+            
+            // 🎯 HTML 형태로 표시 (줄바꿈, 강조 적용)
+            document.getElementById('intensityAdvice').innerHTML = finalIntensityAdvice.replace(/\n/g, '<br>');
+            document.getElementById('comprehensiveAdvice').innerHTML = finalComprehensiveAdvice.replace(/\n/g, '<br>');
             
             const stats = result.stats;
             document.getElementById('updatedStats').textContent = 

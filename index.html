@@ -1364,6 +1364,47 @@
             transform: translateY(-2px);
         }
 
+        /* 🏆 배지 유도 섹션 */
+        .badge-incentive {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1rem;
+            margin: 1rem 0;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .badge-incentive-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .badge-incentive-content {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .badge-preview {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            margin: 0.2rem;
+            font-size: 0.8rem;
+        }
+
+        .badge-preview-icon {
+            font-size: 1rem;
+        }
+
         @keyframes setGlow {
             0%, 100% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -2103,6 +2144,26 @@
                 padding: 0.8rem 1.5rem;
                 font-size: 1rem;
             }
+
+            .badge-incentive {
+                padding: 0.8rem;
+                margin: 0.8rem 0;
+            }
+
+            .badge-incentive-title {
+                font-size: 0.9rem;
+                margin-bottom: 0.6rem;
+            }
+
+            .badge-incentive-content {
+                font-size: 0.8rem;
+            }
+
+            .badge-preview {
+                padding: 0.2rem 0.6rem;
+                font-size: 0.7rem;
+                margin: 0.1rem;
+            }
         }
 
         .loading {
@@ -2414,10 +2475,10 @@
                     
                     <div class="quiz-offer-card">
                         <div class="quiz-offer-title">간단한 퀴즈 풀까요?</div>
-                        <div class="quiz-offer-subtitle">2문제만! 특별 혜택도 받으세요</div>
+                        <div class="quiz-offer-subtitle" id="quizOfferSubtitle">2문제만! 특별 혜택도 받으세요</div>
                         
                         <div class="quiz-offer-buttons">
-                            <button class="quiz-offer-primary" onclick="startQuiz()">
+                            <button class="quiz-offer-primary" onclick="startQuiz()" id="quizOfferButton">
                                 퀴즈 풀고 15% 할인받기
                             </button>
                             <button class="quiz-offer-secondary" onclick="chooseRestOnly()">
@@ -2452,6 +2513,9 @@
 
                 <!-- 🎁 퀴즈 보상 화면 -->
                 <div id="quizRewardSection" style="display: none;">
+                    <h2>휴식 시간</h2>
+                    <div class="countdown" id="quizRewardCountdown">120</div>
+                    
                     <div class="quiz-reward-card">
                         <div class="quiz-reward-title">🎉 퀴즈 완료!</div>
                         <div class="quiz-reward-subtitle" id="quizRewardSubtitle">3문제 모두 정답! 특별 혜택을 받으세요</div>
@@ -2459,7 +2523,7 @@
                         <div class="quiz-product-showcase">
                             <div class="quiz-product-image">
                                 <img src="./images/suumt-product.png" alt="숨트 제품" id="rewardProductImage" 
-                                     onerror="this.style.display='none'; this.parentNode.innerHTML='🫁';">
+                                     onerror="this.style.display='none'; this.parentNode.innerHTML='🎁';">
                             </div>
                             <div class="quiz-product-name" id="rewardProductName">숨트 호흡운동기구</div>
                             <div class="quiz-product-description" id="rewardProductDescription">앱 사용자만을 위한 특별가</div>
@@ -2468,6 +2532,14 @@
                                 <span class="quiz-price-arrow">→</span>
                                 <span class="quiz-discount-price" id="rewardDiscountPrice">75,650원</span>
                                 <span class="quiz-discount-badge" id="rewardDiscountBadge">15%↓</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 🏆 배지 유도 섹션 -->
+                        <div class="badge-incentive" id="badgeIncentiveSection">
+                            <div class="badge-incentive-title">🏆 배지 획득 기회!</div>
+                            <div class="badge-incentive-content" id="badgeIncentiveContent">
+                                <!-- JavaScript로 동적 생성 -->
                             </div>
                         </div>
                         
@@ -2629,15 +2701,31 @@
             SHOP_URL: "https://YOUR-SHOP-URL.com",
             SPECIAL_PRODUCT_PATH: "/product/detail.html?product_no=123",
             
-            // 🎁 보상 설정 (신제품 출시시 쉽게 변경)
-            REWARD: {
-                discountPercent: 15,
-                productName: "숨트 호흡운동기구",
-                originalPrice: "89,000원",
-                discountPrice: "75,650원",
-                productImage: "./images/suumt-product.png", // 🖼️ 제품 전용 이미지
-                description: "앱 사용자만을 위한 특별가"
-            },
+            // 🎁 상품 설정 (2개 상품 로테이션)
+            PRODUCTS: [
+                {
+                    // 첫 번째 상품: 숨트 호흡운동기구
+                    id: 'suumt_device',
+                    name: "숨트 호흡운동기구",
+                    originalPrice: "89,000원",
+                    discountPrice: "75,650원",
+                    discountPercent: 15,
+                    image: "./images/suumt-product.png",
+                    description: "앱 사용자만을 위한 특별가",
+                    specialPath: "/product/detail.html?product_no=123"
+                },
+                {
+                    // 두 번째 상품: 다른 주력 상품
+                    id: 'suumt_accessory',
+                    name: "숨트 전용 액세서리",
+                    originalPrice: "39,000원", 
+                    discountPrice: "33,150원",
+                    discountPercent: 15,
+                    image: "./images/suumt-accessory.png",
+                    description: "숨트와 함께 사용하는 전용 제품",
+                    specialPath: "/product/detail.html?product_no=456"
+                }
+            ],
             
             // 🔧 퀴즈 활성화 설정
             QUIZ_ENABLED: true,
@@ -2692,6 +2780,8 @@
         let quizOfferTimer = null;
         let selectedQuestions = []; // 선택된 2문제
         let solvedQuestions = []; // 지금까지 푼 문제들 (배지용)
+        let globalRestTimer = null; // 🔧 전역 휴식 타이머
+        let globalRestTime = 120; // 🔧 전역 휴식 시간
 
         // 전역 변수
         let currentSet = 1;
@@ -2983,17 +3073,25 @@
                 }
             },
             {
-                id: 'quiz_perfectionist',
-                name: '퀴즈 완벽주의자',
-                icon: '🎯',
-                description: '퀴즈 2문제를 모두 정답으로 맞혔어요',
-                hint: '퀴즈 완벽',
-                condition: (stats) => getQuizPerfectCount() >= 1
-            },
-            {
                 id: 'quiz_explorer',
                 name: '퀴즈 탐험가',
                 icon: '🔍',
+                description: '퀴즈 2문제를 모두 정답으로 맞혔어요',
+                hint: '퀴즈 2문제',
+                condition: (stats) => getQuizPerfectCount() >= 1
+            },
+            {
+                id: 'quiz_perfectionist',
+                name: '퀴즈 완벽주의자',
+                icon: '🎯',
+                description: '3번 연속으로 퀴즈를 완벽하게 풀었어요',
+                hint: '3번 연속 완벽',
+                condition: (stats) => getConsecutivePerfectCount() >= 3
+            },
+            {
+                id: 'quiz_master',
+                name: '퀴즈 마스터',
+                icon: '🧠',
                 description: '6가지 퀴즈 문제를 모두 경험했어요',
                 hint: '모든 문제',
                 condition: (stats) => getSolvedQuestionsCount() >= 6
@@ -3204,6 +3302,19 @@
             localStorage.setItem('quizPerfectCount', count.toString());
         }
 
+        function getConsecutivePerfectCount() {
+            return parseInt(localStorage.getItem('consecutivePerfectCount') || '0');
+        }
+
+        function updateConsecutivePerfectCount(isPerfect) {
+            if (isPerfect) {
+                const count = getConsecutivePerfectCount() + 1;
+                localStorage.setItem('consecutivePerfectCount', count.toString());
+            } else {
+                localStorage.setItem('consecutivePerfectCount', '0');
+            }
+        }
+
         function getSolvedQuestionsCount() {
             const solved = JSON.parse(localStorage.getItem('solvedQuestions') || '[]');
             return solved.length;
@@ -3215,6 +3326,23 @@
                 solved.push(questionIndex);
                 localStorage.setItem('solvedQuestions', JSON.stringify(solved));
             }
+        }
+
+        // 🎁 상품 로테이션 시스템
+        function getTotalQuizCount() {
+            return parseInt(localStorage.getItem('totalQuizCount') || '0');
+        }
+
+        function incrementQuizCount() {
+            const count = getTotalQuizCount() + 1;
+            localStorage.setItem('totalQuizCount', count.toString());
+            return count;
+        }
+
+        function getCurrentProduct() {
+            const quizCount = getTotalQuizCount();
+            const productIndex = quizCount % 2; // 0 또는 1
+            return QUIZ_CONFIG.PRODUCTS[productIndex];
         }
 
         // 🎮 퀴즈 문제 랜덤 선택 함수
@@ -3577,6 +3705,9 @@
             hideModal();
             isAborted = true;
             clearTimeout(breathingTimer);
+            
+            // 🔧 모든 타이머 정리
+            stopGlobalRestTimer();
             clearInterval(restTimer);
             
             gtag('event', 'exercise_aborted', {
@@ -3877,6 +4008,10 @@
         function startRest() {
             document.getElementById('breathingSection').style.display = 'none';
             
+            // 🔧 기존 타이머 정리
+            stopGlobalRestTimer();
+            clearInterval(restTimer);
+            
             // 🎮 퀴즈 시스템이 활성화되어 있으면 퀴즈 제안부터 시작
             if (QUIZ_CONFIG.QUIZ_ENABLED) {
                 showRestIntro();
@@ -3885,37 +4020,70 @@
             }
         }
 
-        // 🎮 새로운 기능: 휴식 시간 소개 (5초)
+        // 🔧 전역 타이머 관리 함수들
+        function startGlobalRestTimer() {
+            globalRestTime = 120;
+            
+            if (globalRestTimer) {
+                clearInterval(globalRestTimer);
+            }
+            
+            globalRestTimer = setInterval(() => {
+                if (isAborted) {
+                    clearInterval(globalRestTimer);
+                    return;
+                }
+                
+                // 모든 화면의 카운트다운 업데이트
+                updateAllCountdowns();
+                globalRestTime--;
+                
+                if (globalRestTime < 0) {
+                    clearInterval(globalRestTimer);
+                    startNextSet();
+                }
+            }, 1000);
+        }
+
+        function updateAllCountdowns() {
+            const countdownElements = [
+                'restCountdown',
+                'quizOfferCountdown', 
+                'quizCountdown',
+                'quizRewardCountdown'  // 🔧 보상 화면 카운트다운 추가
+            ];
+            
+            countdownElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = globalRestTime;
+                }
+            });
+        }
+
+        function stopGlobalRestTimer() {
+            if (globalRestTimer) {
+                clearInterval(globalRestTimer);
+                globalRestTimer = null;
+            }
+        }
+
+        // 🎮 새로운 기능: 휴식 시간 소개 (개선된 버전)
         function showRestIntro() {
             document.getElementById('restSection').style.display = 'block';
             document.getElementById('restControlButtons').style.display = 'none';
             
-            let restTime = 120;
-            const restCountdownEl = document.getElementById('restCountdown');
             const restProgressEl = document.getElementById('restProgressText');
-            
             restProgressEl.textContent = `${currentSet - 1}세트 완료`;
+            
+            // 🔧 전역 타이머 시작
+            startGlobalRestTimer();
             
             // GA 이벤트: 휴식 시작
             gtag('event', 'rest_started', {
                 set_number: currentSet - 1,
                 quiz_enabled: QUIZ_CONFIG.QUIZ_ENABLED
             });
-            
-            restTimer = setInterval(() => {
-                if (isAborted) {
-                    clearInterval(restTimer);
-                    return;
-                }
-                
-                restCountdownEl.textContent = restTime;
-                restTime--;
-                
-                if (restTime < 0) {
-                    clearInterval(restTimer);
-                    startNextSet();
-                }
-            }, 1000);
             
             // 5초 후 퀴즈 제안 화면으로 전환
             quizOfferTimer = setTimeout(() => {
@@ -3925,28 +4093,15 @@
             }, QUIZ_CONFIG.OFFER_DELAY);
         }
 
-        // 🎮 새로운 기능: 퀴즈 제안 화면
+        // 🎮 새로운 기능: 퀴즈 제안 화면 (타이머 연속성 개선)
         function showQuizOffer() {
             document.getElementById('restSection').style.display = 'none';
             document.getElementById('quizOfferSection').style.display = 'block';
             
-            const quizOfferCountdownEl = document.getElementById('quizOfferCountdown');
-            
-            // 퀴즈 제안 카운트다운 동기화
-            const syncInterval = setInterval(() => {
-                const restCountdownEl = document.getElementById('restCountdown');
-                const currentTime = restCountdownEl.textContent;
-                quizOfferCountdownEl.textContent = currentTime;
-                
-                if (parseInt(currentTime) <= 0) {
-                    clearInterval(syncInterval);
-                }
-            }, 1000);
-            
             // GA 이벤트: 퀴즈 제안 노출
             gtag('event', 'quiz_offer_shown', {
                 set_number: currentSet - 1,
-                remaining_rest_time: parseInt(document.getElementById('restCountdown').textContent)
+                remaining_rest_time: globalRestTime
             });
         }
 
@@ -4214,7 +4369,7 @@
         }
 
         function skipRest() {
-            clearInterval(restTimer);
+            stopGlobalRestTimer(); // 🔧 전역 타이머 정리
             incrementSkippedRestCount(); // 🎮 배지 조건용 카운트
             startNextSet();
         }
@@ -4226,7 +4381,8 @@
             document.getElementById('quizProgressSection').style.display = 'none';
             document.getElementById('quizRewardSection').style.display = 'none';
             
-            // 🔧 퀴즈 타이머 정리
+            // 🔧 모든 타이머 정리
+            stopGlobalRestTimer();
             clearTimeout(quizOfferTimer);
             
             // 🚀 호흡 화면 표시

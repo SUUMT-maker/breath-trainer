@@ -1364,47 +1364,6 @@
             transform: translateY(-2px);
         }
 
-        /* 🏆 배지 유도 섹션 */
-        .badge-incentive {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 1rem;
-            margin: 1rem 0;
-            position: relative;
-            z-index: 1;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .badge-incentive-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: white;
-            text-align: center;
-            margin-bottom: 0.8rem;
-        }
-
-        .badge-incentive-content {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
-            line-height: 1.4;
-            text-align: center;
-        }
-
-        .badge-preview {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 0.3rem 0.8rem;
-            border-radius: 12px;
-            margin: 0.2rem;
-            font-size: 0.8rem;
-        }
-
-        .badge-preview-icon {
-            font-size: 1rem;
-        }
-
         @keyframes setGlow {
             0%, 100% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -2144,26 +2103,6 @@
                 padding: 0.8rem 1.5rem;
                 font-size: 1rem;
             }
-
-            .badge-incentive {
-                padding: 0.8rem;
-                margin: 0.8rem 0;
-            }
-
-            .badge-incentive-title {
-                font-size: 0.9rem;
-                margin-bottom: 0.6rem;
-            }
-
-            .badge-incentive-content {
-                font-size: 0.8rem;
-            }
-
-            .badge-preview {
-                padding: 0.2rem 0.6rem;
-                font-size: 0.7rem;
-                margin: 0.1rem;
-            }
         }
 
         .loading {
@@ -2518,7 +2457,7 @@
                     
                     <div class="quiz-reward-card">
                         <div class="quiz-reward-title">🎉 퀴즈 완료!</div>
-                        <div class="quiz-reward-subtitle" id="quizRewardSubtitle">3문제 모두 정답! 특별 혜택을 받으세요</div>
+                        <div class="quiz-reward-subtitle" id="quizRewardSubtitle">2문제 모두 정답! 특별 혜택을 받으세요</div>
                         
                         <div class="quiz-product-showcase">
                             <div class="quiz-product-image">
@@ -2532,14 +2471,6 @@
                                 <span class="quiz-price-arrow">→</span>
                                 <span class="quiz-discount-price" id="rewardDiscountPrice">75,650원</span>
                                 <span class="quiz-discount-badge" id="rewardDiscountBadge">15%↓</span>
-                            </div>
-                        </div>
-                        
-                        <!-- 🏆 배지 유도 섹션 -->
-                        <div class="badge-incentive" id="badgeIncentiveSection">
-                            <div class="badge-incentive-title">🏆 배지 획득 기회!</div>
-                            <div class="badge-incentive-content" id="badgeIncentiveContent">
-                                <!-- JavaScript로 동적 생성 -->
                             </div>
                         </div>
                         
@@ -2633,7 +2564,7 @@
                         <span class="section-icon">🏆</span>
                         <span class="badges-title">배지 컬렉션</span>
                     </div>
-                    <div class="badges-progress" id="badgesProgress">수집한 배지: 0/12</div>
+                    <div class="badges-progress" id="badgesProgress">수집한 배지: 0/15</div>
                     <div class="badges-grid" id="badgesGrid">
                         <!-- 배지들이 JavaScript로 생성됨 -->
                     </div>
@@ -2698,7 +2629,7 @@
         // 🎮 퀴즈 시스템 설정 (쉬운 관리를 위한 구역)
         const QUIZ_CONFIG = {
             // 🛒 쇼핑몰 설정 (나중에 쉽게 변경)
-            SHOP_URL: "https://YOUR-SHOP-URL.com",
+            SHOP_URL: "https://example-shop.com", // 추후 실제 URL로 변경 예정
             SPECIAL_PRODUCT_PATH: "/product/detail.html?product_no=123",
             
             // 🎁 상품 설정 (2개 상품 로테이션)
@@ -3069,7 +3000,7 @@
                 hint: '??? 미스터리',
                 condition: (stats) => {
                     const earnedBadges = getEarnedBadges();
-                    return earnedBadges.length >= 11; // 자기 자신 제외한 모든 배지
+                    return earnedBadges.length >= 14; // 자기 자신 제외한 모든 배지
                 }
             },
             {
@@ -4230,42 +4161,96 @@
             const quizEndTime = getCurrentUserTime();
             const quizDuration = Math.floor((quizEndTime - quizStartTime) / 1000);
             
-            // 보상 내용 업데이트
+            // 🎮 퀴즈 완료 배지 처리
+            handleQuizCompletionBadges();
+            
+            // 보상 내용 업데이트 (현재 상품 로테이션 사용)
             updateRewardContent();
             
             // GA 이벤트: 퀴즈 완료
             gtag('event', 'quiz_completed', {
                 correct_answers: quizCorrectAnswers,
-                total_questions: QUIZ_QUESTIONS.length,
+                total_questions: 2,
                 quiz_duration_seconds: quizDuration,
-                accuracy_percentage: Math.round((quizCorrectAnswers / QUIZ_QUESTIONS.length) * 100)
+                accuracy_percentage: Math.round((quizCorrectAnswers / 2) * 100)
             });
         }
 
-        // 🎮 새로운 기능: 보상 내용 업데이트
+        // 🎮 새로운 기능: 퀴즈 완료 배지 처리
+        function handleQuizCompletionBadges() {
+            let badgesToShow = [];
+            
+            // 퀴즈 탐험가: 2문제를 모두 정답으로 맞혔을 때
+            if (quizCorrectAnswers === 2) {
+                incrementQuizPerfectCount();
+                updateConsecutivePerfectCount(true);
+                
+                const isNewBadge = saveBadge('quiz_explorer');
+                if (isNewBadge) {
+                    const badge = BADGES_CONFIG.find(b => b.id === 'quiz_explorer');
+                    badgesToShow.push(badge);
+                }
+            } else {
+                updateConsecutivePerfectCount(false);
+            }
+            
+            // 퀴즈 완벽주의자: 3번 연속 완벽
+            if (getConsecutivePerfectCount() >= 3) {
+                const isNewBadge = saveBadge('quiz_perfectionist');
+                if (isNewBadge) {
+                    const badge = BADGES_CONFIG.find(b => b.id === 'quiz_perfectionist');
+                    badgesToShow.push(badge);
+                }
+            }
+            
+            // 퀴즈 마스터: 모든 문제 경험
+            if (getSolvedQuestionsCount() >= 6) {
+                const isNewBadge = saveBadge('quiz_master');
+                if (isNewBadge) {
+                    const badge = BADGES_CONFIG.find(b => b.id === 'quiz_master');
+                    badgesToShow.push(badge);
+                }
+            }
+            
+            // 배지가 있으면 첫 번째 배지 즉시 팝업 표시
+            if (badgesToShow.length > 0) {
+                setTimeout(() => {
+                    showBadgePopup(badgesToShow[0]);
+                }, 1000);
+            }
+        }
+
+        // 🎮 새로운 기능: 보상 내용 업데이트 (상품 로테이션 적용)
         function updateRewardContent() {
             const rewardSubtitle = document.getElementById('quizRewardSubtitle');
             const productName = document.getElementById('rewardProductName');
             const productDescription = document.getElementById('rewardProductDescription');
+            const productImage = document.getElementById('rewardProductImage');
             const originalPrice = document.getElementById('rewardOriginalPrice');
             const discountPrice = document.getElementById('rewardDiscountPrice');
             const discountBadge = document.getElementById('rewardDiscountBadge');
             
             // 정답 개수에 따른 메시지
-            if (quizCorrectAnswers === QUIZ_QUESTIONS.length) {
+            if (quizCorrectAnswers === 2) {
                 rewardSubtitle.textContent = '🌟 완벽! 모든 문제를 맞혔어요!';
-            } else if (quizCorrectAnswers >= 2) {
+            } else if (quizCorrectAnswers >= 1) {
                 rewardSubtitle.textContent = `👍 훌륭해요! ${quizCorrectAnswers}문제 정답!`;
             } else {
-                rewardSubtitle.textContent = `💪 좋아요! ${quizCorrectAnswers}문제 정답!`;
+                rewardSubtitle.textContent = `💪 좋아요! 도전해주셔서 감사해요!`;
             }
             
-            // 보상 정보 업데이트
-            productName.textContent = QUIZ_CONFIG.REWARD.productName;
-            productDescription.textContent = QUIZ_CONFIG.REWARD.description;
-            originalPrice.textContent = QUIZ_CONFIG.REWARD.originalPrice;
-            discountPrice.textContent = QUIZ_CONFIG.REWARD.discountPrice;
-            discountBadge.textContent = `${QUIZ_CONFIG.REWARD.discountPercent}% 할인`;
+            // 🎁 현재 상품 로테이션 적용
+            const currentProduct = getCurrentProduct();
+            
+            productName.textContent = currentProduct.name;
+            productDescription.textContent = currentProduct.description;
+            productImage.src = currentProduct.image;
+            originalPrice.textContent = currentProduct.originalPrice;
+            discountPrice.textContent = currentProduct.discountPrice;
+            discountBadge.textContent = `${currentProduct.discountPercent}% 할인`;
+            
+            // 퀴즈 카운트 증가
+            incrementQuizCount();
         }
 
         // 🎮 새로운 기능: 특가 확인하기 (새 탭으로 열기)
@@ -4275,8 +4260,8 @@
             // GA 이벤트: 특가 확인
             gtag('event', 'special_offer_checked', {
                 correct_answers: quizCorrectAnswers,
-                total_questions: QUIZ_QUESTIONS.length,
-                discount_percentage: QUIZ_CONFIG.REWARD.discountPercent,
+                total_questions: 2,
+                discount_percentage: getCurrentProduct().discountPercent,
                 shop_url: shopUrl,
                 open_method: 'new_tab'
             });
@@ -4299,16 +4284,18 @@
             }, 3000);
         }
 
-        // 🎮 새로운 기능: 쇼핑몰 URL 생성 (UTM 개선)
+        // 🎮 새로운 기능: 쇼핑몰 URL 생성 (상품 로테이션 적용)
         function generateShopUrl() {
-            const baseUrl = `${QUIZ_CONFIG.SHOP_URL}${QUIZ_CONFIG.SPECIAL_PRODUCT_PATH}`;
+            const currentProduct = getCurrentProduct();
+            const baseUrl = `${QUIZ_CONFIG.SHOP_URL}${currentProduct.specialPath}`;
             const params = new URLSearchParams({
                 utm_source: 'breath_app',
                 utm_medium: 'quiz_reward',
                 utm_campaign: 'rest_quiz',
                 utm_content: `${quizCorrectAnswers}_of_2_correct`,
                 quiz_score: quizCorrectAnswers,
-                discount: QUIZ_CONFIG.REWARD.discountPercent,
+                discount: currentProduct.discountPercent,
+                product_id: currentProduct.id,
                 questions_solved: getSolvedQuestionsCount()
             });
             

@@ -494,8 +494,8 @@
             border: 1px solid #E7E7E7;
             border-radius: 24px;
             margin: 0 20px 24px;
-            padding: 20px;
-            overflow: hidden;
+            padding: 20px 20px 30px 20px;
+            overflow: visible;
         }
 
         .chart-legend {
@@ -513,6 +513,7 @@
             position: relative;
             height: 150px;
             margin: 20px 0;
+            overflow: visible;
         }
 
         .chart-y-axis {
@@ -558,6 +559,37 @@
         .chart-bar.highlight {
             background: linear-gradient(to top, #5BC8FF, #2DB5F9);
             box-shadow: 0 -2px 8px rgba(45, 181, 249, 0.3);
+        }
+
+        .chart-bar.super-achiever {
+            background: linear-gradient(to top, #FFD700, #FFA500);
+            box-shadow: 0 -2px 12px rgba(255, 215, 0, 0.5);
+            animation: superGlow 2s ease-in-out infinite;
+        }
+
+        .achievement-crown {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            animation: crownBounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes superGlow {
+            0%, 100% { 
+                box-shadow: 0 -2px 12px rgba(255, 215, 0, 0.5);
+                filter: brightness(1);
+            }
+            50% { 
+                box-shadow: 0 -4px 20px rgba(255, 215, 0, 0.8);
+                filter: brightness(1.1);
+            }
+        }
+
+        @keyframes crownBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-3px); }
         }
 
         .chart-bar:hover {
@@ -1377,7 +1409,7 @@
 
             .chart-container {
                 margin: 0 16px 24px;
-                padding: 16px;
+                padding: 16px 16px 26px 16px;
             }
 
             .start-training-section {
@@ -1409,6 +1441,11 @@
 
             .feedback-emoji {
                 font-size: 1.4rem;
+            }
+
+            .achievement-crown {
+                font-size: 14px;
+                top: -20px;
             }
 
             .badges-grid {
@@ -1526,7 +1563,7 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-card-header">
-                            <div class="stat-card-title">호흡 횟수</div>
+                            <div class="stat-card-title">오늘 호흡</div>
                             <div class="stat-card-icon">🫁</div>
                         </div>
                         <div class="stat-card-value">
@@ -1537,7 +1574,7 @@
 
                     <div class="stat-card">
                         <div class="stat-card-header">
-                            <div class="stat-card-title">완료 세트</div>
+                            <div class="stat-card-title">오늘 완료</div>
                             <div class="stat-card-icon">💪</div>
                         </div>
                         <div class="stat-card-value">
@@ -2008,12 +2045,13 @@
             return checkDate >= weekStart && checkDate <= weekEnd;
         }
 
-        // 차트 데이터 업데이트 (개선된 주간 구분)
+        // 차트 데이터 업데이트 (개선된 주간 구분 + 동적 스케일링)
         function updateChart() {
             const history = getExerciseHistory();
             const chartBars = document.getElementById('chartBars');
             const chartXAxis = document.getElementById('chartXAxis');
             const chartSubtitle = document.getElementById('chartSubtitle');
+            const chartYAxis = document.querySelector('.chart-y-axis');
             const bars = chartBars.querySelectorAll('.chart-bar');
             
             // 현재 주의 시작일 계산
@@ -2046,27 +2084,65 @@
             const weekEndStr = formatDateForUser(weekDates[6]);
             chartSubtitle.textContent = `${weekStartStr} ~ ${weekEndStr} 트레이닝 성과`;
 
-            bars.forEach((bar, index) => {
-                const targetDate = weekDates[index];
+            // 🔧 각 날짜별 완료 세트 수 계산
+            const dailySets = weekDates.map(targetDate => {
                 const dayData = history.filter(record => {
                     const recordDate = new Date(record.date);
                     return recordDate.toDateString() === targetDate.toDateString();
                 });
-                
-                const totalSets = dayData.reduce((sum, record) => sum + record.completedSets, 0);
-                const height = Math.min(100, (totalSets / 4) * 100); // 최대 4세트 기준
+                return dayData.reduce((sum, record) => sum + record.completedSets, 0);
+            });
+
+            // 🎯 동적 Y축 스케일 계산
+            const maxSets = Math.max(...dailySets, 4); // 최소 4까지는 표시
+            const yAxisMax = maxSets <= 4 ? 4 : Math.ceil(maxSets / 2) * 2; // 짝수로 올림
+            const yAxisSteps = yAxisMax <= 4 ? [4, 3, 2, 1, 0] : 
+                              yAxisMax <= 6 ? [6, 4, 2, 0] : 
+                              yAxisMax <= 8 ? [8, 6, 4, 2, 0] : 
+                              [yAxisMax, Math.floor(yAxisMax * 0.75), Math.floor(yAxisMax * 0.5), Math.floor(yAxisMax * 0.25), 0];
+
+            // Y축 라벨 업데이트
+            const yLabels = chartYAxis.querySelectorAll('.y-label');
+            yLabels.forEach((label, index) => {
+                if (index < yAxisSteps.length) {
+                    label.textContent = yAxisSteps[index];
+                    label.style.display = 'block';
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+
+            // 막대 그래프 업데이트
+            bars.forEach((bar, index) => {
+                const totalSets = dailySets[index];
+                const height = Math.min(100, (totalSets / yAxisMax) * 100);
                 
                 bar.style.height = `${height}%`;
                 
-                // 데이터가 있는 날은 하이라이트
+                // 기본 클래스 제거
+                bar.classList.remove('highlight', 'super-achiever');
+                
+                // 데이터에 따른 스타일 적용
                 if (totalSets > 0) {
-                    bar.classList.add('highlight');
+                    if (totalSets > 4) {
+                        // 🌟 4세트 초과 시 특별한 스타일
+                        bar.classList.add('super-achiever');
+                        bar.innerHTML = `<div class="achievement-crown">👑</div>`;
+                    } else {
+                        bar.classList.add('highlight');
+                        bar.innerHTML = '';
+                    }
                 } else {
-                    bar.classList.remove('highlight');
+                    bar.innerHTML = '';
                 }
 
                 // 툴팁 업데이트
-                bar.title = `${formatDateForUser(targetDate)}: ${totalSets}세트 완료`;
+                const dateStr = formatDateForUser(weekDates[index]);
+                if (totalSets > 4) {
+                    bar.title = `${dateStr}: ${totalSets}세트 완료 🌟 수퍼 달성!`;
+                } else {
+                    bar.title = `${dateStr}: ${totalSets}세트 완료`;
+                }
             });
         }
 
@@ -2616,8 +2692,40 @@
         function displayUserStats(stats) {
             document.getElementById('totalExercises').textContent = stats.totalExercises;
             document.getElementById('consecutiveDays').textContent = stats.consecutiveDays;
-            document.getElementById('averageSets').textContent = stats.averageSets;
-            document.getElementById('totalBreaths').textContent = stats.totalBreaths;
+            
+            // 🔧 오늘 완료한 세트 수 계산 (평균이 아닌 오늘 실제 완료 세트)
+            const todayCompletedSets = getTodayCompletedSets();
+            document.getElementById('averageSets').textContent = todayCompletedSets;
+            
+            // 🔧 오늘 완료한 호흡 횟수 계산
+            const todayBreaths = getTodayBreaths();
+            document.getElementById('totalBreaths').textContent = todayBreaths;
+        }
+
+        // 🔧 오늘 완료한 세트 수 계산 함수
+        function getTodayCompletedSets() {
+            const history = getExerciseHistory();
+            const today = getCurrentUserTime().toDateString();
+            
+            const todayData = history.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate.toDateString() === today;
+            });
+            
+            return todayData.reduce((sum, record) => sum + record.completedSets, 0);
+        }
+
+        // 🔧 오늘 완료한 호흡 횟수 계산 함수
+        function getTodayBreaths() {
+            const history = getExerciseHistory();
+            const today = getCurrentUserTime().toDateString();
+            
+            const todayData = history.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate.toDateString() === today;
+            });
+            
+            return todayData.reduce((sum, record) => sum + record.completedBreaths, 0);
         }
 
         function startExercise() {
@@ -2790,10 +2898,42 @@
             const minutes = Math.floor(exerciseTime / 60);
             const seconds = exerciseTime % 60;
             
+            // 🔧 완료 세트 계산 수정: 10회 호흡을 완료한 세트만 카운트
+            let actualCompletedSets = 0;
+            if (!isAborted) {
+                actualCompletedSets = 2; // 완전히 끝까지 한 경우
+            } else {
+                // 중단한 경우: 완료된 세트 수 정확히 계산
+                if (currentSet === 1) {
+                    // 첫 세트 도중에 중단: 0세트 완료
+                    actualCompletedSets = 0;
+                } else if (currentSet === 2) {
+                    // 첫 세트 완료 후 중단 (휴식시간 또는 2세트 중): 1세트 완료
+                    actualCompletedSets = 1;
+                } else {
+                    // currentSet > 2인 경우는 없지만 안전장치
+                    actualCompletedSets = 2;
+                }
+            }
+            
+            // 🔧 완료 호흡 횟수 계산 개선
+            let actualCompletedBreaths = 0;
+            if (!isAborted) {
+                actualCompletedBreaths = 20;
+            } else {
+                if (currentSet === 1) {
+                    // 첫 세트 도중: 현재 호흡 - 1
+                    actualCompletedBreaths = Math.max(0, currentBreath - 1);
+                } else if (currentSet === 2) {
+                    // 두 번째 세트: 첫 세트 10회 + 현재 호흡 - 1
+                    actualCompletedBreaths = 10 + Math.max(0, currentBreath - 1);
+                }
+            }
+            
             window.exerciseData = {
                 exerciseTime: `${minutes}:${seconds.toString().padStart(2, '0')}`,
-                completedSets: isAborted ? Math.max(0, currentSet - 1) : 2,
-                completedBreaths: isAborted ? Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1)) : 20,
+                completedSets: actualCompletedSets,
+                completedBreaths: actualCompletedBreaths,
                 isAborted: isAborted,
                 resistanceSettings: { ...resistanceSettings },
                 userFeedback: userFeedback

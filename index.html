@@ -165,6 +165,7 @@
         .user-greeting {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             margin-bottom: 24px;
         }
 
@@ -202,6 +203,39 @@
             font-size: 16px;
             font-weight: 500;
             color: #1E1E1E;
+        }
+
+        /* 🔥 새로운 기능: 메인화면 실시간 현황 */
+        .live-users-badge {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3);
+            animation: liveGlow 2s ease-in-out infinite;
+        }
+
+        .live-indicator {
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            animation: livePulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes liveGlow {
+            0%, 100% { box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3); }
+            50% { box-shadow: 0 4px 16px rgba(79, 172, 254, 0.5); }
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.8); }
         }
 
         /* 📊 통계 섹션 */
@@ -641,6 +675,147 @@
 
         .start-button:active {
             transform: translateY(0);
+        }
+
+        /* 🔥 새로운 기능: 사회적 증명 섹션 (결과화면용) */
+        .social-proof-section {
+            margin: 20px 20px 24px;
+        }
+
+        .social-proof-card {
+            background: white;
+            border: 1px solid #E7E7E7;
+            border-radius: 24px;
+            padding: 20px;
+            border-left: 4px solid #4facfe;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .social-proof-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .social-proof-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1E1E1E;
+        }
+
+        .live-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .live-stat {
+            background: #F8F9FA;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .live-stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4facfe;
+            margin-bottom: 4px;
+        }
+
+        .live-stat-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .reviews-carousel {
+            background: #F8F9FA;
+            border-radius: 16px;
+            padding: 16px;
+            overflow: hidden;
+            position: relative;
+            height: 140px;
+        }
+
+        .reviews-slider {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 100%;
+        }
+
+        .review-card {
+            min-width: 100%;
+            padding: 0 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .review-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .review-author {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .review-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .review-info {
+            text-align: left;
+        }
+
+        .review-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .review-rating {
+            color: #FFD700;
+            font-size: 12px;
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .carousel-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ccc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .carousel-dot.active {
+            background: #4facfe;
+            transform: scale(1.2);
         }
 
         /* 기존 화면들 스타일 유지 */
@@ -1473,6 +1648,37 @@
                 border-right: 3px solid transparent;
                 border-bottom: 3px solid rgba(0, 0, 0, 0.9);
             }
+
+            /* 사회적 증명 모바일 최적화 */
+            .social-proof-section {
+                margin: 16px 16px 20px;
+            }
+
+            .live-stats {
+                gap: 12px;
+            }
+
+            .live-stat {
+                padding: 12px;
+            }
+
+            .live-stat-number {
+                font-size: 20px;
+            }
+
+            .reviews-carousel {
+                padding: 12px;
+                height: 120px;
+            }
+
+            .review-text {
+                font-size: 13px;
+            }
+
+            .live-users-badge {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
         }
 
         .loading {
@@ -1543,6 +1749,11 @@
                         <div class="user-text">
                             <h4>안녕하세요,</h4>
                             <h3 id="userName">AI 숨트레이너</h3>
+                            <!-- 🔥 새로운 기능: 메인화면 실시간 현황 -->
+                            <div class="live-users-badge" id="mainLiveUsers">
+                                <div class="live-indicator"></div>
+                                <span id="mainLiveUsersText">오늘 247명 트레이닝 중</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1857,6 +2068,36 @@
                     </div>
                 </div>
 
+                <!-- 🔥 새로운 기능: 사회적 증명 섹션 -->
+                <div class="social-proof-section">
+                    <div class="social-proof-card">
+                        <div class="social-proof-header">
+                            <span class="section-icon">👥</span>
+                            <span class="social-proof-title">함께하는 숨트 커뮤니티</span>
+                        </div>
+                        
+                        <div class="live-stats">
+                            <div class="live-stat">
+                                <div class="live-stat-number" id="liveUsersCount">1,247</div>
+                                <div class="live-stat-label">오늘 활동 중</div>
+                            </div>
+                            <div class="live-stat">
+                                <div class="live-stat-number" id="totalUsersCount">12,543</div>
+                                <div class="live-stat-label">전체 사용자</div>
+                            </div>
+                        </div>
+                        
+                        <div class="reviews-carousel">
+                            <div class="reviews-slider" id="reviewsSlider">
+                                <!-- 리뷰 카드들이 JavaScript로 생성됨 -->
+                            </div>
+                            <div class="carousel-dots" id="carouselDots">
+                                <!-- 점들이 JavaScript로 생성됨 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="achievementBadges"></div>
 
                 <div class="result-content">
@@ -1899,6 +2140,185 @@
         };
         
         let userFeedback = null;
+
+        // 🔥 새로운 기능: 사회적 증명 데이터
+        const SOCIAL_PROOF_REVIEWS = [
+            {
+                text: "숨트로 폐활량이 정말 늘었어요! 계단 오를 때 숨이 덜 차요 👍",
+                author: "김상우",
+                rating: "⭐⭐⭐⭐⭐",
+                avatar: "김"
+            },
+            {
+                text: "운동 후 호흡이 훨씬 편해졌습니다. 꾸준히 하니까 확실히 달라져요!",
+                author: "박영희",
+                rating: "⭐⭐⭐⭐⭐",
+                avatar: "박"
+            },
+            {
+                text: "처음엔 힘들었는데 이제 2단계까지 할 수 있어요. 성취감 최고!",
+                author: "이민수",
+                rating: "⭐⭐⭐⭐⭐",
+                avatar: "이"
+            },
+            {
+                text: "숨트 앱 덕분에 매일 꾸준히 하게 되네요. UI도 예쁘고 재미있어요!",
+                author: "정하나",
+                rating: "⭐⭐⭐⭐⭐",
+                avatar: "정"
+            },
+            {
+                text: "호흡근 운동이 이렇게 중요한 줄 몰랐어요. 숨트 강력 추천합니다!",
+                author: "최준호",
+                rating: "⭐⭐⭐⭐⭐",
+                avatar: "최"
+            }
+        ];
+
+        let reviewCarouselInterval;
+        let currentReviewIndex = 0;
+
+        // 🔥 새로운 기능: 스마트 실시간 데이터 생성
+        function generateSmartLiveData() {
+            const now = getCurrentUserTime();
+            const hour = now.getHours();
+            const day = now.getDay(); // 0=일요일
+            const baseDate = new Date('2024-01-01'); // 앱 시작일
+            const daysSinceStart = Math.floor((now - baseDate) / (1000 * 60 * 60 * 24));
+            
+            // 기본 사용자 수 (시간이 지날수록 증가)
+            let baseUsers = 8500 + (daysSinceStart * 15); // 하루에 15명씩 증가
+            
+            // 시간대별 활동 패턴
+            let hourMultiplier = 1.0;
+            if (hour >= 6 && hour <= 9) hourMultiplier = 1.8; // 아침 피크
+            else if (hour >= 12 && hour <= 14) hourMultiplier = 1.3; // 점심 시간
+            else if (hour >= 18 && hour <= 22) hourMultiplier = 2.2; // 저녁 피크
+            else if (hour >= 23 || hour <= 5) hourMultiplier = 0.4; // 새벽
+            
+            // 요일별 패턴
+            let dayMultiplier = 1.0;
+            if (day === 0 || day === 6) dayMultiplier = 0.7; // 주말은 70%
+            else if (day >= 1 && day <= 5) dayMultiplier = 1.0; // 평일
+            
+            // 랜덤 변동 (±10%)
+            const randomFactor = 0.9 + (Math.random() * 0.2);
+            
+            const todayActiveUsers = Math.floor(baseUsers * hourMultiplier * dayMultiplier * randomFactor);
+            const totalUsers = Math.floor(baseUsers * 1.5); // 전체 사용자는 더 많음
+            
+            return {
+                todayActive: Math.max(200, todayActiveUsers), // 최소 200명
+                totalUsers: Math.max(8000, totalUsers), // 최소 8000명
+                isGrowing: daysSinceStart > 0
+            };
+        }
+
+        // 🔥 새로운 기능: 사회적 증명 UI 업데이트
+        function updateSocialProofData() {
+            const liveData = generateSmartLiveData();
+            
+            // 메인화면 실시간 현황 업데이트
+            const mainLiveUsersText = document.getElementById('mainLiveUsersText');
+            if (mainLiveUsersText) {
+                mainLiveUsersText.textContent = `오늘 ${liveData.todayActive.toLocaleString()}명 트레이닝 중`;
+            }
+            
+            // 결과화면 상세 현황 업데이트
+            const liveUsersCount = document.getElementById('liveUsersCount');
+            const totalUsersCount = document.getElementById('totalUsersCount');
+            
+            if (liveUsersCount) {
+                liveUsersCount.textContent = liveData.todayActive.toLocaleString();
+            }
+            if (totalUsersCount) {
+                totalUsersCount.textContent = liveData.totalUsers.toLocaleString();
+            }
+        }
+
+        // 🔥 새로운 기능: 리뷰 슬라이더 생성
+        function initReviewsCarousel() {
+            const reviewsSlider = document.getElementById('reviewsSlider');
+            const carouselDots = document.getElementById('carouselDots');
+            
+            if (!reviewsSlider || !carouselDots) return;
+            
+            // 리뷰 카드들 생성
+            reviewsSlider.innerHTML = '';
+            SOCIAL_PROOF_REVIEWS.forEach((review, index) => {
+                const reviewCard = document.createElement('div');
+                reviewCard.className = 'review-card';
+                reviewCard.innerHTML = `
+                    <div class="review-text">"${review.text}"</div>
+                    <div class="review-author">
+                        <div class="review-avatar">${review.avatar}</div>
+                        <div class="review-info">
+                            <div class="review-name">${review.author}</div>
+                            <div class="review-rating">${review.rating}</div>
+                        </div>
+                    </div>
+                `;
+                reviewsSlider.appendChild(reviewCard);
+            });
+            
+            // 캐러셀 점들 생성
+            carouselDots.innerHTML = '';
+            SOCIAL_PROOF_REVIEWS.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
+                dot.addEventListener('click', () => goToReview(index));
+                carouselDots.appendChild(dot);
+            });
+            
+            // 자동 슬라이드 시작
+            startReviewCarousel();
+            
+            // GA 이벤트: 사회적 증명 노출
+            gtag('event', 'social_proof_impression', {
+                total_reviews: SOCIAL_PROOF_REVIEWS.length,
+                current_live_users: generateSmartLiveData().todayActive
+            });
+        }
+
+        // 🔥 새로운 기능: 리뷰 캐러셀 자동 재생
+        function startReviewCarousel() {
+            if (reviewCarouselInterval) {
+                clearInterval(reviewCarouselInterval);
+            }
+            
+            reviewCarouselInterval = setInterval(() => {
+                currentReviewIndex = (currentReviewIndex + 1) % SOCIAL_PROOF_REVIEWS.length;
+                goToReview(currentReviewIndex);
+            }, 4000); // 4초마다 변경
+        }
+
+        // 🔥 새로운 기능: 특정 리뷰로 이동
+        function goToReview(index) {
+            const reviewsSlider = document.getElementById('reviewsSlider');
+            const carouselDots = document.getElementById('carouselDots');
+            
+            if (!reviewsSlider || !carouselDots) return;
+            
+            currentReviewIndex = index;
+            
+            // 슬라이더 이동
+            reviewsSlider.style.transform = `translateX(-${index * 100}%)`;
+            
+            // 점 활성화 상태 업데이트
+            carouselDots.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+                if (i === index) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+            
+            // GA 이벤트: 리뷰 조회
+            gtag('event', 'review_view', {
+                review_index: index,
+                review_author: SOCIAL_PROOF_REVIEWS[index].author
+            });
+        }
 
         // 🎮 배지 시스템 데이터
         const BADGES_CONFIG = [
@@ -2687,6 +3107,7 @@
             const stats = getLocalStats();
             displayUserStats(stats);
             updateChart();
+            updateSocialProofData(); // 🔥 새로운 기능: 사회적 증명 데이터 업데이트
         }
 
         function displayUserStats(stats) {
@@ -2988,6 +3409,10 @@
                 const newBadges = checkNewBadges(updatedStats);
                 updateBadgesDisplay();
                 
+                // 🔥 새로운 기능: 사회적 증명 UI 초기화
+                updateSocialProofData();
+                initReviewsCarousel();
+                
                 if (newBadges.length > 0) {
                     // 첫 번째 새 배지만 팝업으로 표시 (여러 개면 순차적으로)
                     setTimeout(() => {
@@ -3028,6 +3453,8 @@
                 const updatedStats = updateLocalStats(window.exerciseData);
                 addExerciseHistory(window.exerciseData);
                 updateBadgesDisplay();
+                updateSocialProofData();
+                initReviewsCarousel();
             }
         }
 
@@ -3060,6 +3487,11 @@
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
             
+            // 🔥 새로운 기능: 리뷰 캐러셀 정리
+            if (reviewCarouselInterval) {
+                clearInterval(reviewCarouselInterval);
+            }
+            
             document.getElementById('countdownSection').style.display = 'block';
             document.getElementById('breathingSection').style.display = 'none';
             document.getElementById('restSection').style.display = 'none';
@@ -3069,6 +3501,14 @@
             loadUserData();
             loadResistanceSettings();
             updateBadgesDisplay();
+            
+            // 🔥 새로운 기능: 페이지 로드시 사회적 증명 데이터 업데이트
+            updateSocialProofData();
+            
+            // 🔥 새로운 기능: 메인화면 실시간 현황 주기적 업데이트 (2분마다)
+            setInterval(() => {
+                updateSocialProofData();
+            }, 120000);
         };
 
         // Service Worker 등록

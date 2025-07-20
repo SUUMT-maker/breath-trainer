@@ -2682,6 +2682,106 @@ function skipOnboarding() {
         step: document.getElementById('onboardingStep1').style.display === 'none' ? 2 : 1
     });
 }
+
+// 🔥 새로운 기능: 스와이프 네비게이션
+let touchStartX = 0;
+let touchEndX = 0;
+let isOnboarding = true;
+
+function handleSwipeGesture() {
+    const swipeThreshold = 50; // 최소 스와이프 거리 (픽셀)
+    const swipeDistance = touchEndX - touchStartX;
+    
+    // 오른쪽 스와이프 (다음으로)
+    if (swipeDistance > swipeThreshold) {
+        const step1 = document.getElementById('onboardingStep1');
+        const step2 = document.getElementById('onboardingStep2');
+        
+        if (step1 && step1.style.display !== 'none') {
+            // 첫 번째 화면 → 두 번째 화면
+            nextOnboardingStep();
+            
+            gtag('event', 'onboarding_swipe', {
+                action: 'next',
+                step: 1
+            });
+        } else if (step2 && step2.style.display !== 'none') {
+            // 두 번째 화면 → 메인 화면
+            skipOnboarding();
+            
+            gtag('event', 'onboarding_swipe', {
+                action: 'finish',
+                step: 2
+            });
+        }
+    }
+    
+    // 왼쪽 스와이프 (이전으로)
+    else if (swipeDistance < -swipeThreshold) {
+        const step2 = document.getElementById('onboardingStep2');
+        
+        if (step2 && step2.style.display !== 'none') {
+            // 두 번째 화면 → 첫 번째 화면
+            document.getElementById('onboardingStep2').style.display = 'none';
+            document.getElementById('onboardingStep1').style.display = 'flex';
+            
+            gtag('event', 'onboarding_swipe', {
+                action: 'back',
+                step: 2
+            });
+        }
+    }
+}
+
+// 온보딩 화면에 터치 이벤트 리스너 추가
+function initializeOnboardingSwipe() {
+    const introScreen = document.getElementById('introScreen');
+    
+    if (introScreen) {
+        // 터치 시작
+        introScreen.addEventListener('touchstart', (e) => {
+            if (isOnboarding) {
+                touchStartX = e.changedTouches[0].screenX;
+            }
+        }, { passive: true });
+        
+        // 터치 종료
+        introScreen.addEventListener('touchend', (e) => {
+            if (isOnboarding) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipeGesture();
+            }
+        }, { passive: true });
+        
+        // 마우스 지원 (데스크톱 테스트용)
+        let mouseStartX = 0;
+        
+        introScreen.addEventListener('mousedown', (e) => {
+            if (isOnboarding) {
+                mouseStartX = e.clientX;
+            }
+        });
+        
+        introScreen.addEventListener('mouseup', (e) => {
+            if (isOnboarding) {
+                touchStartX = mouseStartX;
+                touchEndX = e.clientX;
+                handleSwipeGesture();
+            }
+        });
+    }
+}
+
+// hideIntro 함수 수정 (온보딩 종료 시 스와이프 비활성화)
+function hideIntro() {
+    isOnboarding = false; // 스와이프 비활성화
+    
+    const introScreen = document.getElementById('introScreen');
+    introScreen.classList.add('hidden');
+    setTimeout(() => {
+        introScreen.style.display = 'none';
+    }, 800);
+}
         
         // Apps Script URL (AI 조언만 사용)
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8iRnFGheIKcPUBkmSqOUAJ4_jPhSFRR593Ukfk1j6Da1oIPOkUlAboDdqr-CA2u29rw/exec';
@@ -4663,6 +4763,8 @@ function skipOnboarding() {
             setInterval(() => {
                 updateSocialProofData();
             }, 120000);
+            // 🔥 새로운 기능: 온보딩 스와이프 초기화
+            initializeOnboardingSwipe();
         };
 
         // Service Worker 등록

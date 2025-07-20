@@ -1964,7 +1964,7 @@
                 icon: '🚀',
                 description: '휴식시간 없이 2세트 연속 완주',
                 hint: '휴식 스킵',
-                condition: (stats) => getSkippedRestCount() >= 1
+                condition: (stats) => getSkippedRestCount() >= 1 && stats.totalExercises >= 2
             },
             {
                 id: 'consistency_hero',

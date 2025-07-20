@@ -680,6 +680,7 @@
             transform: none;
             margin: 2rem auto;
             min-height: auto;
+            overflow: visible;
         }
 
         #resultScreen {
@@ -983,12 +984,12 @@
         .badges-system {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 20px;
-            padding: 20px;
+            padding: 20px 20px 40px 20px;
             text-align: center;
             color: white;
             margin-bottom: 1.5rem;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .badges-system::before {
@@ -1036,6 +1037,7 @@
             gap: 8px;
             position: relative;
             z-index: 1;
+            overflow: visible;
         }
 
         .badge-slot {
@@ -1079,18 +1081,31 @@
 
         .badge-hint {
             position: absolute;
-            bottom: -25px;
+            bottom: -35px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 8px;
-            background: rgba(0, 0, 0, 0.7);
+            font-size: 9px;
+            background: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
             opacity: 0;
             transition: opacity 0.3s ease;
             white-space: nowrap;
-            z-index: 10;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+        }
+
+        .badge-hint::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 4px solid rgba(0, 0, 0, 0.9);
         }
 
         .badge-slot:hover .badge-hint {
@@ -1398,11 +1413,28 @@
 
             .badges-grid {
                 grid-template-columns: repeat(5, 1fr);
+                overflow: visible;
+            }
+
+            .badges-system {
+                padding: 16px 16px 35px 16px;
             }
 
             .badge-slot {
                 width: 36px;
                 height: 36px;
+            }
+            
+            .badge-hint {
+                font-size: 8px;
+                padding: 3px 6px;
+                bottom: -30px;
+            }
+            
+            .badge-hint::before {
+                border-left: 3px solid transparent;
+                border-right: 3px solid transparent;
+                border-bottom: 3px solid rgba(0, 0, 0, 0.9);
             }
         }
 

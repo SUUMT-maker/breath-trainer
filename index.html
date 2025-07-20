@@ -27,6 +27,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="숨트레이너">
     
+    <!-- 매니페스트 링크 -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- 파비콘 및 아이콘 -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="/icons/icon-180x180.png">
+    
     <style>
         /* 🌙 다크모드 강제 방지 */
         :root {
@@ -788,6 +796,23 @@
             font-weight: 500;
         }
 
+        /* 🔧 휴식시간 텍스트 중앙정렬 개선 */
+        #restSection p {
+            text-align: center !important;
+            color: #666 !important;
+            margin: 1rem 0 !important;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        #restProgressText {
+            text-align: center !important;
+            font-size: 1.1rem !important;
+            margin: 1rem 0 !important;
+            color: #333 !important;
+            font-weight: 600;
+        }
+
         @keyframes setGlow {
             0%, 100% { opacity: 0.7; }
             50% { opacity: 1; }
@@ -954,99 +979,131 @@
             color: #1E1E1E;
         }
 
-        /* 🎮 게임화 요소 - 배지 시스템 */
-        .badge-collection-card {
+        /* 🎮 게임화 배지 시스템 */
+        .badges-system {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 24px;
-            padding: 24px;
-            margin-bottom: 1.5rem;
-            color: white;
+            border-radius: 20px;
+            padding: 20px;
             text-align: center;
+            color: white;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .badge-header {
+        .badges-system::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+        }
+
+        .badges-header {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
         }
 
-        .badge-title {
-            font-size: 20px;
-            font-weight: 700;
+        .badges-title {
+            font-size: 18px;
+            font-weight: 600;
         }
 
-        .badge-subtitle {
+        .badges-progress {
             font-size: 14px;
             opacity: 0.9;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
         }
 
-        .badge-grid {
+        .badges-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 16px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            position: relative;
+            z-index: 1;
         }
 
         .badge-slot {
-            width: 60px;
-            height: 60px;
-            border: 3px dashed rgba(255, 255, 255, 0.4);
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px dashed rgba(255, 255, 255, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
             transition: all 0.3s ease;
+            cursor: pointer;
             position: relative;
         }
 
         .badge-slot.earned {
-            border: 3px solid #ffd700;
-            background: rgba(255, 215, 0, 0.2);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #FFD700;
+            color: #333;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
             animation: badgeGlow 2s ease-in-out infinite;
         }
 
         .badge-slot:hover {
             transform: scale(1.1);
-            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .badge-slot.earned:hover {
+            transform: scale(1.2);
+        }
+
+        .badge-icon {
+            font-size: 20px;
+        }
+
+        .badge-slot.earned .badge-icon {
+            font-size: 22px;
         }
 
         .badge-hint {
             position: absolute;
-            bottom: -20px;
+            bottom: -25px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 10px;
-            opacity: 0.7;
+            font-size: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
             white-space: nowrap;
-            max-width: 80px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            z-index: 10;
         }
 
-        .badge-progress {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .badge-motivation {
-            font-size: 12px;
-            opacity: 0.8;
-            line-height: 1.4;
+        .badge-slot:hover .badge-hint {
+            opacity: 1;
         }
 
         @keyframes badgeGlow {
-            0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.8); }
         }
 
-        /* 🎉 배지 획득 모달 */
-        .badge-modal-overlay {
+        /* 배지 획득 팝업 */
+        .badge-popup-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -1056,97 +1113,98 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 2000;
+            z-index: 3000;
+        }
+
+        .badge-popup-overlay.show {
+            display: flex;
             animation: fadeIn 0.5s ease-out;
         }
 
-        .badge-modal-overlay.show {
-            display: flex;
-        }
-
-        .badge-modal {
+        .badge-popup {
             background: white;
             border-radius: 24px;
             padding: 2rem;
+            text-align: center;
             max-width: 320px;
             width: 90%;
-            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: badgePopIn 0.6s ease-out;
             position: relative;
-            animation: bounceIn 0.6s ease-out;
+            overflow: hidden;
         }
 
-        .badge-earned-icon {
+        .badge-popup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
+            animation: goldShine 2s ease-in-out infinite;
+        }
+
+        @keyframes goldShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes badgePopIn {
+            0% { transform: scale(0.5) rotate(180deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(0deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .badge-popup-icon {
             font-size: 4rem;
             margin-bottom: 1rem;
-            animation: rotateBounce 1.5s ease-in-out;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            animation: bounce 1s ease-in-out infinite;
         }
 
-        .badge-earned-title {
-            font-size: 1.5rem;
-            font-weight: bold;
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .badge-popup h3 {
             color: #333;
             margin-bottom: 0.5rem;
+            font-size: 1.4rem;
         }
 
-        .badge-earned-subtitle {
-            font-size: 1rem;
+        .badge-popup .badge-name {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .badge-popup p {
             color: #666;
             margin-bottom: 1.5rem;
+            line-height: 1.5;
         }
 
-        .badge-earned-description {
-            font-size: 0.9rem;
-            color: #555;
-            line-height: 1.4;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 12px;
-        }
-
-        .badge-close-btn {
+        .badge-popup-close {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             border: none;
             border-radius: 25px;
             padding: 12px 24px;
             font-size: 1rem;
-            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .badge-close-btn:hover {
+        .badge-popup-close:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes rotateBounce {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(-10deg) scale(1.1); }
-            75% { transform: rotate(10deg) scale(1.1); }
-        }
-
-        /* 🏁 휴식시간 텍스트 중앙정렬 개선 */
-        #restSection h2 {
-            text-align: center;
-            color: #333;
-            font-size: 1.4rem;
-            margin-bottom: 1.5rem;
-        }
-
-        #restSection p {
-            text-align: center;
-            color: #666;
-            margin: 1rem 0;
-            font-size: 1rem;
-            line-height: 1.5;
         }
 
         .result-content {
@@ -1338,15 +1396,13 @@
                 font-size: 1.4rem;
             }
 
-            .badge-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 12px;
+            .badges-grid {
+                grid-template-columns: repeat(5, 1fr);
             }
 
             .badge-slot {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
+                width: 36px;
+                height: 36px;
             }
         }
 
@@ -1394,16 +1450,14 @@
         </div>
     </div>
 
-    <!-- 🎉 배지 획득 모달 -->
-    <div id="badgeModal" class="badge-modal-overlay">
-        <div class="badge-modal">
-            <div class="badge-earned-icon" id="badgeEarnedIcon">🏆</div>
-            <h2 class="badge-earned-title" id="badgeEarnedTitle">축하합니다!</h2>
-            <p class="badge-earned-subtitle" id="badgeEarnedSubtitle">새로운 배지를 획득했습니다!</p>
-            <div class="badge-earned-description" id="badgeEarnedDescription">
-                첫 트레이닝을 완료하셨네요! 앞으로도 꾸준히 도전해보세요.
-            </div>
-            <button class="badge-close-btn" onclick="closeBadgeModal()">확인</button>
+    <!-- 🎮 배지 획득 팝업 -->
+    <div id="badgePopup" class="badge-popup-overlay">
+        <div class="badge-popup">
+            <div class="badge-popup-icon" id="badgePopupIcon">🏆</div>
+            <h3>배지 획득!</h3>
+            <div class="badge-name" id="badgePopupName">첫 걸음</div>
+            <p id="badgePopupDescription">첫 번째 호흡 트레이닝을 완료하셨습니다!</p>
+            <button class="badge-popup-close" onclick="closeBadgePopup()">확인</button>
         </div>
     </div>
 
@@ -1554,7 +1608,7 @@
                             <span class="section-icon">📈</span>
                             <span>주간 활동</span>
                         </h2>
-                        <div class="section-subtitle">최근 7일간 트레이닝 성과를 한눈에</div>
+                        <div class="section-subtitle" id="chartSubtitle">이번 주 트레이닝 성과를 한눈에</div>
                     </div>
                 </div>
 
@@ -1641,7 +1695,7 @@
                     <h2>휴식 시간</h2>
                     <div class="countdown" id="restCountdown">120</div>
                     <p>다음 세트까지 호흡을 정리하세요</p>
-                    <div class="progress-numbers" style="font-size: 1.1rem; margin: 1rem 0;" id="restProgressText">1세트 완료</div>
+                    <div class="progress-numbers" id="restProgressText">1세트 완료</div>
                     
                     <div class="control-buttons">
                         <button class="btn btn-success" onclick="skipRest()">휴식 건너뛰기</button>
@@ -1722,23 +1776,19 @@
                     </div>
                 </div>
 
-                <div id="achievementBadges"></div>
-
-                <!-- 🎮 배지 수집 카드 (격려 메시지 대체) -->
-                <div class="badge-collection-card">
-                    <div class="badge-header">
-                        <span>🏆</span>
-                        <span class="badge-title">배지 컬렉션</span>
+                <!-- 🎮 배지 시스템 -->
+                <div class="badges-system">
+                    <div class="badges-header">
+                        <span class="section-icon">🏆</span>
+                        <span class="badges-title">배지 컬렉션</span>
                     </div>
-                    <div class="badge-subtitle">수집한 배지들을 확인해보세요!</div>
-                    
-                    <div class="badge-grid" id="badgeGrid">
-                        <!-- JavaScript로 동적 생성 -->
+                    <div class="badges-progress" id="badgesProgress">수집한 배지: 0/12</div>
+                    <div class="badges-grid" id="badgesGrid">
+                        <!-- 배지들이 JavaScript로 생성됨 -->
                     </div>
-                    
-                    <div class="badge-progress" id="badgeProgress">수집률: 0/12</div>
-                    <div class="badge-motivation">모든 배지를 수집하고 호흡 마스터가 되어보세요!</div>
                 </div>
+
+                <div id="achievementBadges"></div>
 
                 <div class="result-content">
                     <div class="result-section">
@@ -1781,162 +1831,194 @@
         
         let userFeedback = null;
 
-        // 🎮 배지 시스템 정의
-        const BADGE_DEFINITIONS = [
+        // 🎮 배지 시스템 데이터
+        const BADGES_CONFIG = [
             {
-                id: 'first_training',
-                name: '첫 발걸음',
-                icon: '🎯',
-                hint: '첫 시작',
-                description: '첫 번째 트레이닝을 완료했습니다! 모든 여정은 첫 걸음부터 시작됩니다.',
-                checkFunction: (stats) => stats.totalExercises >= 1
+                id: 'first_step',
+                name: '첫 걸음',
+                icon: '🌱',
+                description: '첫 번째 호흡 트레이닝 완료',
+                hint: '첫 트레이닝',
+                condition: (stats) => stats.totalExercises >= 1
             },
             {
-                id: 'week_warrior',
-                name: '일주일 전사',
+                id: 'daily_warrior',
+                name: '일일 전사',
+                icon: '⚡',
+                description: '하루에 3번 이상 트레이닝 완료',
+                hint: '하루 3회',
+                condition: (stats) => getTodayExerciseCount() >= 3
+            },
+            {
+                id: 'week_master',
+                name: '주간 마스터',
                 icon: '🔥',
+                description: '7일 연속 트레이닝 완료',
                 hint: '7일 연속',
-                description: '7일 연속으로 트레이닝을 완료했습니다! 놀라운 의지력이네요.',
-                checkFunction: (stats) => stats.consecutiveDays >= 7
+                condition: (stats) => stats.consecutiveDays >= 7
             },
             {
-                id: 'fifty_sessions',
-                name: '50회 마스터',
-                icon: '💎',
-                hint: '50회 달성',
-                description: '총 50회의 트레이닝을 완료했습니다! 진정한 숨트 마스터입니다.',
-                checkFunction: (stats) => stats.totalExercises >= 50
+                id: 'breath_collector',
+                name: '호흡 수집가',
+                icon: '🫁',
+                description: '총 1000회 호흡 달성',
+                hint: '총 1000회',
+                condition: (stats) => stats.totalBreaths >= 1000
+            },
+            {
+                id: 'endurance_king',
+                name: '지구력 왕',
+                icon: '👑',
+                description: '50회 트레이닝 완주',
+                hint: '50회 완주',
+                condition: (stats) => stats.totalExercises >= 50
             },
             {
                 id: 'high_intensity',
-                name: '고강도 챌린저',
-                icon: '⚡',
-                hint: '높은 강도',
-                description: '들숨 4단계 이상으로 트레이닝을 완료했습니다! 도전 정신이 대단해요.',
-                checkFunction: (stats, exerciseData) => {
-                    return exerciseData && exerciseData.resistanceSettings && 
-                           exerciseData.resistanceSettings.inhale >= 4 && !exerciseData.isAborted;
-                }
+                name: '고강도 도전자',
+                icon: '💪',
+                description: '들숨/날숨 모두 4단계 이상 달성',
+                hint: '고강도 달성',
+                condition: (stats) => getMaxIntensityEver().inhale >= 4 && getMaxIntensityEver().exhale >= 4
             },
             {
-                id: 'perfect_score',
-                name: '완벽주의자',
-                icon: '⭐',
-                hint: '완벽한 세션',
-                description: '2세트를 모두 완주하고 "딱 좋아요" 피드백을 남겼습니다!',
-                checkFunction: (stats, exerciseData) => {
-                    return exerciseData && exerciseData.completedSets === 2 && 
-                           exerciseData.userFeedback === 'perfect' && !exerciseData.isAborted;
-                }
-            },
-            {
-                id: 'long_breath',
-                name: '숨길이 챔피언',
-                icon: '🫁',
-                hint: '많은 호흡',
-                description: '총 1000회의 호흡을 완료했습니다! 호흡근이 정말 강해졌어요.',
-                checkFunction: (stats) => stats.totalBreaths >= 1000
-            },
-            {
-                id: 'morning_person',
-                name: '새벽 훈련자',
-                icon: '🌅',
-                hint: '이른 시간',
-                description: '오전 7시 이전에 트레이닝을 완료했습니다! 부지런한 분이네요.',
-                checkFunction: (stats, exerciseData) => {
-                    const now = new Date();
-                    return now.getHours() < 7;
-                }
-            },
-            {
-                id: 'night_owl',
-                name: '밤의 수호자',
-                icon: '🦉',
-                hint: '늦은 시간',
-                description: '오후 10시 이후에 트레이닝을 완료했습니다! 야행성이신가요?',
-                checkFunction: (stats, exerciseData) => {
-                    const now = new Date();
-                    return now.getHours() >= 22;
-                }
+                id: 'perfect_month',
+                name: '완벽한 달',
+                icon: '🌟',
+                description: '30일 연속 트레이닝 완료',
+                hint: '30일 연속',
+                condition: (stats) => stats.consecutiveDays >= 30
             },
             {
                 id: 'speed_demon',
-                name: '스피드 러너',
-                icon: '💨',
-                hint: '빠른 완주',
-                description: '5분 이내에 트레이닝을 완료했습니다! 효율적인 운동이네요.',
-                checkFunction: (stats, exerciseData) => {
-                    if (!exerciseData || !exerciseData.exerciseTime) return false;
-                    const timeStr = exerciseData.exerciseTime;
-                    const [minutes, seconds] = timeStr.split(':').map(Number);
-                    return (minutes * 60 + seconds) <= 300; // 5분 = 300초
-                }
+                name: '스피드 데몬',
+                icon: '🚀',
+                description: '휴식시간 없이 2세트 연속 완주',
+                hint: '휴식 스킵',
+                condition: (stats) => getSkippedRestCount() >= 1
             },
             {
-                id: 'persistent',
-                name: '끈기의 달인',
+                id: 'consistency_hero',
+                name: '꾸준함의 영웅',
                 icon: '🎯',
-                hint: '꾸준함',
-                description: '평균 1.5세트 이상을 유지하고 있습니다! 꾸준함의 힘이네요.',
-                checkFunction: (stats) => stats.averageSets >= 1.5 && stats.totalExercises >= 10
+                description: '100회 트레이닝 완주',
+                hint: '100회 완주',
+                condition: (stats) => stats.totalExercises >= 100
             },
             {
-                id: 'century_club',
-                name: '100클럽 멤버',
-                icon: '💯',
-                hint: '100회 달성',
-                description: '총 100회의 트레이닝을 완료했습니다! 전설적인 기록이에요.',
-                checkFunction: (stats) => stats.totalExercises >= 100
+                id: 'breath_master',
+                name: '호흡 마스터',
+                icon: '🧘',
+                description: '총 5000회 호흡 달성',
+                hint: '총 5000회',
+                condition: (stats) => stats.totalBreaths >= 5000
             },
             {
-                id: 'feedback_master',
-                name: '피드백 마스터',
-                icon: '📝',
-                hint: '소통의 달인',
-                description: '20회 이상 피드백을 남겨주셨습니다! 소중한 의견 감사해요.',
-                checkFunction: (stats) => {
-                    const feedbackHistory = getFeedbackHistory();
-                    return feedbackHistory.length >= 20;
+                id: 'legend',
+                name: '레전드',
+                icon: '🏆',
+                description: '모든 조건을 달성한 진정한 마스터',
+                hint: '??? 미스터리',
+                condition: (stats) => {
+                    const earnedBadges = getEarnedBadges();
+                    return earnedBadges.length >= 11; // 자기 자신 제외한 모든 배지
                 }
+            },
+            {
+                id: 'early_bird',
+                name: '일찍 일어나는 새',
+                icon: '🌅',
+                description: '오전 6시 이전에 트레이닝 완료',
+                hint: '새벽 운동',
+                condition: (stats) => getEarlyMorningCount() >= 1
             }
         ];
 
-        // 🕐 시간대별 차트 업데이트 (시간대 버그 수정)
+        // 🕐 사용자 위치 기반 시간대 자동 설정
+        function getUserTimezone() {
+            return Intl.DateTimeFormat().resolvedOptions().timeZone;
+        }
+
+        function getCurrentUserTime() {
+            return new Date();
+        }
+
+        function formatDateForUser(date) {
+            return date.toLocaleDateString('ko-KR', {
+                weekday: 'short',
+                month: 'numeric',
+                day: 'numeric',
+                timeZone: getUserTimezone()
+            });
+        }
+
+        function getWeekStartDate() {
+            const now = getCurrentUserTime();
+            const dayOfWeek = now.getDay(); // 0 = 일요일
+            const startDate = new Date(now);
+            startDate.setDate(now.getDate() - dayOfWeek);
+            startDate.setHours(0, 0, 0, 0);
+            return startDate;
+        }
+
+        function getWeekEndDate() {
+            const startDate = getWeekStartDate();
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6);
+            endDate.setHours(23, 59, 59, 999);
+            return endDate;
+        }
+
+        function isDateInCurrentWeek(date) {
+            const checkDate = new Date(date);
+            const weekStart = getWeekStartDate();
+            const weekEnd = getWeekEndDate();
+            return checkDate >= weekStart && checkDate <= weekEnd;
+        }
+
+        // 차트 데이터 업데이트 (개선된 주간 구분)
         function updateChart() {
             const history = getExerciseHistory();
             const chartBars = document.getElementById('chartBars');
             const chartXAxis = document.getElementById('chartXAxis');
+            const chartSubtitle = document.getElementById('chartSubtitle');
             const bars = chartBars.querySelectorAll('.chart-bar');
             
-            // 🔧 사용자 현지 시간대 기준으로 최근 7일 계산
-            const today = new Date();
-            const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-            
-            // X축 라벨을 현재 요일 기준으로 업데이트
-            const xLabels = chartXAxis.querySelectorAll('.x-label');
-            for (let i = 0; i < 7; i++) {
-                const date = new Date(today);
-                date.setDate(date.getDate() - (6 - i));
-                xLabels[i].textContent = dayNames[date.getDay()];
-            }
-
-            // 📊 최근 7일간의 데이터를 현지 시간대 기준으로 처리
-            const last7Days = Array.from({length: 7}, (_, i) => {
-                const date = new Date(today);
-                date.setDate(date.getDate() - (6 - i));
-                return {
-                    dateString: date.toDateString(),
-                    dayIndex: i
-                };
+            // 현재 주의 시작일 계산
+            const weekStart = getWeekStartDate();
+            const weekDates = Array.from({length: 7}, (_, i) => {
+                const date = new Date(weekStart);
+                date.setDate(weekStart.getDate() + i);
+                return date;
             });
 
-            bars.forEach((bar, index) => {
-                const targetDateString = last7Days[index].dateString;
+            // 차트 하단 요일 업데이트
+            const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
+            chartXAxis.querySelectorAll('.x-label').forEach((label, index) => {
+                const date = weekDates[index];
+                const dayName = dayLabels[index];
+                const isToday = date.toDateString() === getCurrentUserTime().toDateString();
                 
-                // 같은 날짜의 모든 운동 기록 찾기
+                label.textContent = dayName;
+                if (isToday) {
+                    label.style.fontWeight = 'bold';
+                    label.style.color = '#667eea';
+                } else {
+                    label.style.fontWeight = 'normal';
+                    label.style.color = '#666';
+                }
+            });
+
+            // 주간 제목 업데이트
+            const weekStartStr = formatDateForUser(weekStart);
+            const weekEndStr = formatDateForUser(weekDates[6]);
+            chartSubtitle.textContent = `${weekStartStr} ~ ${weekEndStr} 트레이닝 성과`;
+
+            bars.forEach((bar, index) => {
+                const targetDate = weekDates[index];
                 const dayData = history.filter(record => {
                     const recordDate = new Date(record.date);
-                    return recordDate.toDateString() === targetDateString;
+                    return recordDate.toDateString() === targetDate.toDateString();
                 });
                 
                 const totalSets = dayData.reduce((sum, record) => sum + record.completedSets, 0);
@@ -1944,149 +2026,135 @@
                 
                 bar.style.height = `${height}%`;
                 
-                // 오늘인 경우 특별 표시
-                if (targetDateString === today.toDateString()) {
-                    bar.classList.add('highlight');
-                } else if (totalSets > 0) {
+                // 데이터가 있는 날은 하이라이트
+                if (totalSets > 0) {
                     bar.classList.add('highlight');
                 } else {
                     bar.classList.remove('highlight');
                 }
 
-                // 🎯 개선된 툴팁 (요일과 날짜 정보 포함)
-                const targetDate = new Date(last7Days[index].dateString);
-                const dayName = dayNames[targetDate.getDay()];
-                const dateStr = `${targetDate.getMonth() + 1}/${targetDate.getDate()}`;
-                bar.title = `${dayName} (${dateStr}): ${totalSets}세트 완료`;
+                // 툴팁 업데이트
+                bar.title = `${formatDateForUser(targetDate)}: ${totalSets}세트 완료`;
             });
         }
 
-        // 🎮 배지 시스템 함수들
-        function getBadgeProgress() {
-            return JSON.parse(localStorage.getItem('badgeProgress') || '{}');
+        // 🎮 배지 시스템 헬퍼 함수들
+        function getTodayExerciseCount() {
+            const history = getExerciseHistory();
+            const today = getCurrentUserTime().toDateString();
+            return history.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate.toDateString() === today;
+            }).length;
         }
 
-        function saveBadgeProgress(badgeProgress) {
-            localStorage.setItem('badgeProgress', JSON.stringify(badgeProgress));
+        function getMaxIntensityEver() {
+            const history = getExerciseHistory();
+            let maxInhale = 1;
+            let maxExhale = 1;
+            
+            history.forEach(record => {
+                if (record.resistanceSettings) {
+                    maxInhale = Math.max(maxInhale, record.resistanceSettings.inhale || 1);
+                    maxExhale = Math.max(maxExhale, record.resistanceSettings.exhale || 1);
+                }
+            });
+            
+            return { inhale: maxInhale, exhale: maxExhale };
         }
 
-        function checkAndAwardBadges(stats, exerciseData = null) {
-            try {
-                const badgeProgress = getBadgeProgress();
-                const newBadges = [];
+        function getSkippedRestCount() {
+            return parseInt(localStorage.getItem('skippedRestCount') || '0');
+        }
 
-                BADGE_DEFINITIONS.forEach(badge => {
-                    if (!badgeProgress[badge.id] && badge.checkFunction(stats, exerciseData)) {
-                        badgeProgress[badge.id] = {
-                            earned: true,
-                            earnedAt: new Date().toISOString()
-                        };
+        function incrementSkippedRestCount() {
+            const count = getSkippedRestCount() + 1;
+            localStorage.setItem('skippedRestCount', count.toString());
+        }
+
+        function getEarlyMorningCount() {
+            const history = getExerciseHistory();
+            return history.filter(record => {
+                const recordDate = new Date(record.date);
+                const hour = recordDate.getHours();
+                return hour < 6;
+            }).length;
+        }
+
+        function getEarnedBadges() {
+            return JSON.parse(localStorage.getItem('earnedBadges') || '[]');
+        }
+
+        function saveBadge(badgeId) {
+            const earnedBadges = getEarnedBadges();
+            if (!earnedBadges.includes(badgeId)) {
+                earnedBadges.push(badgeId);
+                localStorage.setItem('earnedBadges', JSON.stringify(earnedBadges));
+                return true; // 새로 획득함
+            }
+            return false; // 이미 있음
+        }
+
+        function checkNewBadges(stats) {
+            const newBadges = [];
+            
+            BADGES_CONFIG.forEach(badge => {
+                if (badge.condition(stats)) {
+                    const isNew = saveBadge(badge.id);
+                    if (isNew) {
                         newBadges.push(badge);
                     }
-                });
-
-                if (newBadges.length > 0) {
-                    saveBadgeProgress(badgeProgress);
-                    // 첫 번째 새 배지만 모달로 표시 (너무 많으면 사용자 경험 저해)
-                    showBadgeModal(newBadges[0]);
-                    console.log('🎮 새 배지 획득:', newBadges.map(b => b.name).join(', '));
                 }
-
-                return newBadges;
-            } catch (error) {
-                console.error('🚨 배지 확인 시스템 오류:', error);
-                return []; // 빈 배열 반환으로 안전장치
-            }
-        }
-
-        function showBadgeModal(badge) {
-            try {
-                // 🛡️ DOM 요소 존재 확인
-                const modal = document.getElementById('badgeModal');
-                const iconEl = document.getElementById('badgeEarnedIcon');
-                const titleEl = document.getElementById('badgeEarnedTitle');
-                const subtitleEl = document.getElementById('badgeEarnedSubtitle');
-                const descEl = document.getElementById('badgeEarnedDescription');
-                
-                if (!modal || !iconEl || !titleEl || !subtitleEl || !descEl) {
-                    console.warn('🚨 배지 모달 DOM 요소를 찾을 수 없음');
-                    return;
-                }
-                
-                iconEl.textContent = badge.icon;
-                titleEl.textContent = '🎉 ' + badge.name + ' 획득!';
-                subtitleEl.textContent = '새로운 배지를 획득했습니다!';
-                descEl.textContent = badge.description;
-                
-                modal.classList.add('show');
-                
-                // Google Analytics 이벤트
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'badge_earned', {
-                        badge_id: badge.id,
-                        badge_name: badge.name
-                    });
-                }
-                
-                console.log('🎉 배지 모달 표시:', badge.name);
-            } catch (error) {
-                console.error('🚨 배지 모달 표시 오류:', error);
-            }
-        }
-
-        function closeBadgeModal() {
-            try {
-                const modal = document.getElementById('badgeModal');
-                if (modal) {
-                    modal.classList.remove('show');
-                    console.log('🎮 배지 모달 닫기');
-                }
-            } catch (error) {
-                console.error('🚨 배지 모달 닫기 오류:', error);
-            }
-        }
-
-        function updateBadgeDisplay() {
-            // 🛡️ 안전장치: 결과화면에서만 실행
-            const badgeGrid = document.getElementById('badgeGrid');
-            const badgeProgressElement = document.getElementById('badgeProgress');
-            
-            // 배지 관련 DOM 요소가 없으면 (메인화면 등) 조용히 리턴
-            if (!badgeGrid || !badgeProgressElement) {
-                console.log('🎮 배지 디스플레이: 결과화면이 아니므로 건너뜀');
-                return;
-            }
-
-            const badgeProgress = getBadgeProgress();
-            badgeGrid.innerHTML = '';
-            let earnedCount = 0;
-
-            BADGE_DEFINITIONS.forEach((badge, index) => {
-                const badgeSlot = document.createElement('div');
-                badgeSlot.className = 'badge-slot';
-                
-                if (badgeProgress[badge.id] && badgeProgress[badge.id].earned) {
-                    badgeSlot.classList.add('earned');
-                    badgeSlot.textContent = badge.icon;
-                    badgeSlot.title = badge.name + ': ' + badge.description;
-                    earnedCount++;
-                } else {
-                    badgeSlot.textContent = '?';
-                    badgeSlot.title = '미획득 배지: ' + badge.hint;
-                    
-                    // 힌트 표시
-                    const hint = document.createElement('div');
-                    hint.className = 'badge-hint';
-                    hint.textContent = badge.hint;
-                    badgeSlot.appendChild(hint);
-                }
-                
-                badgeGrid.appendChild(badgeSlot);
             });
+            
+            return newBadges;
+        }
 
-            // 수집률 업데이트
-            badgeProgressElement.textContent = `수집률: ${earnedCount}/${BADGE_DEFINITIONS.length}`;
-            console.log('🎮 배지 디스플레이 업데이트 완료:', `${earnedCount}/${BADGE_DEFINITIONS.length}`);
+        function showBadgePopup(badge) {
+            const popup = document.getElementById('badgePopup');
+            const icon = document.getElementById('badgePopupIcon');
+            const name = document.getElementById('badgePopupName');
+            const description = document.getElementById('badgePopupDescription');
+            
+            icon.textContent = badge.icon;
+            name.textContent = badge.name;
+            description.textContent = badge.description;
+            
+            popup.classList.add('show');
+            
+            // 팝업 표시 이벤트 추가
+            gtag('event', 'badge_earned', {
+                badge_id: badge.id,
+                badge_name: badge.name
+            });
+        }
+
+        function closeBadgePopup() {
+            document.getElementById('badgePopup').classList.remove('show');
+        }
+
+        function updateBadgesDisplay() {
+            const earnedBadges = getEarnedBadges();
+            const badgesGrid = document.getElementById('badgesGrid');
+            const badgesProgress = document.getElementById('badgesProgress');
+            
+            // 진행도 업데이트
+            badgesProgress.textContent = `수집한 배지: ${earnedBadges.length}/${BADGES_CONFIG.length}`;
+            
+            // 배지 그리드 생성
+            badgesGrid.innerHTML = '';
+            BADGES_CONFIG.forEach(badge => {
+                const isEarned = earnedBadges.includes(badge.id);
+                const badgeSlot = document.createElement('div');
+                badgeSlot.className = `badge-slot ${isEarned ? 'earned' : ''}`;
+                
+                badgeSlot.innerHTML = `
+                    <div class="badge-icon">${isEarned ? badge.icon : '?'}</div>
+                    <div class="badge-hint">${isEarned ? badge.name : badge.hint}</div>
+                `;
+                
+                badgesGrid.appendChild(badgeSlot);
+            });
         }
 
         // 🎯 피드백 히스토리 관리 함수 (스마트 분석용)
@@ -2096,8 +2164,8 @@
 
         function addFeedbackHistory(feedback, resistanceSettings) {
             const history = getFeedbackHistory();
-            const today = new Date().toDateString();
-            const currentHour = new Date().getHours();
+            const today = getCurrentUserTime().toDateString();
+            const currentHour = getCurrentUserTime().getHours();
             const timeOfDay = currentHour < 14 ? 'morning' : 'afternoon';
             
             const newRecord = {
@@ -2106,7 +2174,7 @@
                 feedback: feedback,
                 inhaleLevel: resistanceSettings.inhale,
                 exhaleLevel: resistanceSettings.exhale,
-                timestamp: new Date().toISOString()
+                timestamp: getCurrentUserTime().toISOString()
             };
             
             history.unshift(newRecord);
@@ -2275,7 +2343,6 @@
             showResultScreen();
         }
 
-        // 🎬 스플래시 화면 관련 함수들 (누락된 부분 복원)
         let autoProgressTimer = setTimeout(() => {
             hideIntro();
         }, 3000);
@@ -2284,343 +2351,29 @@
             clearTimeout(autoProgressTimer);
             
             const introScreen = document.getElementById('introScreen');
-            if (introScreen) {
-                introScreen.classList.add('hidden');
-                setTimeout(() => {
-                    introScreen.style.display = 'none';
-                }, 800);
-            }
+            introScreen.classList.add('hidden');
+            setTimeout(() => {
+                introScreen.style.display = 'none';
+            }, 800);
         }
 
-        // 🖼️ 이미지 로딩 에러 처리
         window.addEventListener('load', function() {
             const mainImage = document.getElementById('mainSplashImage');
             const fallbackSplash = document.getElementById('fallbackSplash');
             
-            if (mainImage) {
-                mainImage.addEventListener('error', function() {
-                    console.log('⚠️ 메인 스플래시 이미지 로드 실패');
-                    this.src = './images/suumt-splash-wide.png';
-                    
-                    this.addEventListener('error', function() {
-                        console.log('⚠️ 모든 이미지 로드 실패, 대체 화면 표시');
-                        this.style.display = 'none';
-                        if (fallbackSplash) {
-                            fallbackSplash.style.display = 'flex';
-                        }
-                    });
+            mainImage.addEventListener('error', function() {
+                console.log('⚠️ 메인 스플래시 이미지 로드 실패');
+                this.src = './images/suumt-splash-wide.png';
+                
+                this.addEventListener('error', function() {
+                    console.log('⚠️ 모든 이미지 로드 실패, 대체 화면 표시');
+                    this.style.display = 'none';
+                    fallbackSplash.style.display = 'flex';
                 });
-            }
+            });
 
             console.log('🎬 스플래시 화면 로딩 완료');
         });
-
-        // 🎯 운동 진행률 표시 함수들
-        function initializeProgressIndicators() {
-            const breathsContainer = document.getElementById('breathsIndicators');
-            if (breathsContainer) {
-                breathsContainer.innerHTML = '';
-                
-                for (let i = 0; i < 10; i++) {
-                    const breathDot = document.createElement('div');
-                    breathDot.className = 'breath-indicator';
-                    breathDot.setAttribute('data-breath', i + 1);
-                    breathsContainer.appendChild(breathDot);
-                }
-            }
-            
-            updateProgressIndicators();
-        }
-
-        function updateProgressIndicators() {
-            const setIndicators = document.querySelectorAll('.set-indicator');
-            setIndicators.forEach((indicator, index) => {
-                indicator.classList.remove('active', 'current');
-                if (index < currentSet - 1) {
-                    indicator.classList.add('active');
-                } else if (index === currentSet - 1) {
-                    indicator.classList.add('current');
-                }
-            });
-            
-            const breathIndicators = document.querySelectorAll('.breath-indicator');
-            breathIndicators.forEach((indicator, index) => {
-                indicator.classList.remove('completed', 'current');
-                if (index < currentBreath - 1) {
-                    indicator.classList.add('completed');
-                } else if (index === currentBreath - 1) {
-                    indicator.classList.add('current');
-                }
-            });
-            
-            const setNumbers = document.getElementById('setNumbers');
-            const breathNumbers = document.getElementById('breathNumbers');
-            
-            if (setNumbers) setNumbers.textContent = `${currentSet} / 2 세트`;
-            if (breathNumbers) breathNumbers.textContent = `${currentBreath} / 10 회`;
-        }
-
-        // 🛑 모달 관련 함수들
-        function showStopModal() {
-            const modal = document.getElementById('confirmModal');
-            if (modal) {
-                modal.classList.add('show');
-            }
-        }
-
-        function hideModal() {
-            const modal = document.getElementById('confirmModal');
-            if (modal) {
-                modal.classList.remove('show');
-            }
-        }
-
-        function confirmStop() {
-            hideModal();
-            isAborted = true;
-            clearTimeout(breathingTimer);
-            clearInterval(restTimer);
-            
-            gtag('event', 'exercise_aborted', {
-                completed_sets: Math.max(0, currentSet - 1),
-                completed_breaths: Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1))
-            });
-            
-            completeExercise();
-        }
-
-        // 🏃‍♂️ 운동 시작 및 진행 함수들
-        function startExercise() {
-            resetExercise();
-            showScreen('exerciseScreen');
-            
-            gtag('event', 'exercise_start', {
-                inhale_resistance: resistanceSettings.inhale,
-                exhale_resistance: resistanceSettings.exhale
-            });
-            
-            startCountdown();
-        }
-
-        function startCountdown() {
-            let count = 3;
-            const countdownEl = document.getElementById('countdown');
-            
-            const countdownInterval = setInterval(() => {
-                if (countdownEl) countdownEl.textContent = count;
-                count--;
-                
-                if (count < 0) {
-                    clearInterval(countdownInterval);
-                    startBreathing();
-                }
-            }, 1000);
-        }
-
-        function startBreathing() {
-            const countdownSection = document.getElementById('countdownSection');
-            const breathingSection = document.getElementById('breathingSection');
-            
-            if (countdownSection) countdownSection.style.display = 'none';
-            if (breathingSection) breathingSection.style.display = 'block';
-            
-            const circle = document.getElementById('breathingCircle');
-            if (circle) circle.className = 'breathing-circle exhale';
-            
-            initializeProgressIndicators();
-            
-            exerciseStartTime = new Date();
-            
-            setTimeout(() => {
-                breathingCycle();
-            }, 500);
-        }
-
-        function breathingCycle() {
-            if (isPaused || isAborted) return;
-
-            const circle = document.getElementById('breathingCircle');
-            const circleText = document.getElementById('circleText');
-
-            updateProgressIndicators();
-
-            if (breathingPhase === 'inhale') {
-                if (circleText) circleText.textContent = '들숨 (3초)';
-                if (circle) circle.className = 'breathing-circle inhale';
-                
-                breathingTimer = setTimeout(() => {
-                    breathingPhase = 'hold';
-                    breathingCycle();
-                }, 3000);
-
-            } else if (breathingPhase === 'hold') {
-                if (circleText) circleText.textContent = '멈춤 (1초)';
-                if (circle) circle.className = 'breathing-circle hold';
-                
-                breathingTimer = setTimeout(() => {
-                    breathingPhase = 'exhale';
-                    breathingCycle();
-                }, 1000);
-
-            } else if (breathingPhase === 'exhale') {
-                if (circleText) circleText.textContent = '날숨 (3초)';
-                if (circle) circle.className = 'breathing-circle exhale';
-                
-                breathingTimer = setTimeout(() => {
-                    breathingPhase = 'exhale-hold';
-                    breathingCycle();
-                }, 3000);
-
-            } else if (breathingPhase === 'exhale-hold') {
-                if (circleText) circleText.textContent = '멈춤 (1초)';
-                if (circle) circle.className = 'breathing-circle exhale-hold';
-                
-                breathingTimer = setTimeout(() => {
-                    currentBreath++;
-                    breathingPhase = 'inhale';
-                    
-                    if (currentBreath > 10) {
-                        currentSet++;
-                        currentBreath = 1;
-                        
-                        if (currentSet > 2) {
-                            completeExercise();
-                        } else {
-                            startRest();
-                        }
-                    } else {
-                        breathingCycle();
-                    }
-                }, 1000);
-            }
-        }
-
-        function startRest() {
-            const breathingSection = document.getElementById('breathingSection');
-            const restSection = document.getElementById('restSection');
-            
-            if (breathingSection) breathingSection.style.display = 'none';
-            if (restSection) restSection.style.display = 'block';
-            
-            let restTime = 120;
-            const restCountdownEl = document.getElementById('restCountdown');
-            const restProgressEl = document.getElementById('restProgressText');
-            
-            if (restProgressEl) restProgressEl.textContent = `${currentSet - 1}세트 완료`;
-            
-            restTimer = setInterval(() => {
-                if (isAborted) {
-                    clearInterval(restTimer);
-                    return;
-                }
-                
-                if (restCountdownEl) restCountdownEl.textContent = restTime;
-                restTime--;
-                
-                if (restTime < 0) {
-                    clearInterval(restTimer);
-                    startNextSet();
-                }
-            }, 1000);
-        }
-
-        function skipRest() {
-            clearInterval(restTimer);
-            startNextSet();
-        }
-
-        function startNextSet() {
-            const restSection = document.getElementById('restSection');
-            const breathingSection = document.getElementById('breathingSection');
-            
-            if (restSection) restSection.style.display = 'none';
-            if (breathingSection) breathingSection.style.display = 'block';
-            
-            const circle = document.getElementById('breathingCircle');
-            if (circle) circle.className = 'breathing-circle exhale';
-            
-            initializeProgressIndicators();
-            
-            setTimeout(() => {
-                breathingCycle();
-            }, 500);
-        }
-
-        function pauseExercise() {
-            isPaused = !isPaused;
-            const button = event.target;
-            
-            if (isPaused) {
-                clearTimeout(breathingTimer);
-                if (button) button.textContent = '계속하기';
-                const circleText = document.getElementById('circleText');
-                if (circleText) circleText.textContent = '일시정지';
-            } else {
-                if (button) button.textContent = '일시정지';
-                breathingCycle();
-            }
-        }
-
-        async function completeExercise() {
-            clearTimeout(breathingTimer);
-            clearInterval(restTimer);
-            
-            const exerciseTime = Math.floor((new Date() - exerciseStartTime) / 1000);
-            const minutes = Math.floor(exerciseTime / 60);
-            const seconds = exerciseTime % 60;
-            
-            window.exerciseData = {
-                exerciseTime: `${minutes}:${seconds.toString().padStart(2, '0')}`,
-                completedSets: isAborted ? Math.max(0, currentSet - 1) : 2,
-                completedBreaths: isAborted ? Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1)) : 20,
-                isAborted: isAborted,
-                resistanceSettings: { ...resistanceSettings },
-                userFeedback: userFeedback
-            };
-
-            setTimeout(() => {
-                showFeedbackScreen();
-            }, 1000);
-        }
-
-        // 🎯 피드백 화면 관련
-        function showFeedbackScreen() {
-            updateFeedbackScreenContent();
-            showScreen('feedbackScreen');
-        }
-
-        function updateFeedbackScreenContent() {
-            const title = document.getElementById('feedbackTitle');
-            const description = document.getElementById('feedbackDescription');
-            
-            if (isAborted) {
-                if (title) title.textContent = '중단하신 이유를 알려주세요';
-                if (description) description.textContent = '트레이닝을 중단하기 전까지의 강도는 어떠셨나요?';
-            } else {
-                if (title) title.textContent = '지금 호흡하는 느낌이 어떠세요?';
-                if (description) description.textContent = '방금 완료한 트레이닝의 강도는 어떠셨나요?';
-            }
-        }
-
-        // 🏠 화면 전환 및 초기화
-        function resetExercise() {
-            currentSet = 1;
-            currentBreath = 1;
-            isPaused = false;
-            isAborted = false;
-            breathingPhase = 'inhale';
-            userFeedback = null;
-            clearTimeout(breathingTimer);
-            clearInterval(restTimer);
-            
-            const countdownSection = document.getElementById('countdownSection');
-            const breathingSection = document.getElementById('breathingSection');
-            const restSection = document.getElementById('restSection');
-            
-            if (countdownSection) countdownSection.style.display = 'block';
-            if (breathingSection) breathingSection.style.display = 'none';
-            if (restSection) restSection.style.display = 'none';
-        }
 
         function initializeProgressIndicators() {
             const breathsContainer = document.getElementById('breathsIndicators');
@@ -2703,7 +2456,7 @@
         function addExerciseHistory(exerciseData) {
             const history = getExerciseHistory();
             const newRecord = {
-                date: new Date().toISOString(),
+                date: getCurrentUserTime().toISOString(), // 사용자 시간대 적용
                 exerciseTime: exerciseData.exerciseTime,
                 completedSets: exerciseData.completedSets,
                 completedBreaths: exerciseData.completedBreaths,
@@ -2728,7 +2481,7 @@
             stats.totalSets += exerciseData.completedSets;
             stats.totalBreaths += exerciseData.completedBreaths;
             
-            const today = new Date().toDateString();
+            const today = getCurrentUserTime().toDateString();
             const lastDate = stats.lastExerciseDate ? new Date(stats.lastExerciseDate).toDateString() : null;
             
             if (lastDate === today) {
@@ -2741,7 +2494,7 @@
                 stats.consecutiveDays = 1;
             }
             
-            stats.lastExerciseDate = new Date().toISOString();
+            stats.lastExerciseDate = getCurrentUserTime().toISOString();
             stats.averageSets = stats.totalExercises > 0 ? Math.round((stats.totalSets / stats.totalExercises) * 10) / 10 : 0;
             
             localStorage.setItem('breathTrainerStats', JSON.stringify(stats));
@@ -2819,16 +2572,13 @@
         function goToMain() {
             showScreen('mainScreen');
             resetExercise();
-            loadUserData(); // 🛡️ 이제 안전하게 호출 (배지 업데이트 제거됨)
-            console.log('🏠 메인화면으로 이동 완료');
+            loadUserData();
         }
 
         function loadUserData() {
             const stats = getLocalStats();
             displayUserStats(stats);
             updateChart();
-            // 🛡️ 배지 업데이트는 결과화면에서만 실행 (메인화면에서 제거)
-            console.log('📊 메인화면 데이터 로딩 완료 (배지는 결과화면에서만 업데이트)');
         }
 
         function displayUserStats(stats) {
@@ -2874,7 +2624,7 @@
             
             initializeProgressIndicators();
             
-            exerciseStartTime = new Date();
+            exerciseStartTime = getCurrentUserTime(); // 사용자 시간대 적용
             
             setTimeout(() => {
                 breathingCycle();
@@ -2968,6 +2718,7 @@
 
         function skipRest() {
             clearInterval(restTimer);
+            incrementSkippedRestCount(); // 🎮 배지 조건용 카운트
             startNextSet();
         }
 
@@ -3003,7 +2754,7 @@
             clearTimeout(breathingTimer);
             clearInterval(restTimer);
             
-            const exerciseTime = Math.floor((new Date() - exerciseStartTime) / 1000);
+            const exerciseTime = Math.floor((getCurrentUserTime() - exerciseStartTime) / 1000);
             const minutes = Math.floor(exerciseTime / 60);
             const seconds = exerciseTime % 60;
             
@@ -3057,20 +2808,24 @@
                     exhale_resistance: exerciseDataWithFeedback.resistanceSettings.exhale
                 });
                 
-                // 🔧 AI 조언을 먼저 받기 (기존 순서 복원)
-                const aiAdvice = await getTrainerAdvice(exerciseDataWithFeedback);
-                
-                console.log('🤖 AI 조언 결과:', aiAdvice);
-                
-                // 🔧 통계 업데이트와 배지 확인을 AI 조언 이후에 실행
+                // 🎮 통계 업데이트 및 배지 체크
                 const updatedStats = updateLocalStats(window.exerciseData);
                 addExerciseHistory(exerciseDataWithFeedback);
                 
-                // 🎮 배지 확인 및 수여 (AI 조언 후에 실행)
-                const newBadges = checkAndAwardBadges(updatedStats, exerciseDataWithFeedback);
+                // 🎮 새 배지 체크 및 표시
+                const newBadges = checkNewBadges(updatedStats);
+                updateBadgesDisplay();
                 
-                // 🎮 배지 디스플레이 업데이트 (결과화면에서만)
-                updateBadgeDisplay();
+                if (newBadges.length > 0) {
+                    // 첫 번째 새 배지만 팝업으로 표시 (여러 개면 순차적으로)
+                    setTimeout(() => {
+                        showBadgePopup(newBadges[0]);
+                    }, 1000);
+                }
+                
+                const aiAdvice = await getTrainerAdvice(exerciseDataWithFeedback);
+                
+                console.log('🤖 AI 조언 결과:', aiAdvice);
                 
                 if (typeof aiAdvice === 'object' && aiAdvice.intensityAdvice && aiAdvice.comprehensiveAdvice) {
                     handleExerciseResult({
@@ -3098,19 +2853,9 @@
                 document.getElementById('intensityAdvice').textContent = '분석을 불러오는 중 문제가 발생했습니다.';
                 document.getElementById('comprehensiveAdvice').textContent = '네트워크 연결을 확인하고 다시 시도해주세요.';
                 
-                // 🔧 에러 발생시에도 기본 기능 유지
                 const updatedStats = updateLocalStats(window.exerciseData);
                 addExerciseHistory(window.exerciseData);
-                
-                // 🎮 에러 상황에서도 배지 확인
-                try {
-                    const newBadges = checkAndAwardBadges(updatedStats, window.exerciseData);
-                    updateBadgeDisplay();
-                } catch (badgeError) {
-                    console.error('🎮 배지 시스템 오류:', badgeError);
-                }
-                
-                displayAchievementBadges(updatedStats);
+                updateBadgesDisplay();
             }
         }
 
@@ -3131,30 +2876,6 @@
             
             document.getElementById('intensityAdvice').innerHTML = finalIntensityAdvice.replace(/\n/g, '<br>');
             document.getElementById('comprehensiveAdvice').innerHTML = finalComprehensiveAdvice.replace(/\n/g, '<br>');
-            
-            displayAchievementBadges(result.stats);
-        }
-
-        function displayAchievementBadges(stats) {
-            const badgesContainer = document.getElementById('achievementBadges');
-            const badges = [];
-            
-            if (stats.totalExercises === 1) {
-                badges.push('🎯 첫 호흡근육 트레이닝 완료!');
-            }
-            if (stats.totalExercises === 10) {
-                badges.push('🏆 숨트 마스터 10회!');
-            }
-            if (stats.consecutiveDays >= 7) {
-                badges.push('🔥 일주일 연속 트레이닝!');
-            }
-            if (stats.averageSets >= 1.5) {
-                badges.push('⭐ 꾸준한 호흡 트레이너!');
-            }
-            
-            badgesContainer.innerHTML = badges.map(badge => 
-                `<div class="achievement-badge">${badge}</div>`
-            ).join('');
         }
 
         function resetExercise() {
@@ -3173,45 +2894,9 @@
         }
 
         window.onload = function() {
-            try {
-                console.log('🚀 앱 초기화 시작');
-                
-                // 🛡️ 기본 기능들 먼저 로딩 (배지 시스템 제외)
-                loadUserData();
-                loadResistanceSettings();
-                
-                console.log('✅ 기본 기능 로딩 완료');
-                
-                // 🎮 배지 시스템은 나중에 초기화 (에러가 있어도 기본 기능에 영향 없음)
-                setTimeout(() => {
-                    try {
-                        console.log('🎮 배지 시스템 초기화 시도...');
-                        // 배지 시스템 관련 초기화가 필요하다면 여기서
-                        console.log('🎮 배지 시스템 초기화 완료');
-                    } catch (badgeError) {
-                        console.warn('🚨 배지 시스템 초기화 실패 (기본 기능은 정상):', badgeError);
-                    }
-                }, 100);
-                
-            } catch (error) {
-                console.error('🚨 앱 초기화 오류:', error);
-                // 기본 기능들은 개별적으로라도 시도
-                try {
-                    displayUserStats(getLocalStats());
-                } catch (e) {
-                    console.error('통계 표시 실패:', e);
-                }
-                try {
-                    updateChart();
-                } catch (e) {
-                    console.error('차트 업데이트 실패:', e);
-                }
-                try {
-                    loadResistanceSettings();
-                } catch (e) {
-                    console.error('저항 설정 로딩 실패:', e);
-                }
-            }
+            loadUserData();
+            loadResistanceSettings();
+            updateBadgesDisplay();
         };
 
         // Service Worker 등록
@@ -3227,3 +2912,6 @@
                     });
             });
         }
+    </script>
+</body>
+</html>

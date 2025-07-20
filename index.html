@@ -1059,26 +1059,9 @@
         .quiz-offer-subtitle {
             font-size: 1rem;
             opacity: 0.9;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             position: relative;
             z-index: 1;
-        }
-
-        .quiz-offer-benefits {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .quiz-benefit {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            backdrop-filter: blur(10px);
         }
 
         .quiz-offer-buttons {
@@ -1295,17 +1278,29 @@
             margin-bottom: 0.5rem;
         }
 
-        .quiz-product-prices {
+        .quiz-product-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-product-price-line {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 0.8rem;
-            margin-bottom: 0.5rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .quiz-original-price {
             text-decoration: line-through;
             color: #999;
+            font-size: 0.9rem;
+        }
+
+        .quiz-price-arrow {
+            color: #667eea;
+            font-weight: bold;
             font-size: 0.9rem;
         }
 
@@ -1318,15 +1313,10 @@
         .quiz-discount-badge {
             background: #F44336;
             color: white;
-            padding: 0.2rem 0.8rem;
+            padding: 0.2rem 0.6rem;
             border-radius: 12px;
             font-size: 0.8rem;
             font-weight: bold;
-        }
-
-        .quiz-product-description {
-            font-size: 0.9rem;
-            color: #666;
         }
 
         .quiz-dual-buttons {
@@ -2043,14 +2033,8 @@
                 font-size: 1.2rem;
             }
 
-            .quiz-offer-benefits {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .quiz-benefit {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
+            .quiz-offer-buttons {
+                gap: 0.8rem;
             }
 
             .quiz-offer-primary,
@@ -2102,8 +2086,8 @@
                 font-size: 1rem;
             }
 
-            .quiz-product-prices {
-                gap: 0.6rem;
+            .quiz-product-price-line {
+                gap: 0.4rem;
             }
 
             .quiz-discount-price {
@@ -2429,21 +2413,15 @@
                     <div class="countdown" id="quizOfferCountdown">120</div>
                     
                     <div class="quiz-offer-card">
-                        <div class="quiz-offer-title">지루한 휴식시간,<br>재미있게 보내실래요?</div>
-                        <div class="quiz-offer-subtitle">간단한 퀴즈 3문제를 풀고 특별한 혜택을 받아보세요!</div>
-                        
-                        <div class="quiz-offer-benefits">
-                            <div class="quiz-benefit">🧠 호흡 지식 UP</div>
-                            <div class="quiz-benefit">💰 15% 할인 혜택</div>
-                            <div class="quiz-benefit">⏰ 30초면 완료</div>
-                        </div>
+                        <div class="quiz-offer-title">간단한 퀴즈 풀까요?</div>
+                        <div class="quiz-offer-subtitle">2문제만! 특별 혜택도 받으세요</div>
                         
                         <div class="quiz-offer-buttons">
                             <button class="quiz-offer-primary" onclick="startQuiz()">
-                                🎯 퀴즈 풀고 15% 할인받기
+                                퀴즈 풀고 15% 할인받기
                             </button>
                             <button class="quiz-offer-secondary" onclick="chooseRestOnly()">
-                                😌 휴식만 하기
+                                휴식만 하기
                             </button>
                         </div>
                     </div>
@@ -2456,9 +2434,9 @@
                         <div class="countdown" id="quizCountdown">120</div>
                         
                         <div class="quiz-progress-bar">
-                            <div class="quiz-progress-fill" id="quizProgressFill" style="width: 33%"></div>
+                            <div class="quiz-progress-fill" id="quizProgressFill" style="width: 50%"></div>
                         </div>
-                        <div class="quiz-progress-text" id="quizProgressText">문제 1 / 3</div>
+                        <div class="quiz-progress-text" id="quizProgressText">문제 1 / 2</div>
                     </div>
                     
                     <div class="quiz-question-card">
@@ -2485,10 +2463,11 @@
                             </div>
                             <div class="quiz-product-name" id="rewardProductName">숨트 호흡운동기구</div>
                             <div class="quiz-product-description" id="rewardProductDescription">앱 사용자만을 위한 특별가</div>
-                            <div class="quiz-product-prices">
+                            <div class="quiz-product-price-line">
                                 <span class="quiz-original-price" id="rewardOriginalPrice">89,000원</span>
+                                <span class="quiz-price-arrow">→</span>
                                 <span class="quiz-discount-price" id="rewardDiscountPrice">75,650원</span>
-                                <span class="quiz-discount-badge" id="rewardDiscountBadge">15% 할인</span>
+                                <span class="quiz-discount-badge" id="rewardDiscountBadge">15%↓</span>
                             </div>
                         </div>
                         
@@ -2666,7 +2645,7 @@
             OFFER_DELAY: 5000 // 5초 후 퀴즈 제안
         };
 
-        // 🧠 퀴즈 문제 (쉽게 수정 가능)
+        // 🧠 퀴즈 문제 풀 (6문제 중 2문제 랜덤 선택)
         const QUIZ_QUESTIONS = [
             {
                 question: "호흡근 운동을 하면 어떤 변화가 생길까요?",
@@ -2685,6 +2664,24 @@
                 options: ["4초 들이쉬고 4초 내쉬기", "빠르게 얕게 호흡", "호흡 참기"],
                 correct: 0,
                 explanation: "깊고 천천히 하는 호흡이 마음을 진정시키고 스트레스를 줄여줘요!"
+            },
+            {
+                question: "호흡근을 강화하면 얻는 가장 큰 효과는?",
+                options: ["체중 감량", "지구력 향상", "근육량 증가"],
+                correct: 1,
+                explanation: "호흡근 강화로 산소 공급이 원활해져 전체적인 지구력이 향상돼요!"
+            },
+            {
+                question: "일상에서 호흡을 의식하면 좋은 점은?",
+                options: ["집중력 향상", "소화 촉진", "시력 개선"],
+                correct: 0,
+                explanation: "의식적인 호흡은 뇌에 산소를 충분히 공급해 집중력을 높여줘요!"
+            },
+            {
+                question: "깊은 호흡의 가장 중요한 포인트는?",
+                options: ["빠른 속도", "배까지 내려가는 느낌", "소리 내기"],
+                correct: 1,
+                explanation: "배까지 공기가 내려가는 복식호흡이 가장 효과적이에요!"
             }
         ];
 
@@ -2693,6 +2690,8 @@
         let quizCorrectAnswers = 0;
         let quizStartTime = null;
         let quizOfferTimer = null;
+        let selectedQuestions = []; // 선택된 2문제
+        let solvedQuestions = []; // 지금까지 푼 문제들 (배지용)
 
         // 전역 변수
         let currentSet = 1;
@@ -2984,6 +2983,22 @@
                 }
             },
             {
+                id: 'quiz_perfectionist',
+                name: '퀴즈 완벽주의자',
+                icon: '🎯',
+                description: '퀴즈 2문제를 모두 정답으로 맞혔어요',
+                hint: '퀴즈 완벽',
+                condition: (stats) => getQuizPerfectCount() >= 1
+            },
+            {
+                id: 'quiz_explorer',
+                name: '퀴즈 탐험가',
+                icon: '🔍',
+                description: '6가지 퀴즈 문제를 모두 경험했어요',
+                hint: '모든 문제',
+                condition: (stats) => getSolvedQuestionsCount() >= 6
+            },
+            {
                 id: 'early_bird',
                 name: '일찍 일어나는 새',
                 icon: '🌅',
@@ -3177,6 +3192,44 @@
                 const hour = recordDate.getHours();
                 return hour < 6;
             }).length;
+        }
+
+        // 🎮 새로운 배지 관련 헬퍼 함수들
+        function getQuizPerfectCount() {
+            return parseInt(localStorage.getItem('quizPerfectCount') || '0');
+        }
+
+        function incrementQuizPerfectCount() {
+            const count = getQuizPerfectCount() + 1;
+            localStorage.setItem('quizPerfectCount', count.toString());
+        }
+
+        function getSolvedQuestionsCount() {
+            const solved = JSON.parse(localStorage.getItem('solvedQuestions') || '[]');
+            return solved.length;
+        }
+
+        function addSolvedQuestion(questionIndex) {
+            const solved = JSON.parse(localStorage.getItem('solvedQuestions') || '[]');
+            if (!solved.includes(questionIndex)) {
+                solved.push(questionIndex);
+                localStorage.setItem('solvedQuestions', JSON.stringify(solved));
+            }
+        }
+
+        // 🎮 퀴즈 문제 랜덤 선택 함수
+        function selectRandomQuestions() {
+            const questionIndices = Array.from({length: QUIZ_QUESTIONS.length}, (_, i) => i);
+            
+            // 피셔-예이츠 셔플 알고리즘
+            for (let i = questionIndices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questionIndices[i], questionIndices[j]] = [questionIndices[j], questionIndices[i]];
+            }
+            
+            // 처음 2개 문제 선택
+            selectedQuestions = questionIndices.slice(0, 2);
+            console.log('🎯 선택된 문제:', selectedQuestions);
         }
 
         function getEarnedBadges() {
@@ -3907,18 +3960,23 @@
             quizCorrectAnswers = 0;
             quizStartTime = getCurrentUserTime();
             
+            // 🎯 랜덤 2문제 선택
+            selectRandomQuestions();
+            
             // GA 이벤트: 퀴즈 시작
             gtag('event', 'quiz_started', {
                 set_number: currentSet - 1,
-                remaining_rest_time: parseInt(document.getElementById('restCountdown').textContent)
+                remaining_rest_time: parseInt(document.getElementById('restCountdown').textContent),
+                selected_questions: selectedQuestions
             });
             
             showQuizQuestion();
         }
 
-        // 🎮 새로운 기능: 퀴즈 문제 표시
+        // 🎮 새로운 기능: 퀴즈 문제 표시 (랜덤 문제 지원)
         function showQuizQuestion() {
-            const question = QUIZ_QUESTIONS[currentQuizQuestion];
+            const questionIndex = selectedQuestions[currentQuizQuestion];
+            const question = QUIZ_QUESTIONS[questionIndex];
             const questionEl = document.getElementById('quizQuestion');
             const optionsEl = document.getElementById('quizOptions');
             const explanationEl = document.getElementById('quizExplanation');
@@ -3935,17 +3993,17 @@
                 const optionEl = document.createElement('div');
                 optionEl.className = 'quiz-option';
                 optionEl.textContent = option;
-                optionEl.onclick = () => selectQuizAnswer(index);
+                optionEl.onclick = () => selectQuizAnswer(index, questionIndex);
                 optionsEl.appendChild(optionEl);
             });
             
             // 설명 숨기기
             explanationEl.style.display = 'none';
             
-            // 진행률 업데이트
-            const progress = ((currentQuizQuestion + 1) / QUIZ_QUESTIONS.length) * 100;
+            // 진행률 업데이트 (2문제 기준)
+            const progress = ((currentQuizQuestion + 1) / 2) * 100;
             progressFillEl.style.width = `${progress}%`;
-            progressTextEl.textContent = `문제 ${currentQuizQuestion + 1} / ${QUIZ_QUESTIONS.length}`;
+            progressTextEl.textContent = `문제 ${currentQuizQuestion + 1} / 2`;
             
             // 카운트다운 동기화
             const syncInterval = setInterval(() => {
@@ -3959,9 +4017,9 @@
             }, 1000);
         }
 
-        // 🎮 새로운 기능: 퀴즈 답안 선택
-        function selectQuizAnswer(selectedIndex) {
-            const question = QUIZ_QUESTIONS[currentQuizQuestion];
+        // 🎮 새로운 기능: 퀴즈 답안 선택 (배지 추적 추가)
+        function selectQuizAnswer(selectedIndex, questionIndex) {
+            const question = QUIZ_QUESTIONS[questionIndex];
             const optionsEl = document.getElementById('quizOptions');
             const explanationEl = document.getElementById('quizExplanation');
             const options = optionsEl.querySelectorAll('.quiz-option');
@@ -3982,6 +4040,9 @@
                 quizCorrectAnswers++;
             }
             
+            // 🎮 푼 문제 기록 (배지용)
+            addSolvedQuestion(questionIndex);
+            
             // 설명 표시
             explanationEl.textContent = question.explanation;
             explanationEl.style.display = 'block';
@@ -3989,6 +4050,7 @@
             // GA 이벤트: 답안 선택
             gtag('event', 'quiz_answer_selected', {
                 question_number: currentQuizQuestion + 1,
+                question_index: questionIndex,
                 selected_answer: selectedIndex,
                 correct_answer: question.correct,
                 is_correct: selectedIndex === question.correct
@@ -3997,7 +4059,7 @@
             // 2초 후 다음 문제 또는 결과 화면
             setTimeout(() => {
                 currentQuizQuestion++;
-                if (currentQuizQuestion < QUIZ_QUESTIONS.length) {
+                if (currentQuizQuestion < 2) { // 2문제로 변경
                     showQuizQuestion();
                 } else {
                     showQuizResult();
@@ -4082,16 +4144,17 @@
             }, 3000);
         }
 
-        // 🎮 새로운 기능: 쇼핑몰 URL 생성
+        // 🎮 새로운 기능: 쇼핑몰 URL 생성 (UTM 개선)
         function generateShopUrl() {
             const baseUrl = `${QUIZ_CONFIG.SHOP_URL}${QUIZ_CONFIG.SPECIAL_PRODUCT_PATH}`;
             const params = new URLSearchParams({
                 utm_source: 'breath_app',
                 utm_medium: 'quiz_reward',
                 utm_campaign: 'rest_quiz',
-                utm_content: `${quizCorrectAnswers}_of_${QUIZ_QUESTIONS.length}_correct`,
+                utm_content: `${quizCorrectAnswers}_of_2_correct`,
                 quiz_score: quizCorrectAnswers,
-                discount: QUIZ_CONFIG.REWARD.discountPercent
+                discount: QUIZ_CONFIG.REWARD.discountPercent,
+                questions_solved: getSolvedQuestionsCount()
             });
             
             return `${baseUrl}?${params.toString()}`;
@@ -4373,6 +4436,7 @@
             currentQuizQuestion = 0;
             quizCorrectAnswers = 0;
             quizStartTime = null;
+            selectedQuestions = [];
             clearTimeout(quizOfferTimer);
             
             // 🔥 새로운 기능: 리뷰 캐러셀 정리

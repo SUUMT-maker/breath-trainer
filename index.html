@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>숨트레이너</title>
     
+    <!-- Google Analytics 4 - 숨트레이너 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TFYK5NK44V"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -13,9 +14,11 @@
         gtag('config', 'G-TFYK5NK44V');
     </script>
     
+    <!-- 🌙 다크모드 문제 해결: 색상 스키마 고정 -->
     <meta name="color-scheme" content="light">
     <meta name="supported-color-schemes" content="light">
     
+    <!-- PWA 메타 태그 -->
     <meta name="description" content="숨트 호흡운동기구 전용 가이드 앱">
     <meta name="keywords" content="숨트, 호흡운동기구, 호흡근육트레이닝, 폐활량, 호흡근육강화">
     <meta name="author" content="숨트레이너">
@@ -24,8 +27,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="숨트레이너">
     
+    <!-- 매니페스트 링크 -->
     <link rel="manifest" href="/manifest.json">
     
+    <!-- 파비콘 및 아이콘 -->
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
     <link rel="apple-touch-icon" href="/icons/icon-180x180.png">
@@ -2116,53 +2121,112 @@
     </style>
 </head>
 <body>
-    <div id="introScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #CEEEFF; display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 1; transition: opacity 0.8s ease-out;">
+    <!-- 🎬 2단계 온보딩 스플래시 화면 -->
+<div id="introScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #CFEFFF; display: flex; justify-content: center; align-items: center; z-index: 2000; opacity: 1; transition: opacity 0.8s ease-out;">
     
-    <div id="onboardingStep1" class="onboarding-step active" style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; position: relative; justify-content: center; padding: 20px;">
-        
-        <div style="width: 335px; height: 293px; margin-bottom: 68px; position: relative; overflow: hidden; border-radius: 12px; background: transparent;">
-            <img src="./images/suumt-usage.png" alt="숨트 사용 모습" style="width: 372px; height: 351px; object-fit: cover; position: absolute; left: -18px; top: -29px; background: transparent;" onerror="this.style.display='none';">
+    <!-- 첫 번째 온보딩 화면 -->
+    <div id="onboardingStep1" class="onboarding-step active" style="width: 375px; height: 812px; position: relative; background: #CFEFFF; overflow: hidden;">
+        <!-- 메인 콘텐츠 컨테이너 -->
+        <div style="height: 702px; left: 20px; top: 61px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 23px; display: inline-flex;">
+            
+            <!-- 메인 이미지 -->
+            <div style="width: 335px; height: 419px; position: relative; overflow: hidden;">
+                <img src="./images/suumt-usage.png" alt="숨트 사용 모습" style="width: 350px; height: 525px; left: -5px; top: -33px; position: absolute; object-fit: cover;" onerror="this.style.display='none';">
+            </div>
+            
+            <!-- 텍스트 및 버튼 영역 -->
+            <div style="flex-direction: column; justify-content: flex-start; align-items: center; gap: 40px; display: flex;">
+                
+                <!-- 텍스트와 인디케이터 -->
+                <div style="flex-direction: column; justify-content: flex-start; align-items: center; gap: 32px; display: flex;">
+                    
+                    <!-- 텍스트 영역 -->
+                    <div style="flex-direction: column; justify-content: flex-start; align-items: center; gap: 16px; display: flex;">
+                        <div style="width: 275px; text-align: center; justify-content: center; display: flex; flex-direction: column; color: #1E1E1E; font-size: 32px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; line-height: 40px; word-wrap: break-word;">건강한 호흡, 더 나은 삶</div>
+                        <div style="width: 243px; text-align: center; justify-content: center; display: flex; flex-direction: column; color: #626262; font-size: 14px; font-family: 'Space Grotesk', sans-serif; font-weight: 400; line-height: 20px; word-wrap: break-word;">AI와 함께하는 스마트 숨트레이닝</div>
+                    </div>
+                    
+                    <!-- 페이지 인디케이터 -->
+                    <div style="justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex;">
+                        <div style="width: 16.97px; height: 4px; background: #1E1E1E; border-radius: 56px;"></div>
+                        <div style="width: 4.17px; height: 4px; opacity: 0.30; background: #3D3C3C; border-radius: 56px;"></div>
+                    </div>
+                    
+                </div>
+                
+                <!-- 버튼 영역 -->
+                <div style="justify-content: flex-start; align-items: flex-start; gap: 16px; display: inline-flex;">
+                    <button onclick="skipOnboarding()" style="width: 160px; height: 48px; padding: 16px; border-radius: 24px; outline: 1px #2EB5FA solid; outline-offset: -1px; justify-content: center; align-items: center; gap: 10px; display: flex; background: transparent; border: none; cursor: pointer; transition: all 0.3s ease;">
+                        <div style="justify-content: center; display: flex; flex-direction: column; color: #2EB5FA; font-size: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; line-height: 16px; word-wrap: break-word;">Skip</div>
+                    </button>
+                    <button onclick="nextOnboardingStep()" style="width: 159px; height: 48px; padding: 16px; background: #2EB5FA; border-radius: 24px; justify-content: center; align-items: center; gap: 10px; display: flex; border: none; cursor: pointer; transition: all 0.3s ease;">
+                        <div style="justify-content: center; display: flex; flex-direction: column; color: white; font-size: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; line-height: 16px; word-wrap: break-word;">Next</div>
+                    </button>
+                </div>
+                
+            </div>
+            
         </div>
         
-        <div style="text-align: center; margin-bottom: 32px;">
-            <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: clamp(24px, 7vw, 32px); font-weight: 700; color: #1E1E1E; margin: 0 0 16px 0; line-height: 1.25; max-width: 350px; word-break: keep-all;">건강한 호흡, 더 나은 삶</h1>
-            <p style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 400; color: #616161; margin: 0; line-height: 1.43; max-width: 280px;">AI와 함께하는 스마트 숨트레이닝</p>
-        </div>
-        
-        <div style="display: flex; gap: 4px; margin-bottom: 40px;">
-            <div style="width: 17px; height: 4px; background: #1E1E1E; border-radius: 56px;"></div>
-            <div style="width: 4px; height: 4px; background: #3C3C3C; opacity: 0.3; border-radius: 56px;"></div>
-        </div>
-        
-        <div style="display: flex; gap: 16px;">
-            <button onclick="skipOnboarding()" style="width: 160px; height: 48px; background: transparent; border: 1px solid #2DB5F9; border-radius: 24px; color: #2DB5F9; font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">Skip</button>
-            <button onclick="nextOnboardingStep()" style="width: 159px; height: 48px; background: #2DB5F9; border: none; border-radius: 24px; color: white; font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">Next</button>
-        </div>
+        <!-- 배경 블러 효과 -->
+        <div style="width: 81.09px; height: 202.88px; left: -159px; top: 124.29px; position: absolute; transform: rotate(-82deg); transform-origin: top left; background: #2EB5FA; box-shadow: 180px 180px 180px; filter: blur(90px);"></div>
+        <div style="width: 101.20px; height: 215.79px; left: -204px; top: 733.21px; position: absolute; transform: rotate(-82deg); transform-origin: top left; background: #2EB5FA; box-shadow: 180px 180px 180px; filter: blur(90px);"></div>
+        <div style="width: 78.57px; height: 121.69px; left: 431.37px; top: 387.20px; position: absolute; transform: rotate(67deg); transform-origin: top left; background: #2EB5FA; box-shadow: 180px 180px 180px; filter: blur(90px);"></div>
     </div>
     
-    <div id="onboardingStep2" class="onboarding-step" style="width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; position: relative; justify-content: center; padding: 20px;">
-        
-        <div style="width: 335px; height: 419px; margin-bottom: 23px; position: relative; overflow: hidden; border-radius: 12px; background: transparent;">
-            <img src="./images/suumt-onboarding.png" alt="숨트 제품" style="width: 473px; height: 464px; object-fit: cover; position: absolute; left: -69px; top: -45px; background: transparent;" onerror="this.style.display='none';">
+    <!-- 두 번째 온보딩 화면 -->
+    <div id="onboardingStep2" class="onboarding-step" style="width: 375px; height: 812px; position: relative; background: #CFEFFF; overflow: hidden; display: none;">
+        <!-- 메인 콘텐츠 컨테이너 -->
+        <div style="height: 702px; left: 20px; top: 61px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 23px; display: inline-flex;">
+            
+            <!-- 메인 이미지 -->
+            <div style="width: 335px; height: 419px; position: relative; overflow: hidden;">
+                <img src="./images/suumt-onboarding.png" alt="숨트 제품" style="width: 350px; height: 525px; left: -5px; top: -33px; position: absolute; object-fit: cover;" onerror="this.style.display='none';">
+            </div>
+            
+            <!-- 텍스트 및 버튼 영역 -->
+            <div style="flex-direction: column; justify-content: flex-start; align-items: center; gap: 40px; display: flex;">
+                
+                <!-- 텍스트와 인디케이터 -->
+                <div style="flex-direction: column; justify-content: flex-start; align-items: center; gap: 32px; display: flex;">
+                    
+                    <!-- 텍스트 영역 -->
+                    <div style="flex-direction: column; justify-content: flex-start; align-items: center; gap: 16px; display: flex;">
+                        <div style="width: 275px; text-align: center; justify-content: center; display: flex; flex-direction: column; color: #1E1E1E; font-size: 32px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; line-height: 40px; word-wrap: break-word;">숨트와 함께 시작하세요</div>
+                        <div style="width: 243px; text-align: center; justify-content: center; display: flex; flex-direction: column; color: #626262; font-size: 14px; font-family: 'Space Grotesk', sans-serif; font-weight: 400; line-height: 20px; word-wrap: break-word;">AI 숨트레이너와 함께<br>나만의 호흡운동을 시작해보세요</div>
+                    </div>
+                    
+                    <!-- 페이지 인디케이터 -->
+                    <div style="justify-content: flex-start; align-items: flex-start; gap: 4px; display: inline-flex;">
+                        <div style="width: 4.17px; height: 4px; opacity: 0.30; background: #3D3C3C; border-radius: 56px;"></div>
+                        <div style="width: 16.97px; height: 4px; background: #1E1E1E; border-radius: 56px;"></div>
+                    </div>
+                    
+                </div>
+                
+                <!-- 버튼 영역 -->
+                <div style="justify-content: flex-start; align-items: flex-start; gap: 16px; display: inline-flex;">
+                    <button onclick="skipOnboarding()" style="width: 160px; height: 48px; padding: 16px; border-radius: 24px; outline: 1px #2EB5FA solid; outline-offset: -1px; justify-content: center; align-items: center; gap: 10px; display: flex; background: transparent; border: none; cursor: pointer; transition: all 0.3s ease;">
+                        <div style="justify-content: center; display: flex; flex-direction: column; color: #2EB5FA; font-size: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; line-height: 16px; word-wrap: break-word;">Skip</div>
+                    </button>
+                    <button onclick="skipOnboarding()" style="width: 159px; height: 48px; padding: 16px; background: #2EB5FA; border-radius: 24px; justify-content: center; align-items: center; gap: 10px; display: flex; border: none; cursor: pointer; transition: all 0.3s ease;">
+                        <div style="justify-content: center; display: flex; flex-direction: column; color: white; font-size: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; line-height: 16px; word-wrap: break-word;">Start</div>
+                    </button>
+                </div>
+                
+            </div>
+            
         </div>
         
-        <div style="text-align: center; margin-bottom: 32px;">
-            <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: clamp(22px, 6vw, 28px); font-weight: 700; color: #1E1E1E; margin: 0 0 16px 0; line-height: 1.25; max-width: 320px; word-break: keep-all;">숨트와 함께 시작하세요</h1>
-            <p style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 400; color: #616161; margin: 0; line-height: 1.43; max-width: 280px;">AI 숨트레이너와 함께<br>나만의 호흡운동을 시작해보세요</p>
-        </div>
-        
-        <div style="display: flex; gap: 4px; margin-bottom: 40px;">
-            <div style="width: 4px; height: 4px; background: #3C3C3C; opacity: 0.3; border-radius: 56px;"></div>
-            <div style="width: 17px; height: 4px; background: #1E1E1E; border-radius: 56px;"></div>
-        </div>
-        
-        <div style="display: flex; gap: 16px;">
-            <button onclick="skipOnboarding()" style="width: 160px; height: 48px; background: transparent; border: 1px solid #2DB5F9; border-radius: 24px; color: #2DB5F9; font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">Skip</button>
-            <button onclick="skipOnboarding()" style="width: 159px; height: 48px; background: #2DB5F9; border: none; border-radius: 24px; color: white; font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;">Start</button>
-        </div>
+        <!-- 배경 블러 효과 -->
+        <div style="width: 81.09px; height: 202.88px; left: -159px; top: 124.29px; position: absolute; transform: rotate(-82deg); transform-origin: top left; background: #2EB5FA; box-shadow: 180px 180px 180px; filter: blur(90px);"></div>
+        <div style="width: 101.20px; height: 215.79px; left: -204px; top: 733.21px; position: absolute; transform: rotate(-82deg); transform-origin: top left; background: #2EB5FA; box-shadow: 180px 180px 180px; filter: blur(90px);"></div>
+        <div style="width: 78.57px; height: 121.69px; left: 431.37px; top: 387.20px; position: absolute; transform: rotate(67deg); transform-origin: top left; background: #2EB5FA; box-shadow: 180px 180px 180px; filter: blur(90px);"></div>
     </div>
+    
 </div>
 
+    <!-- 🎯 커스텀 확인 모달 -->
     <div id="confirmModal" class="modal-overlay">
         <div class="modal">
             <h3>트레이닝 중단</h3>
@@ -2174,6 +2238,7 @@
         </div>
     </div>
 
+    <!-- 🎮 배지 획득 팝업 -->
     <div id="badgePopup" class="badge-popup-overlay">
         <div class="badge-popup">
             <div class="badge-popup-icon" id="badgePopupIcon">🏆</div>
@@ -2185,7 +2250,9 @@
     </div>
 
     <div class="app-container">
+        <!-- 메인 화면 -->
         <div id="mainScreen" class="screen active">
+            <!-- 메인 헤더 -->
             <div class="main-header">
                 <div class="user-greeting">
                     <div class="user-info">
@@ -2195,6 +2262,7 @@
                         <div class="user-text">
                             <h4>안녕하세요,</h4>
                             <h3 id="userName">AI 숨트레이너</h3>
+                            <!-- 🔥 새로운 기능: 메인화면 실시간 현황 -->
                             <div class="live-users-badge" id="mainLiveUsers">
                                 <div class="live-indicator"></div>
                                 <span id="mainLiveUsersText">오늘 247명 트레이닝 중</span>
@@ -2204,6 +2272,7 @@
                 </div>
             </div>
 
+            <!-- 통계 섹션 -->
             <div class="stats-section">
                 <div class="section-header">
                     <div>
@@ -2262,6 +2331,7 @@
                 </div>
             </div>
 
+            <!-- 운동 가이드 -->
             <div class="guide-card">
                 <div class="guide-header">
                     <div class="guide-title">📋 숨트 운동 가이드</div>
@@ -2277,6 +2347,7 @@
                 <div class="guide-step">숨트를 입에 물고 준비하세요</div>
             </div>
 
+            <!-- 저항 설정 -->
             <div class="resistance-card">
                 <div class="resistance-header">
                     <div class="resistance-title">🎯 저항 강도 설정</div>
@@ -2322,6 +2393,7 @@
                 </div>
             </div>
 
+            <!-- 차트 섹션 -->
             <div class="chart-section">
                 <div class="section-header">
                     <div>
@@ -2365,6 +2437,7 @@
                 </div>
             </div>
 
+            <!-- 트레이닝 시작 -->
             <div class="start-training-section">
                 <button class="start-button" onclick="startExercise()">
                     <span>🚀</span>
@@ -2373,6 +2446,7 @@
             </div>
         </div>
 
+        <!-- 운동 화면 -->
         <div id="exerciseScreen" class="screen">
             <div class="container">
                 <div id="countdownSection">
@@ -2398,7 +2472,8 @@
                         <div class="breaths-progress">
                             <div class="progress-label">호흡 횟수</div>
                             <div class="breaths-indicators" id="breathsIndicators">
-                                </div>
+                                <!-- 10개의 호흡 점들이 JavaScript로 생성됨 -->
+                            </div>
                             <div class="progress-numbers" id="breathNumbers">1 / 10 회</div>
                         </div>
                     </div>
@@ -2421,6 +2496,7 @@
                     </div>
                 </div>
 
+                <!-- 🎮 퀴즈 제안 화면 -->
                 <div id="quizOfferSection" style="display: none;">
                     <h2>휴식 시간</h2>
                     <div class="countdown" id="quizOfferCountdown">120</div>
@@ -2440,6 +2516,7 @@
                     </div>
                 </div>
 
+                <!-- 🧠 퀴즈 진행 화면 -->
                 <div id="quizProgressSection" style="display: none;">
                     <div class="quiz-progress-header">
                         <h2>퀴즈 타임!</h2>
@@ -2454,13 +2531,15 @@
                     <div class="quiz-question-card">
                         <div class="quiz-question" id="quizQuestion">문제가 여기에 표시됩니다</div>
                         <div class="quiz-options" id="quizOptions">
-                            </div>
+                            <!-- 선택지들이 JavaScript로 생성됨 -->
+                        </div>
                         <div class="quiz-explanation" id="quizExplanation" style="display: none;">
                             설명이 여기에 표시됩니다
                         </div>
                     </div>
                 </div>
 
+                <!-- 🎁 퀴즈 보상 화면 -->
                 <div id="quizRewardSection" style="display: none;">
                     <h2>휴식 시간</h2>
                     <div class="countdown" id="quizRewardCountdown">120</div>
@@ -2497,6 +2576,7 @@
             </div>
         </div>
 
+        <!-- 피드백 페이지 -->
         <div id="feedbackScreen" class="screen">
             <div class="container">
                 <div class="celebration">🤖</div>
@@ -2525,6 +2605,7 @@
             </div>
         </div>
 
+        <!-- 결과 화면 -->
         <div id="resultScreen" class="screen">
             <div class="container">
                 <div class="result-header">
@@ -2566,6 +2647,7 @@
                     </div>
                 </div>
 
+                <!-- 🎮 배지 시스템 -->
                 <div class="badges-system">
                     <div class="badges-header">
                         <span class="section-icon">🏆</span>
@@ -2573,9 +2655,11 @@
                     </div>
                     <div class="badges-progress" id="badgesProgress">수집한 배지: 0/15</div>
                     <div class="badges-grid" id="badgesGrid">
-                        </div>
+                        <!-- 배지들이 JavaScript로 생성됨 -->
+                    </div>
                 </div>
 
+                <!-- 🔥 새로운 기능: 사회적 증명 섹션 -->
                 <div class="social-proof-section">
                     <div class="social-proof-card">
                         <div class="social-proof-header">
@@ -2596,9 +2680,11 @@
                         
                         <div class="reviews-carousel">
                             <div class="reviews-slider" id="reviewsSlider">
-                                </div>
+                                <!-- 리뷰 카드들이 JavaScript로 생성됨 -->
+                            </div>
                             <div class="carousel-dots" id="carouselDots">
-                                </div>
+                                <!-- 점들이 JavaScript로 생성됨 -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2626,11 +2712,7 @@
     </div>
 
     <script>
-// ======================================================================
-// ========= JAVASCRIPT 코드 시작 (여기서부터 수정되었습니다) =========
-// ======================================================================
-
-// 🎬 온보딩 네비게이션 함수들
+        // 🎬 온보딩 네비게이션 함수들
 function nextOnboardingStep() {
     document.getElementById('onboardingStep1').style.display = 'none';
     document.getElementById('onboardingStep2').style.display = 'flex';
@@ -2653,57 +2735,50 @@ let touchStartX = 0;
 let touchEndX = 0;
 let isOnboarding = true;
 
-/**
- * =================================================
- * 여기가 수정된 스와이프 로직입니다.
- * =================================================
- */
 function handleSwipeGesture() {
     const swipeThreshold = 50; // 최소 스와이프 거리 (픽셀)
     const swipeDistance = touchEndX - touchStartX;
-    const step1 = document.getElementById('onboardingStep1');
-    const step2 = document.getElementById('onboardingStep2');
-
-    // --- 왼쪽으로 스와이프 (오른쪽에서 왼쪽으로, <--), "다음" 기능 ---
-    if (swipeDistance < -swipeThreshold) {
-        // 첫 번째 화면에 있다면 -> 두 번째 화면으로 이동
+    
+    // 오른쪽 스와이프 (다음으로)
+    if (swipeDistance > swipeThreshold) {
+        const step1 = document.getElementById('onboardingStep1');
+        const step2 = document.getElementById('onboardingStep2');
+        
         if (step1 && step1.style.display !== 'none') {
+            // 첫 번째 화면 → 두 번째 화면
             nextOnboardingStep();
+            
             gtag('event', 'onboarding_swipe', {
                 action: 'next',
                 step: 1
             });
-        }
-        // 두 번째 화면에 있다면 -> 온보딩 종료하고 메인 화면으로 이동
-        else if (step2 && step2.style.display !== 'none') {
+        } else if (step2 && step2.style.display !== 'none') {
+            // 두 번째 화면 → 메인 화면
             skipOnboarding();
+            
             gtag('event', 'onboarding_swipe', {
                 action: 'finish',
                 step: 2
             });
         }
     }
-
-    // --- 오른쪽으로 스와이프 (왼쪽에서 오른쪽으로, -->), "이전" 기능 ---
-    else if (swipeDistance > swipeThreshold) {
-        // 두 번째 화면에 있다면 -> 첫 번째 화면으로 돌아감
+    
+    // 왼쪽 스와이프 (이전으로)
+    else if (swipeDistance < -swipeThreshold) {
+        const step2 = document.getElementById('onboardingStep2');
+        
         if (step2 && step2.style.display !== 'none') {
+            // 두 번째 화면 → 첫 번째 화면
             document.getElementById('onboardingStep2').style.display = 'none';
             document.getElementById('onboardingStep1').style.display = 'flex';
+            
             gtag('event', 'onboarding_swipe', {
                 action: 'back',
                 step: 2
             });
         }
-        // 첫 번째 화면에서는 "이전" 동작 없음
     }
 }
-/**
- * =================================================
- * 스와이프 로직 수정 끝
- * =================================================
- */
-
 
 // 온보딩 화면에 터치 이벤트 리스너 추가
 function initializeOnboardingSwipe() {
@@ -3698,19 +3773,16 @@ function hideIntro() {
             const mainImage = document.getElementById('mainSplashImage');
             const fallbackSplash = document.getElementById('fallbackSplash');
             
-            if (mainImage) {
-                mainImage.addEventListener('error', function() {
-                    console.log('⚠️ 메인 스플래시 이미지 로드 실패');
-                    this.src = './images/suumt-splash-wide.png';
-                    
-                    this.addEventListener('error', function() {
-                        console.log('⚠️ 모든 이미지 로드 실패, 대체 화면 표시');
-                        this.style.display = 'none';
-                        if(fallbackSplash) fallbackSplash.style.display = 'flex';
-                    });
+            mainImage.addEventListener('error', function() {
+                console.log('⚠️ 메인 스플래시 이미지 로드 실패');
+                this.src = './images/suumt-splash-wide.png';
+                
+                this.addEventListener('error', function() {
+                    console.log('⚠️ 모든 이미지 로드 실패, 대체 화면 표시');
+                    this.style.display = 'none';
+                    fallbackSplash.style.display = 'flex';
                 });
-            }
-
+            });
 
             console.log('🎬 스플래시 화면 로딩 완료');
         });

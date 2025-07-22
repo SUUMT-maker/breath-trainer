@@ -1,7 +1,7 @@
 {
   "name": "숨트레이너 - 호흡운동 트레이닝",
   "short_name": "숨트레이너",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI와 함께하는 스마트 호흡운동 트레이닝 앱",
   "start_url": "/?v=1.0.1",
   "display": "standalone",

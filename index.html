@@ -40,6 +40,1542 @@
         :root {
             color-scheme: light !important;
         }
+
+        async function completeExercise() {
+            clearTimeout(breathingTimer);
+            clearInterval(restTimer);
+            
+            const exerciseTime = Math.floor((getCurrentUserTime() - exerciseStartTime) / 1000);
+            const minutes = Math.floor(exerciseTime / 60);
+            const seconds = exerciseTime % 60;
+            
+            // 🔧 완료 세트 계산 수정: 10회 호흡을 완료한 세트만 카운트
+            let actualCompletedSets = 0;
+            if (!isAborted) {
+                actualCompletedSets = 2; // 완전히 끝까지 한 경우
+            } else {
+                // 중단한 경우: 완료된 세트 수 정확히 계산
+                if (currentSet === 1) {
+                    // 첫 세트 도중에 중단: 0세트 완료
+                    actualCompletedSets = 0;
+                } else if (currentSet === 2) {
+                    // 첫 세트 완료 후 중단 (휴식시간 또는 2세트 중): 1세트 완료
+                    actualCompletedSets = 1;
+                } else {
+                    // currentSet > 2인 경우는 없지만 안전장치
+                    actualCompletedSets = 2;
+                }
+            }
+            
+            // 🔧 완료 호흡 횟수 계산 개선
+            let actualCompletedBreaths = 0;
+            if (!isAborted) {
+                actualCompletedBreaths = 20;
+            } else {
+                if (currentSet === 1) {
+                    // 첫 세트 도중: 현재 호흡 - 1
+                    actualCompletedBreaths = Math.max(0, currentBreath - 1);
+                } else if (currentSet === 2) {
+                    // 두 번째 세트: 첫 세트 10회 + 현재 호흡 - 1
+                    actualCompletedBreaths = 10 + Math.max(0, currentBreath - 1);
+                }
+            }
+            
+            window.exerciseData = {
+                exerciseTime: `${minutes}:${seconds.toString().padStart(2, '0')}`,
+                completedSets: actualCompletedSets,
+                completedBreaths: actualCompletedBreaths,
+                isAborted: isAborted,
+                resistanceSettings: { ...resistanceSettings },
+                userFeedback: userFeedback
+            };
+
+            setTimeout(() => {
+                showFeedbackScreen();
+            }, 1000);
+        }
+
+        async function showResultScreen() {
+            try {
+                console.log('📋 결과 화면 표시 시작');
+                
+                showScreen('resultScreen');
+                
+                const timeData = window.exerciseData.exerciseTime.split(':');
+                const minutes = parseInt(timeData[0]);
+                const seconds = parseInt(timeData[1]);
+                
+                // 결과 통계 업데이트
+                document.getElementById('resistanceInfo').textContent = `${window.exerciseData.resistanceSettings.inhale}/${window.exerciseData.resistanceSettings.exhale}`;
+                document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
+                document.getElementById('completedSets').textContent = `${window.exerciseData.completedSets}/2`;
+                document.getElementById('totalBreathsResult').textContent = `${window.exerciseData.completedBreaths}회`;
+                
+                document.getElementById('intensityAdvice').textContent = '강도 조절 분석을 진행하고 있습니다...';
+                document.getElementById('comprehensiveAdvice').textContent = 'AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...';
+                
+                const exerciseDataWithFeedback = {
+                    ...window.exerciseData,
+                    userFeedback: userFeedback
+                };
+                
+                console.log('🎯 AI 분석용 최종 데이터:', exerciseDataWithFeedback);
+                
+                gtag('event', 'exercise_complete', {
+                    exercise_duration: exerciseDataWithFeedback.exerciseTime,
+                    completed_sets: exerciseDataWithFeedback.completedSets,
+                    completed_breaths: exerciseDataWithFeedback.completedBreaths,
+                    is_aborted: exerciseDataWithFeedback.isAborted,
+                    user_feedback: exerciseDataWithFeedback.userFeedback,
+                    inhale_resistance: exerciseDataWithFeedback.resistanceSettings.inhale,
+                    exhale_resistance: exerciseDataWithFeedback.resistanceSettings.exhale
+                });
+                
+                // 🎮 통계 업데이트 및 배지 체크
+                const updatedStats = updateLocalStats(window.exerciseData);
+                addExerciseHistory(exerciseDataWithFeedback);
+                
+                // 🎮 새 배지 체크 및 표시
+                const newBadges = checkNewBadges(updatedStats);
+                updateBadgesDisplay();
+                
+                // 🔥 새로운 기능: 사회적 증명 UI 초기화
+                updateSocialProofData();
+                initReviewsCarousel();
+                
+                if (newBadges.length > 0) {
+                    // 첫 번째 새 배지만 팝업으로 표시 (여러 개면 순차적으로)
+                    setTimeout(() => {
+                        showBadgePopup(newBadges[0]);
+                    }, 1000);
+                }
+                
+                const aiAdvice = await getTrainerAdvice(exerciseDataWithFeedback);
+                
+                console.log('🤖 AI 조언 결과:', aiAdvice);
+                
+                if (typeof aiAdvice === 'object' && aiAdvice.intensityAdvice && aiAdvice.comprehensiveAdvice) {
+                    handleExerciseResult({
+                        success: true,
+                        intensityAdvice: aiAdvice.intensityAdvice,
+                        comprehensiveAdvice: aiAdvice.comprehensiveAdvice,
+                        stats: updatedStats
+                    });
+                } else if (typeof aiAdvice === 'string') {
+                    handleExerciseResult({
+                        success: true,
+                        intensityAdvice: aiAdvice,
+                        comprehensiveAdvice: "AI 트레이너가 당신의 꾸준한 노력을 응원합니다!",
+                        stats: updatedStats
+                    });
+                } else {
+                    throw new Error('AI 조언 형식 오류');
+                }
+                
+                console.log('✅ 결과 화면 처리 완료');
+                
+            } catch (error) {
+                console.error('❌ showResultScreen 오류:', error);
+                
+                document.getElementById('intensityAdvice').textContent = '분석을 불러오는 중 문제가 발생했습니다.';
+                document.getElementById('comprehensiveAdvice').textContent = '네트워크 연결을 확인하고 다시 시도해주세요.';
+                
+                const updatedStats = updateLocalStats(window.exerciseData);
+                addExerciseHistory(window.exerciseData);
+                updateBadgesDisplay();
+                updateSocialProofData();
+                initReviewsCarousel();
+            }
+        }
+
+        // 🎯 개선된 결과 처리 함수 (스마트 분석 적용)
+        function handleExerciseResult(result) {
+            addFeedbackHistory(userFeedback, resistanceSettings);
+            const analysis = analyzeFeedbackPattern(userFeedback, resistanceSettings);
+            
+            console.log('🧠 스마트 분석 결과:', analysis);
+            
+            let finalIntensityAdvice = result.intensityAdvice;
+            let finalComprehensiveAdvice = result.comprehensiveAdvice;
+            
+            const additionalAdvice = generateLocalAdviceAddition(analysis, userFeedback, window.exerciseData.isAborted);
+            if (additionalAdvice) {
+                finalIntensityAdvice += additionalAdvice;
+            }
+            
+            document.getElementById('intensityAdvice').innerHTML = finalIntensityAdvice.replace(/\n/g, '<br>');
+            document.getElementById('comprehensiveAdvice').innerHTML = finalComprehensiveAdvice.replace(/\n/g, '<br>');
+        }
+
+        function resetExercise() {
+            currentSet = 1;
+            currentBreath = 1;
+            isPaused = false;
+            isAborted = false;
+            breathingPhase = 'inhale';
+            userFeedback = null;
+            clearTimeout(breathingTimer);
+            clearInterval(restTimer);
+            
+            // 🎮 퀴즈 시스템 초기화
+            currentQuizQuestion = 0;
+            quizCorrectAnswers = 0;
+            quizStartTime = null;
+            selectedQuestions = [];
+            clearTimeout(quizOfferTimer);
+            
+            // 🔥 새로운 기능: 리뷰 캐러셀 정리
+            if (reviewCarouselInterval) {
+                clearInterval(reviewCarouselInterval);
+            }
+            
+            // 모든 화면 숨기기
+            document.getElementById('countdownSection').style.display = 'block';
+            document.getElementById('breathingSection').style.display = 'none';
+            document.getElementById('restSection').style.display = 'none';
+            document.getElementById('quizOfferSection').style.display = 'none';
+            document.getElementById('quizProgressSection').style.display = 'none';
+            document.getElementById('quizRewardSection').style.display = 'none';
+        }
+
+        window.onload = function() {
+            loadUserData();
+            loadResistanceSettings();
+            updateBadgesDisplay();
+            
+            // 🔥 새로운 기능: 페이지 로드시 사회적 증명 데이터 업데이트
+            updateSocialProofData();
+            
+            // 🔥 새로운 기능: 메인화면 실시간 현황 주기적 업데이트 (2분마다)
+            setInterval(() => {
+                updateSocialProofData();
+            }, 120000);
+            // 🔥 새로운 기능: 온보딩 스와이프 초기화
+            initializeOnboardingSwipe();
+        };
+
+        // Service Worker 등록
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('✅ ServiceWorker 등록 성공:', registration.scope);
+                        registration.update();
+                    })
+                    .catch(function(error) {
+                        console.log('❌ ServiceWorker 등록 실패:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
+
+        function startRest() {
+            document.getElementById('breathingSection').style.display = 'none';
+            
+            // 🔧 기존 타이머 정리
+            stopGlobalRestTimer();
+            clearInterval(restTimer);
+            
+            // 🎮 퀴즈 시스템이 활성화되어 있으면 퀴즈 제안부터 시작
+            if (QUIZ_CONFIG.QUIZ_ENABLED) {
+                showRestIntro();
+            } else {
+                showNormalRest();
+            }
+        }
+
+        // 🔧 전역 타이머 관리 함수들
+        function startGlobalRestTimer() {
+            globalRestTime = 120;
+            
+            if (globalRestTimer) {
+                clearInterval(globalRestTimer);
+            }
+            
+            globalRestTimer = setInterval(() => {
+                if (isAborted) {
+                    clearInterval(globalRestTimer);
+                    return;
+                }
+                
+                // 모든 화면의 카운트다운 업데이트
+                updateAllCountdowns();
+                globalRestTime--;
+                
+                if (globalRestTime < 0) {
+                    clearInterval(globalRestTimer);
+                    startNextSet();
+                }
+            }, 1000);
+        }
+
+        function updateAllCountdowns() {
+            const countdownElements = [
+                'restCountdown',
+                'quizOfferCountdown', 
+                'quizCountdown',
+                'quizRewardCountdown'  // 🔧 보상 화면 카운트다운 추가
+            ];
+            
+            countdownElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = globalRestTime;
+                }
+            });
+        }
+
+        function stopGlobalRestTimer() {
+            if (globalRestTimer) {
+                clearInterval(globalRestTimer);
+                globalRestTimer = null;
+            }
+        }
+
+        // 🎮 새로운 기능: 휴식 시간 소개 (개선된 버전)
+        function showRestIntro() {
+            document.getElementById('restSection').style.display = 'block';
+            document.getElementById('restControlButtons').style.display = 'none';
+            
+            const restProgressEl = document.getElementById('restProgressText');
+            restProgressEl.textContent = `${currentSet - 1}세트 완료`;
+            
+            // 🔧 전역 타이머 시작
+            startGlobalRestTimer();
+            
+            // GA 이벤트: 휴식 시작
+            gtag('event', 'rest_started', {
+                set_number: currentSet - 1,
+                quiz_enabled: QUIZ_CONFIG.QUIZ_ENABLED
+            });
+            
+            // 5초 후 퀴즈 제안 화면으로 전환
+            quizOfferTimer = setTimeout(() => {
+                if (!isAborted) {
+                    showQuizOffer();
+                }
+            }, QUIZ_CONFIG.OFFER_DELAY);
+        }
+
+        // 🎮 새로운 기능: 퀴즈 제안 화면 (타이머 연속성 개선)
+        function showQuizOffer() {
+            document.getElementById('restSection').style.display = 'none';
+            document.getElementById('quizOfferSection').style.display = 'block';
+            
+            // GA 이벤트: 퀴즈 제안 노출
+            gtag('event', 'quiz_offer_shown', {
+                set_number: currentSet - 1,
+                remaining_rest_time: globalRestTime
+            });
+        }
+
+        // 🎮 새로운 기능: 퀴즈 시작
+        function startQuiz() {
+            document.getElementById('quizOfferSection').style.display = 'none';
+            document.getElementById('quizProgressSection').style.display = 'block';
+            
+            // 퀴즈 상태 초기화
+            currentQuizQuestion = 0;
+            quizCorrectAnswers = 0;
+            quizStartTime = getCurrentUserTime();
+            
+            // 🎯 랜덤 2문제 선택
+            selectRandomQuestions();
+            
+            // GA 이벤트: 퀴즈 시작
+            gtag('event', 'quiz_started', {
+                set_number: currentSet - 1,
+                remaining_rest_time: parseInt(document.getElementById('restCountdown').textContent),
+                selected_questions: selectedQuestions
+            });
+            
+            showQuizQuestion();
+        }
+
+        // 🎮 새로운 기능: 퀴즈 문제 표시 (랜덤 문제 지원)
+        function showQuizQuestion() {
+            const questionIndex = selectedQuestions[currentQuizQuestion];
+            const question = QUIZ_QUESTIONS[questionIndex];
+            const questionEl = document.getElementById('quizQuestion');
+            const optionsEl = document.getElementById('quizOptions');
+            const explanationEl = document.getElementById('quizExplanation');
+            const progressFillEl = document.getElementById('quizProgressFill');
+            const progressTextEl = document.getElementById('quizProgressText');
+            const quizCountdownEl = document.getElementById('quizCountdown');
+            
+            // 문제 표시
+            questionEl.textContent = question.question;
+            
+            // 선택지 생성
+            optionsEl.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'quiz-option';
+                optionEl.textContent = option;
+                optionEl.onclick = () => selectQuizAnswer(index, questionIndex);
+                optionsEl.appendChild(optionEl);
+            });
+            
+            // 설명 숨기기
+            explanationEl.style.display = 'none';
+            
+            // 진행률 업데이트 (2문제 기준)
+            const progress = ((currentQuizQuestion + 1) / 2) * 100;
+            progressFillEl.style.width = `${progress}%`;
+            progressTextEl.textContent = `문제 ${currentQuizQuestion + 1} / 2`;
+            
+            // 카운트다운 동기화
+            const syncInterval = setInterval(() => {
+                const restCountdownEl = document.getElementById('restCountdown');
+                const currentTime = restCountdownEl.textContent;
+                quizCountdownEl.textContent = currentTime;
+                
+                if (parseInt(currentTime) <= 0) {
+                    clearInterval(syncInterval);
+                }
+            }, 1000);
+        }
+
+        // 🎮 새로운 기능: 퀴즈 답안 선택 (배지 추적 추가)
+        function selectQuizAnswer(selectedIndex, questionIndex) {
+            const question = QUIZ_QUESTIONS[questionIndex];
+            const optionsEl = document.getElementById('quizOptions');
+            const explanationEl = document.getElementById('quizExplanation');
+            const options = optionsEl.querySelectorAll('.quiz-option');
+            
+            // 선택지 비활성화
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+            });
+            
+            // 정답/오답 표시
+            options[selectedIndex].classList.add(selectedIndex === question.correct ? 'correct' : 'incorrect');
+            if (selectedIndex !== question.correct) {
+                options[question.correct].classList.add('correct');
+            }
+            
+            // 정답 카운트
+            if (selectedIndex === question.correct) {
+                quizCorrectAnswers++;
+            }
+            
+            // 🎮 푼 문제 기록 (배지용)
+            addSolvedQuestion(questionIndex);
+            
+            // 설명 표시
+            explanationEl.textContent = question.explanation;
+            explanationEl.style.display = 'block';
+            
+            // GA 이벤트: 답안 선택
+            gtag('event', 'quiz_answer_selected', {
+                question_number: currentQuizQuestion + 1,
+                question_index: questionIndex,
+                selected_answer: selectedIndex,
+                correct_answer: question.correct,
+                is_correct: selectedIndex === question.correct
+            });
+            
+            // 2초 후 다음 문제 또는 결과 화면
+            setTimeout(() => {
+                currentQuizQuestion++;
+                if (currentQuizQuestion < 2) { // 2문제로 변경
+                    showQuizQuestion();
+                } else {
+                    showQuizResult();
+                }
+            }, 2500);
+        }
+
+        // 🎮 새로운 기능: 퀴즈 결과 화면
+        function showQuizResult() {
+            document.getElementById('quizProgressSection').style.display = 'none';
+            document.getElementById('quizRewardSection').style.display = 'block';
+            
+            const quizEndTime = getCurrentUserTime();
+            const quizDuration = Math.floor((quizEndTime - quizStartTime) / 1000);
+            
+            // 🎮 퀴즈 완료 배지 처리
+            handleQuizCompletionBadges();
+            
+            // 보상 내용 업데이트 (현재 상품 로테이션 사용)
+            updateRewardContent();
+            
+            // GA 이벤트: 퀴즈 완료
+            gtag('event', 'quiz_completed', {
+                correct_answers: quizCorrectAnswers,
+                total_questions: 2,
+                quiz_duration_seconds: quizDuration,
+                accuracy_percentage: Math.round((quizCorrectAnswers / 2) * 100)
+            });
+        }
+
+        // 🎮 새로운 기능: 퀴즈 완료 배지 처리
+        function handleQuizCompletionBadges() {
+            let badgesToShow = [];
+            
+            // 퀴즈 탐험가: 2문제를 모두 정답으로 맞혔을 때
+            if (quizCorrectAnswers === 2) {
+                incrementQuizPerfectCount();
+                updateConsecutivePerfectCount(true);
+                
+                const isNewBadge = saveBadge('quiz_explorer');
+                if (isNewBadge) {
+                    const badge = BADGES_CONFIG.find(b => b.id === 'quiz_explorer');
+                    badgesToShow.push(badge);
+                }
+            } else {
+                updateConsecutivePerfectCount(false);
+            }
+            
+            // 퀴즈 완벽주의자: 3번 연속 완벽
+            if (getConsecutivePerfectCount() >= 3) {
+                const isNewBadge = saveBadge('quiz_perfectionist');
+                if (isNewBadge) {
+                    const badge = BADGES_CONFIG.find(b => b.id === 'quiz_perfectionist');
+                    badgesToShow.push(badge);
+                }
+            }
+            
+            // 퀴즈 마스터: 모든 문제 경험
+            if (getSolvedQuestionsCount() >= 6) {
+                const isNewBadge = saveBadge('quiz_master');
+                if (isNewBadge) {
+                    const badge = BADGES_CONFIG.find(b => b.id === 'quiz_master');
+                    badgesToShow.push(badge);
+                }
+            }
+            
+            // 배지가 있으면 첫 번째 배지 즉시 팝업 표시
+            if (badgesToShow.length > 0) {
+                setTimeout(() => {
+                    showBadgePopup(badgesToShow[0]);
+                }, 1000);
+            }
+        }
+
+        // 🎮 새로운 기능: 보상 내용 업데이트 (상품 로테이션 적용)
+        function updateRewardContent() {
+            const rewardSubtitle = document.getElementById('quizRewardSubtitle');
+            const productName = document.getElementById('rewardProductName');
+            const productDescription = document.getElementById('rewardProductDescription');
+            const productImage = document.getElementById('rewardProductImage');
+            const originalPrice = document.getElementById('rewardOriginalPrice');
+            const discountPrice = document.getElementById('rewardDiscountPrice');
+            const discountBadge = document.getElementById('rewardDiscountBadge');
+            
+            // 정답 개수에 따른 메시지
+            if (quizCorrectAnswers === 2) {
+                rewardSubtitle.textContent = '🌟 완벽! 모든 문제를 맞혔어요!';
+            } else if (quizCorrectAnswers >= 1) {
+                rewardSubtitle.textContent = `👍 훌륭해요! ${quizCorrectAnswers}문제 정답!`;
+            } else {
+                rewardSubtitle.textContent = `💪 좋아요! 도전해주셔서 감사해요!`;
+            }
+            
+            // 🎁 현재 상품 로테이션 적용
+            const currentProduct = getCurrentProduct();
+            
+            productName.textContent = currentProduct.name;
+            productDescription.textContent = currentProduct.description;
+            productImage.src = currentProduct.image;
+            originalPrice.textContent = currentProduct.originalPrice;
+            discountPrice.textContent = currentProduct.discountPrice;
+            discountBadge.textContent = `${currentProduct.discountPercent}% 할인`;
+            
+            // 퀴즈 카운트 증가
+            incrementQuizCount();
+        }
+
+        // 🎮 새로운 기능: 특가 확인하기 (새 탭으로 열기)
+        function checkSpecialOffer() {
+            const shopUrl = generateShopUrl();
+            
+            // GA 이벤트: 특가 확인
+            gtag('event', 'special_offer_checked', {
+                correct_answers: quizCorrectAnswers,
+                total_questions: 2,
+                discount_percentage: getCurrentProduct().discountPercent,
+                shop_url: shopUrl,
+                open_method: 'new_tab'
+            });
+            
+            // 새 탭에서 쇼핑몰 열기 (앱은 그대로 유지)
+            window.open(shopUrl, '_blank');
+            
+            // 사용자에게 피드백 제공
+            const checkButton = document.querySelector('.quiz-check-button');
+            const originalText = checkButton.textContent;
+            checkButton.textContent = '✅ 새 탭에서 열림';
+            checkButton.style.background = 'rgba(76, 175, 80, 0.9)';
+            checkButton.style.color = 'white';
+            
+            // 3초 후 원래 상태로 복원
+            setTimeout(() => {
+                checkButton.textContent = originalText;
+                checkButton.style.background = '';
+                checkButton.style.color = '';
+            }, 3000);
+        }
+
+        // 🎮 새로운 기능: 쇼핑몰 URL 생성 (상품 로테이션 적용)
+        function generateShopUrl() {
+            const currentProduct = getCurrentProduct();
+            const baseUrl = `${QUIZ_CONFIG.SHOP_URL}${currentProduct.specialPath}`;
+            const params = new URLSearchParams({
+                utm_source: 'breath_app',
+                utm_medium: 'quiz_reward',
+                utm_campaign: 'rest_quiz',
+                utm_content: `${quizCorrectAnswers}_of_2_correct`,
+                quiz_score: quizCorrectAnswers,
+                discount: currentProduct.discountPercent,
+                product_id: currentProduct.id,
+                questions_solved: getSolvedQuestionsCount()
+            });
+            
+            return `${baseUrl}?${params.toString()}`;
+        }
+
+        // 🎮 새로운 기능: 퀴즈 후 다음 세트로
+        function continueToNextSet() {
+            // 퀴즈 관련 화면 모두 숨기기
+            document.getElementById('quizRewardSection').style.display = 'none';
+            
+            // 기존 휴식 타이머 정리
+            clearInterval(restTimer);
+            clearTimeout(quizOfferTimer);
+            
+            // 다음 세트 시작
+            startNextSet();
+        }
+
+        // 🎮 새로운 기능: 휴식만 선택
+        function chooseRestOnly() {
+            document.getElementById('quizOfferSection').style.display = 'none';
+            
+            // GA 이벤트: 휴식만 선택
+            gtag('event', 'quiz_declined', {
+                set_number: currentSet - 1,
+                remaining_rest_time: parseInt(document.getElementById('restCountdown').textContent)
+            });
+            
+            showNormalRest();
+        }
+
+        // 🎮 새로운 기능: 일반 휴식 화면 (기존 방식)
+        function showNormalRest() {
+            document.getElementById('restSection').style.display = 'block';
+            document.getElementById('restControlButtons').style.display = 'block'; // 이때 건너뛰기 버튼 활성화!
+            
+            let restTime = parseInt(document.getElementById('restCountdown').textContent) || 120;
+            const restCountdownEl = document.getElementById('restCountdown');
+            const restProgressEl = document.getElementById('restProgressText');
+            
+            restProgressEl.textContent = `${currentSet - 1}세트 완료`;
+            
+            restTimer = setInterval(() => {
+                if (isAborted) {
+                    clearInterval(restTimer);
+                    return;
+                }
+                
+                restCountdownEl.textContent = restTime;
+                restTime--;
+                
+                if (restTime < 0) {
+                    clearInterval(restTimer);
+                    startNextSet();
+                }
+            }, 1000);
+        }
+
+        function skipRest() {
+            stopGlobalRestTimer(); // 🔧 전역 타이머 정리
+            incrementSkippedRestCount(); // 🎮 배지 조건용 카운트
+            startNextSet();
+        }
+
+        function startNextSet() {
+            // 🔧 모든 휴식/퀴즈 관련 화면 숨기기
+            document.getElementById('restSection').style.display = 'none';
+            document.getElementById('quizOfferSection').style.display = 'none';
+            document.getElementById('quizProgressSection').style.display = 'none';
+            document.getElementById('quizRewardSection').style.display = 'none';
+            
+            // 🔧 모든 타이머 정리
+            stopGlobalRestTimer();
+            clearTimeout(quizOfferTimer);
+            
+            // 🚀 호흡 화면 표시
+            document.getElementById('breathingSection').style.display = 'block';
+            
+            const circle = document.getElementById('breathingCircle');
+            circle.className = 'breathing-circle exhale';
+            
+            initializeProgressIndicators();
+            
+            setTimeout(() => {
+                breathingCycle();
+            }, 500);
+        }
+
+        function pauseExercise() {
+            isPaused = !isPaused;
+            const button = event.target;
+            
+            if (isPaused) {
+                clearTimeout(breathingTimer);
+                button.textContent = '계속하기';
+                document.getElementById('circleText').textContent = '일시정지';
+            } else {
+                button.textContent = '일시정지';
+                breathingCycle();
+            }
+        }
+
+        // 로컬 스토리지 기반 통계 관리
+        function getLocalStats() {
+            const stats = JSON.parse(localStorage.getItem('breathTrainerStats') || '{}');
+            return {
+                totalExercises: stats.totalExercises || 0,
+                totalSets: stats.totalSets || 0,
+                totalBreaths: stats.totalBreaths || 0,
+                consecutiveDays: stats.consecutiveDays || 0,
+                lastExerciseDate: stats.lastExerciseDate || null,
+                averageSets: stats.totalExercises > 0 ? Math.round((stats.totalSets / stats.totalExercises) * 10) / 10 : 0
+            };
+        }
+
+        function getExerciseHistory() {
+            return JSON.parse(localStorage.getItem('breathTrainerHistory') || '[]');
+        }
+
+        function addExerciseHistory(exerciseData) {
+            const history = getExerciseHistory();
+            const newRecord = {
+                date: getCurrentUserTime().toISOString(), // 사용자 시간대 적용
+                exerciseTime: exerciseData.exerciseTime,
+                completedSets: exerciseData.completedSets,
+                completedBreaths: exerciseData.completedBreaths,
+                isAborted: exerciseData.isAborted,
+                userFeedback: exerciseData.userFeedback,
+                resistanceSettings: exerciseData.resistanceSettings
+            };
+            
+            history.unshift(newRecord);
+            
+            if (history.length > 10) {
+                history.splice(10);
+            }
+            
+            localStorage.setItem('breathTrainerHistory', JSON.stringify(history));
+        }
+
+        function updateLocalStats(exerciseData) {
+            const stats = getLocalStats();
+            
+            stats.totalExercises += 1;
+            stats.totalSets += exerciseData.completedSets;
+            stats.totalBreaths += exerciseData.completedBreaths;
+            
+            const today = getCurrentUserTime().toDateString();
+            const lastDate = stats.lastExerciseDate ? new Date(stats.lastExerciseDate).toDateString() : null;
+            
+            if (lastDate === today) {
+                // 오늘 이미 트레이닝함
+            } else if (lastDate === new Date(Date.now() - 24*60*60*1000).toDateString()) {
+                // 어제 트레이닝함
+                stats.consecutiveDays += 1;
+            } else {
+                // 연속 끊김
+                stats.consecutiveDays = 1;
+            }
+            
+            stats.lastExerciseDate = getCurrentUserTime().toISOString();
+            stats.averageSets = stats.totalExercises > 0 ? Math.round((stats.totalSets / stats.totalExercises) * 10) / 10 : 0;
+            
+            localStorage.setItem('breathTrainerStats', JSON.stringify(stats));
+            return stats;
+        }
+
+        // 🔧 AI 조언 요청
+        async function getTrainerAdvice(exerciseData) {
+            try {
+                console.log('🤖 AI 조언 요청 시작');
+                console.log('📊 전달할 운동 데이터:', exerciseData);
+                
+                const params = new URLSearchParams({
+                    function: 'getAIAdvice',
+                    exerciseTime: exerciseData.exerciseTime,
+                    completedSets: exerciseData.completedSets.toString(),
+                    completedBreaths: exerciseData.completedBreaths.toString(),
+                    isAborted: exerciseData.isAborted.toString(),
+                    userFeedback: exerciseData.userFeedback || '',
+                    inhaleResistance: exerciseData.resistanceSettings ? exerciseData.resistanceSettings.inhale.toString() : '1',
+                    exhaleResistance: exerciseData.resistanceSettings ? exerciseData.resistanceSettings.exhale.toString() : '1'
+                });
+                
+                console.log('🌐 요청 파라미터:', params.toString());
+                
+                const response = await fetch(`${SCRIPT_URL}?${params}`);
+                
+                if (!response.ok) {
+                    throw new Error(`연결 오류: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('📦 Apps Script 응답:', result);
+                
+                if (result.success) {
+                    if (result.advice && typeof result.advice === 'object') {
+                        return {
+                            intensityAdvice: result.advice.intensityAdvice || result.advice,
+                            comprehensiveAdvice: result.advice.comprehensiveAdvice || "AI 트레이너가 당신의 꾸준한 노력을 응원합니다!"
+                        };
+                    } else if (typeof result.advice === 'string') {
+                        return {
+                            intensityAdvice: result.advice,
+                            comprehensiveAdvice: "AI 트레이너가 당신의 꾸준한 노력을 응원합니다!"
+                        };
+                    }
+                } 
+                
+                throw new Error(result.message || 'AI 조언 생성 실패');
+                
+            } catch (error) {
+                console.error('🚨 AI 조언 요청 오류:', error);
+                
+                const defaultAdvices = [
+                    `${exerciseData.completedSets}세트 완주! 숨트의 저항을 이겨내며 호흡근이 한층 강해졌습니다.`,
+                    `${exerciseData.exerciseTime} 동안의 집중적인 호흡 트레이닝, 수고하셨습니다!`,
+                    `호흡근육 강화 여정에서 또 한 걸음 전진하셨네요!`
+                ];
+                
+                const randomIndex = Math.floor(Math.random() * defaultAdvices.length);
+                return {
+                    intensityAdvice: defaultAdvices[randomIndex],
+                    comprehensiveAdvice: "꾸준히 도전하는 의지가 정말 대단해요!"
+                };
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function goToMain() {
+            showScreen('mainScreen');
+            resetExercise();
+            loadUserData();
+        }
+
+        function loadUserData() {
+            const stats = getLocalStats();
+            displayUserStats(stats);
+            updateChart();
+            updateSocialProofData(); // 🔥 새로운 기능: 사회적 증명 데이터 업데이트
+        }
+
+        function displayUserStats(stats) {
+            document.getElementById('totalExercises').textContent = stats.totalExercises;
+            document.getElementById('consecutiveDays').textContent = stats.consecutiveDays;
+            
+            // 🔧 오늘 완료한 세트 수 계산 (평균이 아닌 오늘 실제 완료 세트)
+            const todayCompletedSets = getTodayCompletedSets();
+            document.getElementById('averageSets').textContent = todayCompletedSets;
+            
+            // 🔧 오늘 완료한 호흡 횟수 계산
+            const todayBreaths = getTodayBreaths();
+            document.getElementById('totalBreaths').textContent = todayBreaths;
+        }
+
+        // 🔧 오늘 완료한 세트 수 계산 함수
+        function getTodayCompletedSets() {
+            const history = getExerciseHistory();
+            const today = getCurrentUserTime().toDateString();
+            
+            const todayData = history.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate.toDateString() === today;
+            });
+            
+            return todayData.reduce((sum, record) => sum + record.completedSets, 0);
+        }
+
+        // 🔧 오늘 완료한 호흡 횟수 계산 함수
+        function getTodayBreaths() {
+            const history = getExerciseHistory();
+            const today = getCurrentUserTime().toDateString();
+            
+            const todayData = history.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate.toDateString() === today;
+            });
+            
+            return todayData.reduce((sum, record) => sum + record.completedBreaths, 0);
+        }
+
+        function startExercise() {
+            resetExercise();
+            showScreen('exerciseScreen');
+            
+            gtag('event', 'exercise_start', {
+                inhale_resistance: resistanceSettings.inhale,
+                exhale_resistance: resistanceSettings.exhale
+            });
+            
+            startCountdown();
+        }
+
+        function startCountdown() {
+            let count = 3;
+            const countdownEl = document.getElementById('countdown');
+            
+            const countdownInterval = setInterval(() => {
+                countdownEl.textContent = count;
+                count--;
+                
+                if (count < 0) {
+                    clearInterval(countdownInterval);
+                    startBreathing();
+                }
+            }, 1000);
+        }
+
+        function startBreathing() {
+            document.getElementById('countdownSection').style.display = 'none';
+            document.getElementById('breathingSection').style.display = 'block';
+            
+            const circle = document.getElementById('breathingCircle');
+            circle.className = 'breathing-circle exhale';
+            
+            initializeProgressIndicators();
+            
+            exerciseStartTime = getCurrentUserTime(); // 사용자 시간대 적용
+            
+            setTimeout(() => {
+                breathingCycle();
+            }, 500);
+        }
+
+        function breathingCycle() {
+            if (isPaused || isAborted) return;
+
+            const circle = document.getElementById('breathingCircle');
+            const circleText = document.getElementById('circleText');
+
+            updateProgressIndicators();
+
+            if (breathingPhase === 'inhale') {
+                circleText.textContent = '들숨 (3초)';
+                circle.className = 'breathing-circle inhale';
+                
+                breathingTimer = setTimeout(() => {
+                    breathingPhase = 'hold';
+                    breathingCycle();
+                }, 3000);
+
+            } else if (breathingPhase === 'hold') {
+                circleText.textContent = '멈춤 (1초)';
+                circle.className = 'breathing-circle hold';
+                
+                breathingTimer = setTimeout(() => {
+                    breathingPhase = 'exhale';
+                    breathingCycle();
+                }, 1000);
+
+            } else if (breathingPhase === 'exhale') {
+                circleText.textContent = '날숨 (3초)';
+                circle.className = 'breathing-circle exhale';
+                
+                breathingTimer = setTimeout(() => {
+                    breathingPhase = 'exhale-hold';
+                    breathingCycle();
+                }, 3000);
+
+            } else if (breathingPhase === 'exhale-hold') {
+                circleText.textContent = '멈춤 (1초)';
+                circle.className = 'breathing-circle exhale-hold';
+                
+                breathingTimer = setTimeout(() => {
+                    currentBreath++;
+                    breathingPhase = 'inhale';
+                    
+                    if (currentBreath > 10) {
+                        currentSet++;
+                        currentBreath = 1;
+                        
+                        if (currentSet > 2) {
+                            completeExercise();
+                        } else {
+                            startRest();
+                        }
+                    } else {
+                        breathingCycle();
+                    }
+                }, 1000);
+            }
+        }
+
+        // 🎯 피드백 히스토리 관리 함수 (스마트 분석용)
+        function getFeedbackHistory() {
+            return JSON.parse(localStorage.getItem('feedbackHistory') || '[]');
+        }
+
+        function addFeedbackHistory(feedback, resistanceSettings) {
+            const history = getFeedbackHistory();
+            const today = getCurrentUserTime().toDateString();
+            const currentHour = getCurrentUserTime().getHours();
+            const timeOfDay = currentHour < 14 ? 'morning' : 'afternoon';
+            
+            const newRecord = {
+                date: today,
+                timeOfDay: timeOfDay,
+                feedback: feedback,
+                inhaleLevel: resistanceSettings.inhale,
+                exhaleLevel: resistanceSettings.exhale,
+                timestamp: getCurrentUserTime().toISOString()
+            };
+            
+            history.unshift(newRecord);
+            
+            if (history.length > 60) {
+                history.splice(60);
+            }
+            
+            localStorage.setItem('feedbackHistory', JSON.stringify(history));
+            return history;
+        }
+
+        // 🎯 스마트 피드백 패턴 분석
+        function analyzeFeedbackPattern(currentFeedback, resistanceSettings) {
+            const history = getFeedbackHistory();
+            
+            let consecutivePerfectCount = 0;
+            let consecutiveEasyCount = 0;
+            let consecutiveHardCount = 0;
+            
+            if (currentFeedback === 'perfect') {
+                consecutivePerfectCount = 1;
+            } else if (currentFeedback === 'easy') {
+                consecutiveEasyCount = 1;
+            } else if (currentFeedback === 'hard') {
+                consecutiveHardCount = 1;
+            }
+            
+            for (let record of history) {
+                if (currentFeedback === 'perfect' && record.feedback === 'perfect') {
+                    consecutivePerfectCount++;
+                } else if (currentFeedback === 'easy' && record.feedback === 'easy') {
+                    consecutiveEasyCount++;
+                } else if (currentFeedback === 'hard' && record.feedback === 'hard') {
+                    consecutiveHardCount++;
+                } else {
+                    break;
+                }
+            }
+            
+            const previousFeedback = history.length > 0 ? history[0].feedback : null;
+            
+            return {
+                consecutivePerfectCount: consecutivePerfectCount,
+                consecutiveEasyCount: consecutiveEasyCount,
+                consecutiveHardCount: consecutiveHardCount,
+                previousFeedback: previousFeedback,
+                hasImproved: previousFeedback === 'hard' && currentFeedback === 'perfect',
+                hasProgressed: previousFeedback === 'perfect' && currentFeedback === 'easy',
+                readyForChallenge: consecutivePerfectCount >= 14,
+                shouldIncrease: consecutiveEasyCount >= 3,
+                needsDecrease: consecutiveHardCount >= 2,
+                totalHistory: history.length
+            };
+        }
+
+        // 🎯 스마트 조언 생성
+        function generateLocalAdviceAddition(analysis, currentFeedback, isAborted) {
+            let additionalAdvice = '';
+            
+            if (!isAborted) {
+                if (analysis.readyForChallenge) {
+                    additionalAdvice += '<br><br><strong>🚀 장기 분석</strong><br>1주일간 꾸준히 적당한 강도를 유지하셨네요!<br>이제 한 단계 도전해보시겠어요?';
+                } else if (analysis.shouldIncrease) {
+                    additionalAdvice += '<br><br><strong>⬆️ 진행 단계</strong><br>연속으로 쉬우셨으니 저항을 올려보세요!';
+                } else if (analysis.hasProgressed) {
+                    additionalAdvice += '<br><br><strong>🌟 실력 향상</strong><br>적당했던 강도가 이제 쉬워졌네요!<br>성장하고 계십니다!';
+                } else if (analysis.hasImproved) {
+                    additionalAdvice += '<br><br><strong>💪 회복 완료</strong><br>힘들던 강도가 이제 적당해졌어요!<br>좋은 적응력이네요!';
+                }
+            } else {
+                if (analysis.needsDecrease) {
+                    additionalAdvice += '<br><br><strong>🛡️ 안전 우선</strong><br>무리하지 마시고 강도를 낮춰보세요.<br>꾸준함이 더 중요해요!';
+                } else if (analysis.totalHistory >= 5) {
+                    additionalAdvice += '<br><br><strong>💙 계속 도전</strong><br>그동안 꾸준히 하신 모습이 멋져요!<br>컨디션 좋을 때 다시 해봐요!';
+                }
+            }
+            
+            return additionalAdvice;
+        }
+
+        // 저항 설정 관리 함수들
+        function loadResistanceSettings() {
+            const saved = JSON.parse(localStorage.getItem('resistanceSettings') || '{"inhale": 1, "exhale": 1}');
+            resistanceSettings = saved;
+            updateResistanceUI();
+        }
+
+        function saveResistanceSettings() {
+            localStorage.setItem('resistanceSettings', JSON.stringify(resistanceSettings));
+        }
+
+        function adjustResistance(type, change) {
+            const maxLevels = { inhale: 6, exhale: 5 };
+            const newLevel = resistanceSettings[type] + change;
+            
+            if (newLevel >= 1 && newLevel <= maxLevels[type]) {
+                resistanceSettings[type] = newLevel;
+                saveResistanceSettings();
+                updateResistanceUI();
+            }
+        }
+
+        function updateResistanceUI() {
+            document.getElementById('inhaleLevel').textContent = resistanceSettings.inhale;
+            document.getElementById('exhaleLevel').textContent = resistanceSettings.exhale;
+            
+            updateResistanceScale('inhale', resistanceSettings.inhale);
+            updateResistanceScale('exhale', resistanceSettings.exhale);
+            
+            updateResistanceButtons();
+        }
+
+        function updateResistanceScale(type, level) {
+            const scale = document.getElementById(type + 'Scale');
+            const dots = scale.querySelectorAll('.dot');
+            
+            dots.forEach((dot, index) => {
+                if (index < level) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function updateResistanceButtons() {
+            const inhaleMinusBtn = document.querySelector('.resistance-control:first-child .resistance-btn:first-child');
+            const inhalePlusBtn = document.querySelector('.resistance-control:first-child .resistance-btn:last-child');
+            const exhaleMinusBtn = document.querySelector('.resistance-control:last-child .resistance-btn:first-child');
+            const exhalePlusBtn = document.querySelector('.resistance-control:last-child .resistance-btn:last-child');
+            
+            inhaleMinusBtn.disabled = resistanceSettings.inhale <= 1;
+            inhalePlusBtn.disabled = resistanceSettings.inhale >= 6;
+            exhaleMinusBtn.disabled = resistanceSettings.exhale <= 1;
+            exhalePlusBtn.disabled = resistanceSettings.exhale >= 5;
+        }
+
+        function showFeedbackScreen() {
+            updateFeedbackScreenContent();
+            showScreen('feedbackScreen');
+        }
+
+        function updateFeedbackScreenContent() {
+            const title = document.getElementById('feedbackTitle');
+            const description = document.getElementById('feedbackDescription');
+            
+            if (isAborted) {
+                title.textContent = '중단하신 이유를 알려주세요';
+                description.textContent = '트레이닝을 중단하기 전까지의 강도는 어떠셨나요?';
+            } else {
+                title.textContent = '지금 호흡하는 느낌이 어떠세요?';
+                description.textContent = '방금 완료한 트레이닝의 강도는 어떠셨나요?';
+            }
+        }
+
+        function selectFeedback(feedback) {
+            userFeedback = feedback;
+            
+            gtag('event', 'feedback_selected', {
+                feedback_type: feedback,
+                completed_sets: window.exerciseData ? window.exerciseData.completedSets : 0,
+                is_aborted: isAborted
+            });
+            
+            showResultScreen();
+        }
+
+        window.addEventListener('load', function() {
+            const mainImage = document.getElementById('mainSplashImage');
+            const fallbackSplash = document.getElementById('fallbackSplash');
+            
+            mainImage.addEventListener('error', function() {
+                console.log('⚠️ 메인 스플래시 이미지 로드 실패');
+                this.src = './images/suumt-splash-wide.png';
+                
+                this.addEventListener('error', function() {
+                    console.log('⚠️ 모든 이미지 로드 실패, 대체 화면 표시');
+                    this.style.display = 'none';
+                    fallbackSplash.style.display = 'flex';
+                });
+            });
+
+            console.log('🎬 스플래시 화면 로딩 완료');
+        });
+
+        function initializeProgressIndicators() {
+            const breathsContainer = document.getElementById('breathsIndicators');
+            breathsContainer.innerHTML = '';
+            
+            for (let i = 0; i < 10; i++) {
+                const breathDot = document.createElement('div');
+                breathDot.className = 'breath-indicator';
+                breathDot.setAttribute('data-breath', i + 1);
+                breathsContainer.appendChild(breathDot);
+            }
+            
+            updateProgressIndicators();
+        }
+
+        function updateProgressIndicators() {
+            const setIndicators = document.querySelectorAll('.set-indicator');
+            setIndicators.forEach((indicator, index) => {
+                indicator.classList.remove('active', 'current');
+                if (index < currentSet - 1) {
+                    indicator.classList.add('active');
+                } else if (index === currentSet - 1) {
+                    indicator.classList.add('current');
+                }
+            });
+            
+            const breathIndicators = document.querySelectorAll('.breath-indicator');
+            breathIndicators.forEach((indicator, index) => {
+                indicator.classList.remove('completed', 'current');
+                if (index < currentBreath - 1) {
+                    indicator.classList.add('completed');
+                } else if (index === currentBreath - 1) {
+                    indicator.classList.add('current');
+                }
+            });
+            
+            document.getElementById('setNumbers').textContent = `${currentSet} / 2 세트`;
+            document.getElementById('breathNumbers').textContent = `${currentBreath} / 10 회`;
+        }
+
+        function showStopModal() {
+            document.getElementById('confirmModal').classList.add('show');
+        }
+
+        function hideModal() {
+            document.getElementById('confirmModal').classList.remove('show');
+        }
+
+        function confirmStop() {
+            hideModal();
+            isAborted = true;
+            clearTimeout(breathingTimer);
+            
+            // 🔧 모든 타이머 정리
+            stopGlobalRestTimer();
+            clearInterval(restTimer);
+            
+            gtag('event', 'exercise_aborted', {
+                completed_sets: Math.max(0, currentSet - 1),
+                completed_breaths: Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1))
+            });
+            
+            completeExercise();
+        }
+
+        // 차트 데이터 업데이트 (개선된 주간 구분 + 동적 스케일링)
+        function updateChart() {
+            const history = getExerciseHistory();
+            const chartBars = document.getElementById('chartBars');
+            const chartXAxis = document.getElementById('chartXAxis');
+            const chartSubtitle = document.getElementById('chartSubtitle');
+            const chartYAxis = document.querySelector('.chart-y-axis');
+            const bars = chartBars.querySelectorAll('.chart-bar');
+            
+            // 현재 주의 시작일 계산
+            const weekStart = getWeekStartDate();
+            const weekDates = Array.from({length: 7}, (_, i) => {
+                const date = new Date(weekStart);
+                date.setDate(weekStart.getDate() + i);
+                return date;
+            });
+
+            // 차트 하단 요일 업데이트
+            const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
+            chartXAxis.querySelectorAll('.x-label').forEach((label, index) => {
+                const date = weekDates[index];
+                const dayName = dayLabels[index];
+                const isToday = date.toDateString() === getCurrentUserTime().toDateString();
+                
+                label.textContent = dayName;
+                if (isToday) {
+                    label.style.fontWeight = 'bold';
+                    label.style.color = '#667eea';
+                } else {
+                    label.style.fontWeight = 'normal';
+                    label.style.color = '#666';
+                }
+            });
+
+            // 주간 제목 업데이트
+            const weekStartStr = formatDateForUser(weekStart);
+            const weekEndStr = formatDateForUser(weekDates[6]);
+            chartSubtitle.textContent = `${weekStartStr} ~ ${weekEndStr} 트레이닝 성과`;
+
+            // 🔧 각 날짜별 완료 세트 수 계산
+            const dailySets = weekDates.map(targetDate => {
+                const dayData = history.filter(record => {
+                    const recordDate = new Date(record.date);
+                    return recordDate.toDateString() === targetDate.toDateString();
+                });
+                return dayData.reduce((sum, record) => sum + record.completedSets, 0);
+            });
+
+            // 🎯 동적 Y축 스케일 계산
+            const maxSets = Math.max(...dailySets, 4); // 최소 4까지는 표시
+            const yAxisMax = maxSets <= 4 ? 4 : Math.ceil(maxSets / 2) * 2; // 짝수로 올림
+            const yAxisSteps = yAxisMax <= 4 ? [4, 3, 2, 1, 0] : 
+                              yAxisMax <= 6 ? [6, 4, 2, 0] : 
+                              yAxisMax <= 8 ? [8, 6, 4, 2, 0] : 
+                              [yAxisMax, Math.floor(yAxisMax * 0.75), Math.floor(yAxisMax * 0.5), Math.floor(yAxisMax * 0.25), 0];
+
+            // Y축 라벨 업데이트
+            const yLabels = chartYAxis.querySelectorAll('.y-label');
+            yLabels.forEach((label, index) => {
+                if (index < yAxisSteps.length) {
+                    label.textContent = yAxisSteps[index];
+                    label.style.display = 'block';
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+
+            // 막대 그래프 업데이트
+            bars.forEach((bar, index) => {
+                const totalSets = dailySets[index];
+                const height = Math.min(100, (totalSets / yAxisMax) * 100);
+                
+                bar.style.height = `${height}%`;
+                
+                // 기본 클래스 제거
+                bar.classList.remove('highlight', 'super-achiever');
+                
+                // 데이터에 따른 스타일 적용
+                if (totalSets > 0) {
+                    if (totalSets > 4) {
+                        // 🌟 4세트 초과 시 특별한 스타일
+                        bar.classList.add('super-achiever');
+                        bar.innerHTML = `<div class="achievement-crown">👑</div>`;
+                    } else {
+                        bar.classList.add('highlight');
+                        bar.innerHTML = '';
+                    }
+                } else {
+                    bar.innerHTML = '';
+                }
+
+                // 툴팁 업데이트
+                const dateStr = formatDateForUser(weekDates[index]);
+                if (totalSets > 4) {
+                    bar.title = `${dateStr}: ${totalSets}세트 완료 🌟 수퍼 달성!`;
+                } else {
+                    bar.title = `${dateStr}: ${totalSets}세트 완료`;
+                }
+            });
+        }
+
+        // 🎮 배지 시스템 헬퍼 함수들
+        function getTodayExerciseCount() {
+            const history = getExerciseHistory();
+            const today = getCurrentUserTime().toDateString();
+            return history.filter(record => {
+                const recordDate = new Date(record.date);
+                return recordDate.toDateString() === today;
+            }).length;
+        }
+
+        function getMaxIntensityEver() {
+            const history = getExerciseHistory();
+            let maxInhale = 1;
+            let maxExhale = 1;
+            
+            history.forEach(record => {
+                if (record.resistanceSettings) {
+                    maxInhale = Math.max(maxInhale, record.resistanceSettings.inhale || 1);
+                    maxExhale = Math.max(maxExhale, record.resistanceSettings.exhale || 1);
+                }
+            });
+            
+            return { inhale: maxInhale, exhale: maxExhale };
+        }
+
+        function getSkippedRestCount() {
+            return parseInt(localStorage.getItem('skippedRestCount') || '0');
+        }
+
+        function incrementSkippedRestCount() {
+            const count = getSkippedRestCount() + 1;
+            localStorage.setItem('skippedRestCount', count.toString());
+        }
+
+        function getEarlyMorningCount() {
+            const history = getExerciseHistory();
+            return history.filter(record => {
+                const recordDate = new Date(record.date);
+                const hour = recordDate.getHours();
+                return hour < 6;
+            }).length;
+        }
+
+        // 🎮 새로운 배지 관련 헬퍼 함수들
+        function getQuizPerfectCount() {
+            return parseInt(localStorage.getItem('quizPerfectCount') || '0');
+        }
+
+        function incrementQuizPerfectCount() {
+            const count = getQuizPerfectCount() + 1;
+            localStorage.setItem('quizPerfectCount', count.toString());
+        }
+
+        function getConsecutivePerfectCount() {
+            return parseInt(localStorage.getItem('consecutivePerfectCount') || '0');
+        }
+
+        function updateConsecutivePerfectCount(isPerfect) {
+            if (isPerfect) {
+                const count = getConsecutivePerfectCount() + 1;
+                localStorage.setItem('consecutivePerfectCount', count.toString());
+            } else {
+                localStorage.setItem('consecutivePerfectCount', '0');
+            }
+        }
+
+        function getSolvedQuestionsCount() {
+            const solved = JSON.parse(localStorage.getItem('solvedQuestions') || '[]');
+            return solved.length;
+        }
+
+        function addSolvedQuestion(questionIndex) {
+            const solved = JSON.parse(localStorage.getItem('solvedQuestions') || '[]');
+            if (!solved.includes(questionIndex)) {
+                solved.push(questionIndex);
+                localStorage.setItem('solvedQuestions', JSON.stringify(solved));
+            }
+        }
+
+        // 🎁 상품 로테이션 시스템
+        function getTotalQuizCount() {
+            return parseInt(localStorage.getItem('totalQuizCount') || '0');
+        }
+
+        function incrementQuizCount() {
+            const count = getTotalQuizCount() + 1;
+            localStorage.setItem('totalQuizCount', count.toString());
+            return count;
+        }
+
+        function getCurrentProduct() {
+            const quizCount = getTotalQuizCount();
+            const productIndex = quizCount % 2; // 0 또는 1
+            return QUIZ_CONFIG.PRODUCTS[productIndex];
+        }
+
+        // 🎮 퀴즈 문제 랜덤 선택 함수
+        function selectRandomQuestions() {
+            const questionIndices = Array.from({length: QUIZ_QUESTIONS.length}, (_, i) => i);
+            
+            // 피셔-예이츠 셔플 알고리즘
+            for (let i = questionIndices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questionIndices[i], questionIndices[j]] = [questionIndices[j], questionIndices[i]];
+            }
+            
+            // 처음 2개 문제 선택
+            selectedQuestions = questionIndices.slice(0, 2);
+            console.log('🎯 선택된 문제:', selectedQuestions);
+        }
+
+        function getEarnedBadges() {
+            return JSON.parse(localStorage.getItem('earnedBadges') || '[]');
+        }
+
+        function saveBadge(badgeId) {
+            const earnedBadges = getEarnedBadges();
+            if (!earnedBadges.includes(badgeId)) {
+                earnedBadges.push(badgeId);
+                localStorage.setItem('earnedBadges', JSON.stringify(earnedBadges));
+                return true; // 새로 획득함
+            }
+            return false; // 이미 있음
+        }
+
+        function checkNewBadges(stats) {
+            const newBadges = [];
+            
+            BADGES_CONFIG.forEach(badge => {
+                if (badge.condition(stats)) {
+                    const isNew = saveBadge(badge.id);
+                    if (isNew) {
+                        newBadges.push(badge);
+                    }
+                }
+            });
+            
+            return newBadges;
+        }
+
+        function showBadgePopup(badge) {
+            const popup = document.getElementById('badgePopup');
+            const icon = document.getElementById('badgePopupIcon');
+            const name = document.getElementById('badgePopupName');
+            const description = document.getElementById('badgePopupDescription');
+            
+            icon.textContent = badge.icon;
+            name.textContent = badge.name;
+            description.textContent = badge.description;
+            
+            popup.classList.add('show');
+            
+            // 팝업 표시 이벤트 추가
+            gtag('event', 'badge_earned', {
+                badge_id: badge.id,
+                badge_name: badge.name
+            });
+        }
+
+        function closeBadgePopup() {
+            document.getElementById('badgePopup').classList.remove('show');
+        }
+
+        function updateBadgesDisplay() {
+            const earnedBadges = getEarnedBadges();
+            const badgesGrid = document.getElementById('badgesGrid');
+            const badgesProgress = document.getElementById('badgesProgress');
+            
+            // 진행도 업데이트
+            badgesProgress.textContent = `수집한 배지: ${earnedBadges.length}/${BADGES_CONFIG.length}`;
+            
+            // 배지 그리드 생성
+            badgesGrid.innerHTML = '';
+            BADGES_CONFIG.forEach(badge => {
+                const isEarned = earnedBadges.includes(badge.id);
+                const badgeSlot = document.createElement('div');
+                badgeSlot.className = `badge-slot ${isEarned ? 'earned' : ''}`;
+                
+                badgeSlot.innerHTML = `
+                    <div class="badge-icon">${isEarned ? badge.icon : '?'}</div>
+                    <div class="badge-hint">${isEarned ? badge.name : badge.hint}</div>
+                `;
+                
+                badgesGrid.appendChild(badgeSlot);
+            });
+        }
         
         * {
             margin: 0;
@@ -134,6 +1670,12 @@
         @keyframes breathe {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
         }
 
         /* 📱 모던 컨테이너 디자인 */
@@ -2219,22 +3761,6 @@
     
 </div>
 
-<style>
-@keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    33% { transform: translateY(-20px) rotate(1deg); }
-    66% { transform: translateY(10px) rotate(-1deg); }
-}
-</style>
-        
-        <!-- 배경 블러 효과 -->
-        <div style="width: 81.09px; height: 202.88px; left: -159px; top: 124.29px; position: absolute; transform: rotate(-82deg); transform-origin: top left; background: #2EB5FA; box-shadow: 180px 180px 180px; filter: blur(90px);"></div>
-        <div style="width: 101.20px; height: 215.79px; left: -204px; top: 733.21px; position: absolute; transform: rotate(-82deg); transform-origin: top left; background: #2EB5FA; box-shadow: 180px 180px 180px; filter: blur(90px);"></div>
-        <div style="width: 78.57px; height: 121.69px; left: 431.37px; top: 387.20px; position: absolute; transform: rotate(67deg); transform-origin: top left; background: #2EB5FA; box-shadow: 180px 180px 180px; filter: blur(90px);"></div>
-    </div>
-    
-</div>
-
     <!-- 🎯 커스텀 확인 모달 -->
     <div id="confirmModal" class="modal-overlay">
         <div class="modal">
@@ -3294,1548 +4820,3 @@ function hideIntro() {
             const weekEnd = getWeekEndDate();
             return checkDate >= weekStart && checkDate <= weekEnd;
         }
-
-        // 차트 데이터 업데이트 (개선된 주간 구분 + 동적 스케일링)
-        function updateChart() {
-            const history = getExerciseHistory();
-            const chartBars = document.getElementById('chartBars');
-            const chartXAxis = document.getElementById('chartXAxis');
-            const chartSubtitle = document.getElementById('chartSubtitle');
-            const chartYAxis = document.querySelector('.chart-y-axis');
-            const bars = chartBars.querySelectorAll('.chart-bar');
-            
-            // 현재 주의 시작일 계산
-            const weekStart = getWeekStartDate();
-            const weekDates = Array.from({length: 7}, (_, i) => {
-                const date = new Date(weekStart);
-                date.setDate(weekStart.getDate() + i);
-                return date;
-            });
-
-            // 차트 하단 요일 업데이트
-            const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
-            chartXAxis.querySelectorAll('.x-label').forEach((label, index) => {
-                const date = weekDates[index];
-                const dayName = dayLabels[index];
-                const isToday = date.toDateString() === getCurrentUserTime().toDateString();
-                
-                label.textContent = dayName;
-                if (isToday) {
-                    label.style.fontWeight = 'bold';
-                    label.style.color = '#667eea';
-                } else {
-                    label.style.fontWeight = 'normal';
-                    label.style.color = '#666';
-                }
-            });
-
-            // 주간 제목 업데이트
-            const weekStartStr = formatDateForUser(weekStart);
-            const weekEndStr = formatDateForUser(weekDates[6]);
-            chartSubtitle.textContent = `${weekStartStr} ~ ${weekEndStr} 트레이닝 성과`;
-
-            // 🔧 각 날짜별 완료 세트 수 계산
-            const dailySets = weekDates.map(targetDate => {
-                const dayData = history.filter(record => {
-                    const recordDate = new Date(record.date);
-                    return recordDate.toDateString() === targetDate.toDateString();
-                });
-                return dayData.reduce((sum, record) => sum + record.completedSets, 0);
-            });
-
-            // 🎯 동적 Y축 스케일 계산
-            const maxSets = Math.max(...dailySets, 4); // 최소 4까지는 표시
-            const yAxisMax = maxSets <= 4 ? 4 : Math.ceil(maxSets / 2) * 2; // 짝수로 올림
-            const yAxisSteps = yAxisMax <= 4 ? [4, 3, 2, 1, 0] : 
-                              yAxisMax <= 6 ? [6, 4, 2, 0] : 
-                              yAxisMax <= 8 ? [8, 6, 4, 2, 0] : 
-                              [yAxisMax, Math.floor(yAxisMax * 0.75), Math.floor(yAxisMax * 0.5), Math.floor(yAxisMax * 0.25), 0];
-
-            // Y축 라벨 업데이트
-            const yLabels = chartYAxis.querySelectorAll('.y-label');
-            yLabels.forEach((label, index) => {
-                if (index < yAxisSteps.length) {
-                    label.textContent = yAxisSteps[index];
-                    label.style.display = 'block';
-                } else {
-                    label.style.display = 'none';
-                }
-            });
-
-            // 막대 그래프 업데이트
-            bars.forEach((bar, index) => {
-                const totalSets = dailySets[index];
-                const height = Math.min(100, (totalSets / yAxisMax) * 100);
-                
-                bar.style.height = `${height}%`;
-                
-                // 기본 클래스 제거
-                bar.classList.remove('highlight', 'super-achiever');
-                
-                // 데이터에 따른 스타일 적용
-                if (totalSets > 0) {
-                    if (totalSets > 4) {
-                        // 🌟 4세트 초과 시 특별한 스타일
-                        bar.classList.add('super-achiever');
-                        bar.innerHTML = `<div class="achievement-crown">👑</div>`;
-                    } else {
-                        bar.classList.add('highlight');
-                        bar.innerHTML = '';
-                    }
-                } else {
-                    bar.innerHTML = '';
-                }
-
-                // 툴팁 업데이트
-                const dateStr = formatDateForUser(weekDates[index]);
-                if (totalSets > 4) {
-                    bar.title = `${dateStr}: ${totalSets}세트 완료 🌟 수퍼 달성!`;
-                } else {
-                    bar.title = `${dateStr}: ${totalSets}세트 완료`;
-                }
-            });
-        }
-
-        // 🎮 배지 시스템 헬퍼 함수들
-        function getTodayExerciseCount() {
-            const history = getExerciseHistory();
-            const today = getCurrentUserTime().toDateString();
-            return history.filter(record => {
-                const recordDate = new Date(record.date);
-                return recordDate.toDateString() === today;
-            }).length;
-        }
-
-        function getMaxIntensityEver() {
-            const history = getExerciseHistory();
-            let maxInhale = 1;
-            let maxExhale = 1;
-            
-            history.forEach(record => {
-                if (record.resistanceSettings) {
-                    maxInhale = Math.max(maxInhale, record.resistanceSettings.inhale || 1);
-                    maxExhale = Math.max(maxExhale, record.resistanceSettings.exhale || 1);
-                }
-            });
-            
-            return { inhale: maxInhale, exhale: maxExhale };
-        }
-
-        function getSkippedRestCount() {
-            return parseInt(localStorage.getItem('skippedRestCount') || '0');
-        }
-
-        function incrementSkippedRestCount() {
-            const count = getSkippedRestCount() + 1;
-            localStorage.setItem('skippedRestCount', count.toString());
-        }
-
-        function getEarlyMorningCount() {
-            const history = getExerciseHistory();
-            return history.filter(record => {
-                const recordDate = new Date(record.date);
-                const hour = recordDate.getHours();
-                return hour < 6;
-            }).length;
-        }
-
-        // 🎮 새로운 배지 관련 헬퍼 함수들
-        function getQuizPerfectCount() {
-            return parseInt(localStorage.getItem('quizPerfectCount') || '0');
-        }
-
-        function incrementQuizPerfectCount() {
-            const count = getQuizPerfectCount() + 1;
-            localStorage.setItem('quizPerfectCount', count.toString());
-        }
-
-        function getConsecutivePerfectCount() {
-            return parseInt(localStorage.getItem('consecutivePerfectCount') || '0');
-        }
-
-        function updateConsecutivePerfectCount(isPerfect) {
-            if (isPerfect) {
-                const count = getConsecutivePerfectCount() + 1;
-                localStorage.setItem('consecutivePerfectCount', count.toString());
-            } else {
-                localStorage.setItem('consecutivePerfectCount', '0');
-            }
-        }
-
-        function getSolvedQuestionsCount() {
-            const solved = JSON.parse(localStorage.getItem('solvedQuestions') || '[]');
-            return solved.length;
-        }
-
-        function addSolvedQuestion(questionIndex) {
-            const solved = JSON.parse(localStorage.getItem('solvedQuestions') || '[]');
-            if (!solved.includes(questionIndex)) {
-                solved.push(questionIndex);
-                localStorage.setItem('solvedQuestions', JSON.stringify(solved));
-            }
-        }
-
-        // 🎁 상품 로테이션 시스템
-        function getTotalQuizCount() {
-            return parseInt(localStorage.getItem('totalQuizCount') || '0');
-        }
-
-        function incrementQuizCount() {
-            const count = getTotalQuizCount() + 1;
-            localStorage.setItem('totalQuizCount', count.toString());
-            return count;
-        }
-
-        function getCurrentProduct() {
-            const quizCount = getTotalQuizCount();
-            const productIndex = quizCount % 2; // 0 또는 1
-            return QUIZ_CONFIG.PRODUCTS[productIndex];
-        }
-
-        // 🎮 퀴즈 문제 랜덤 선택 함수
-        function selectRandomQuestions() {
-            const questionIndices = Array.from({length: QUIZ_QUESTIONS.length}, (_, i) => i);
-            
-            // 피셔-예이츠 셔플 알고리즘
-            for (let i = questionIndices.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [questionIndices[i], questionIndices[j]] = [questionIndices[j], questionIndices[i]];
-            }
-            
-            // 처음 2개 문제 선택
-            selectedQuestions = questionIndices.slice(0, 2);
-            console.log('🎯 선택된 문제:', selectedQuestions);
-        }
-
-        function getEarnedBadges() {
-            return JSON.parse(localStorage.getItem('earnedBadges') || '[]');
-        }
-
-        function saveBadge(badgeId) {
-            const earnedBadges = getEarnedBadges();
-            if (!earnedBadges.includes(badgeId)) {
-                earnedBadges.push(badgeId);
-                localStorage.setItem('earnedBadges', JSON.stringify(earnedBadges));
-                return true; // 새로 획득함
-            }
-            return false; // 이미 있음
-        }
-
-        function checkNewBadges(stats) {
-            const newBadges = [];
-            
-            BADGES_CONFIG.forEach(badge => {
-                if (badge.condition(stats)) {
-                    const isNew = saveBadge(badge.id);
-                    if (isNew) {
-                        newBadges.push(badge);
-                    }
-                }
-            });
-            
-            return newBadges;
-        }
-
-        function showBadgePopup(badge) {
-            const popup = document.getElementById('badgePopup');
-            const icon = document.getElementById('badgePopupIcon');
-            const name = document.getElementById('badgePopupName');
-            const description = document.getElementById('badgePopupDescription');
-            
-            icon.textContent = badge.icon;
-            name.textContent = badge.name;
-            description.textContent = badge.description;
-            
-            popup.classList.add('show');
-            
-            // 팝업 표시 이벤트 추가
-            gtag('event', 'badge_earned', {
-                badge_id: badge.id,
-                badge_name: badge.name
-            });
-        }
-
-        function closeBadgePopup() {
-            document.getElementById('badgePopup').classList.remove('show');
-        }
-
-        function updateBadgesDisplay() {
-            const earnedBadges = getEarnedBadges();
-            const badgesGrid = document.getElementById('badgesGrid');
-            const badgesProgress = document.getElementById('badgesProgress');
-            
-            // 진행도 업데이트
-            badgesProgress.textContent = `수집한 배지: ${earnedBadges.length}/${BADGES_CONFIG.length}`;
-            
-            // 배지 그리드 생성
-            badgesGrid.innerHTML = '';
-            BADGES_CONFIG.forEach(badge => {
-                const isEarned = earnedBadges.includes(badge.id);
-                const badgeSlot = document.createElement('div');
-                badgeSlot.className = `badge-slot ${isEarned ? 'earned' : ''}`;
-                
-                badgeSlot.innerHTML = `
-                    <div class="badge-icon">${isEarned ? badge.icon : '?'}</div>
-                    <div class="badge-hint">${isEarned ? badge.name : badge.hint}</div>
-                `;
-                
-                badgesGrid.appendChild(badgeSlot);
-            });
-        }
-
-        // 🎯 피드백 히스토리 관리 함수 (스마트 분석용)
-        function getFeedbackHistory() {
-            return JSON.parse(localStorage.getItem('feedbackHistory') || '[]');
-        }
-
-        function addFeedbackHistory(feedback, resistanceSettings) {
-            const history = getFeedbackHistory();
-            const today = getCurrentUserTime().toDateString();
-            const currentHour = getCurrentUserTime().getHours();
-            const timeOfDay = currentHour < 14 ? 'morning' : 'afternoon';
-            
-            const newRecord = {
-                date: today,
-                timeOfDay: timeOfDay,
-                feedback: feedback,
-                inhaleLevel: resistanceSettings.inhale,
-                exhaleLevel: resistanceSettings.exhale,
-                timestamp: getCurrentUserTime().toISOString()
-            };
-            
-            history.unshift(newRecord);
-            
-            if (history.length > 60) {
-                history.splice(60);
-            }
-            
-            localStorage.setItem('feedbackHistory', JSON.stringify(history));
-            return history;
-        }
-
-        // 🎯 스마트 피드백 패턴 분석
-        function analyzeFeedbackPattern(currentFeedback, resistanceSettings) {
-            const history = getFeedbackHistory();
-            
-            let consecutivePerfectCount = 0;
-            let consecutiveEasyCount = 0;
-            let consecutiveHardCount = 0;
-            
-            if (currentFeedback === 'perfect') {
-                consecutivePerfectCount = 1;
-            } else if (currentFeedback === 'easy') {
-                consecutiveEasyCount = 1;
-            } else if (currentFeedback === 'hard') {
-                consecutiveHardCount = 1;
-            }
-            
-            for (let record of history) {
-                if (currentFeedback === 'perfect' && record.feedback === 'perfect') {
-                    consecutivePerfectCount++;
-                } else if (currentFeedback === 'easy' && record.feedback === 'easy') {
-                    consecutiveEasyCount++;
-                } else if (currentFeedback === 'hard' && record.feedback === 'hard') {
-                    consecutiveHardCount++;
-                } else {
-                    break;
-                }
-            }
-            
-            const previousFeedback = history.length > 0 ? history[0].feedback : null;
-            
-            return {
-                consecutivePerfectCount: consecutivePerfectCount,
-                consecutiveEasyCount: consecutiveEasyCount,
-                consecutiveHardCount: consecutiveHardCount,
-                previousFeedback: previousFeedback,
-                hasImproved: previousFeedback === 'hard' && currentFeedback === 'perfect',
-                hasProgressed: previousFeedback === 'perfect' && currentFeedback === 'easy',
-                readyForChallenge: consecutivePerfectCount >= 14,
-                shouldIncrease: consecutiveEasyCount >= 3,
-                needsDecrease: consecutiveHardCount >= 2,
-                totalHistory: history.length
-            };
-        }
-
-        // 🎯 스마트 조언 생성
-        function generateLocalAdviceAddition(analysis, currentFeedback, isAborted) {
-            let additionalAdvice = '';
-            
-            if (!isAborted) {
-                if (analysis.readyForChallenge) {
-                    additionalAdvice += '<br><br><strong>🚀 장기 분석</strong><br>1주일간 꾸준히 적당한 강도를 유지하셨네요!<br>이제 한 단계 도전해보시겠어요?';
-                } else if (analysis.shouldIncrease) {
-                    additionalAdvice += '<br><br><strong>⬆️ 진행 단계</strong><br>연속으로 쉬우셨으니 저항을 올려보세요!';
-                } else if (analysis.hasProgressed) {
-                    additionalAdvice += '<br><br><strong>🌟 실력 향상</strong><br>적당했던 강도가 이제 쉬워졌네요!<br>성장하고 계십니다!';
-                } else if (analysis.hasImproved) {
-                    additionalAdvice += '<br><br><strong>💪 회복 완료</strong><br>힘들던 강도가 이제 적당해졌어요!<br>좋은 적응력이네요!';
-                }
-            } else {
-                if (analysis.needsDecrease) {
-                    additionalAdvice += '<br><br><strong>🛡️ 안전 우선</strong><br>무리하지 마시고 강도를 낮춰보세요.<br>꾸준함이 더 중요해요!';
-                } else if (analysis.totalHistory >= 5) {
-                    additionalAdvice += '<br><br><strong>💙 계속 도전</strong><br>그동안 꾸준히 하신 모습이 멋져요!<br>컨디션 좋을 때 다시 해봐요!';
-                }
-            }
-            
-            return additionalAdvice;
-        }
-
-        // 저항 설정 관리 함수들
-        function loadResistanceSettings() {
-            const saved = JSON.parse(localStorage.getItem('resistanceSettings') || '{"inhale": 1, "exhale": 1}');
-            resistanceSettings = saved;
-            updateResistanceUI();
-        }
-
-        function saveResistanceSettings() {
-            localStorage.setItem('resistanceSettings', JSON.stringify(resistanceSettings));
-        }
-
-        function adjustResistance(type, change) {
-            const maxLevels = { inhale: 6, exhale: 5 };
-            const newLevel = resistanceSettings[type] + change;
-            
-            if (newLevel >= 1 && newLevel <= maxLevels[type]) {
-                resistanceSettings[type] = newLevel;
-                saveResistanceSettings();
-                updateResistanceUI();
-            }
-        }
-
-        function updateResistanceUI() {
-            document.getElementById('inhaleLevel').textContent = resistanceSettings.inhale;
-            document.getElementById('exhaleLevel').textContent = resistanceSettings.exhale;
-            
-            updateResistanceScale('inhale', resistanceSettings.inhale);
-            updateResistanceScale('exhale', resistanceSettings.exhale);
-            
-            updateResistanceButtons();
-        }
-
-        function updateResistanceScale(type, level) {
-            const scale = document.getElementById(type + 'Scale');
-            const dots = scale.querySelectorAll('.dot');
-            
-            dots.forEach((dot, index) => {
-                if (index < level) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
-                }
-            });
-        }
-
-        function updateResistanceButtons() {
-            const inhaleMinusBtn = document.querySelector('.resistance-control:first-child .resistance-btn:first-child');
-            const inhalePlusBtn = document.querySelector('.resistance-control:first-child .resistance-btn:last-child');
-            const exhaleMinusBtn = document.querySelector('.resistance-control:last-child .resistance-btn:first-child');
-            const exhalePlusBtn = document.querySelector('.resistance-control:last-child .resistance-btn:last-child');
-            
-            inhaleMinusBtn.disabled = resistanceSettings.inhale <= 1;
-            inhalePlusBtn.disabled = resistanceSettings.inhale >= 6;
-            exhaleMinusBtn.disabled = resistanceSettings.exhale <= 1;
-            exhalePlusBtn.disabled = resistanceSettings.exhale >= 5;
-        }
-
-        function showFeedbackScreen() {
-            updateFeedbackScreenContent();
-            showScreen('feedbackScreen');
-        }
-
-        function updateFeedbackScreenContent() {
-            const title = document.getElementById('feedbackTitle');
-            const description = document.getElementById('feedbackDescription');
-            
-            if (isAborted) {
-                title.textContent = '중단하신 이유를 알려주세요';
-                description.textContent = '트레이닝을 중단하기 전까지의 강도는 어떠셨나요?';
-            } else {
-                title.textContent = '지금 호흡하는 느낌이 어떠세요?';
-                description.textContent = '방금 완료한 트레이닝의 강도는 어떠셨나요?';
-            }
-        }
-
-        function selectFeedback(feedback) {
-            userFeedback = feedback;
-            
-            gtag('event', 'feedback_selected', {
-                feedback_type: feedback,
-                completed_sets: window.exerciseData ? window.exerciseData.completedSets : 0,
-                is_aborted: isAborted
-            });
-            
-            showResultScreen();
-        }
-
-        function hideIntro() {
-            
-            const introScreen = document.getElementById('introScreen');
-            introScreen.classList.add('hidden');
-            setTimeout(() => {
-                introScreen.style.display = 'none';
-            }, 800);
-        }
-
-        window.addEventListener('load', function() {
-            const mainImage = document.getElementById('mainSplashImage');
-            const fallbackSplash = document.getElementById('fallbackSplash');
-            
-            mainImage.addEventListener('error', function() {
-                console.log('⚠️ 메인 스플래시 이미지 로드 실패');
-                this.src = './images/suumt-splash-wide.png';
-                
-                this.addEventListener('error', function() {
-                    console.log('⚠️ 모든 이미지 로드 실패, 대체 화면 표시');
-                    this.style.display = 'none';
-                    fallbackSplash.style.display = 'flex';
-                });
-            });
-
-            console.log('🎬 스플래시 화면 로딩 완료');
-        });
-
-        function initializeProgressIndicators() {
-            const breathsContainer = document.getElementById('breathsIndicators');
-            breathsContainer.innerHTML = '';
-            
-            for (let i = 0; i < 10; i++) {
-                const breathDot = document.createElement('div');
-                breathDot.className = 'breath-indicator';
-                breathDot.setAttribute('data-breath', i + 1);
-                breathsContainer.appendChild(breathDot);
-            }
-            
-            updateProgressIndicators();
-        }
-
-        function updateProgressIndicators() {
-            const setIndicators = document.querySelectorAll('.set-indicator');
-            setIndicators.forEach((indicator, index) => {
-                indicator.classList.remove('active', 'current');
-                if (index < currentSet - 1) {
-                    indicator.classList.add('active');
-                } else if (index === currentSet - 1) {
-                    indicator.classList.add('current');
-                }
-            });
-            
-            const breathIndicators = document.querySelectorAll('.breath-indicator');
-            breathIndicators.forEach((indicator, index) => {
-                indicator.classList.remove('completed', 'current');
-                if (index < currentBreath - 1) {
-                    indicator.classList.add('completed');
-                } else if (index === currentBreath - 1) {
-                    indicator.classList.add('current');
-                }
-            });
-            
-            document.getElementById('setNumbers').textContent = `${currentSet} / 2 세트`;
-            document.getElementById('breathNumbers').textContent = `${currentBreath} / 10 회`;
-        }
-
-        function showStopModal() {
-            document.getElementById('confirmModal').classList.add('show');
-        }
-
-        function hideModal() {
-            document.getElementById('confirmModal').classList.remove('show');
-        }
-
-        function confirmStop() {
-            hideModal();
-            isAborted = true;
-            clearTimeout(breathingTimer);
-            
-            // 🔧 모든 타이머 정리
-            stopGlobalRestTimer();
-            clearInterval(restTimer);
-            
-            gtag('event', 'exercise_aborted', {
-                completed_sets: Math.max(0, currentSet - 1),
-                completed_breaths: Math.max(0, (currentSet - 1) * 10 + (currentBreath - 1))
-            });
-            
-            completeExercise();
-        }
-
-        // 로컬 스토리지 기반 통계 관리
-        function getLocalStats() {
-            const stats = JSON.parse(localStorage.getItem('breathTrainerStats') || '{}');
-            return {
-                totalExercises: stats.totalExercises || 0,
-                totalSets: stats.totalSets || 0,
-                totalBreaths: stats.totalBreaths || 0,
-                consecutiveDays: stats.consecutiveDays || 0,
-                lastExerciseDate: stats.lastExerciseDate || null,
-                averageSets: stats.totalExercises > 0 ? Math.round((stats.totalSets / stats.totalExercises) * 10) / 10 : 0
-            };
-        }
-
-        function getExerciseHistory() {
-            return JSON.parse(localStorage.getItem('breathTrainerHistory') || '[]');
-        }
-
-        function addExerciseHistory(exerciseData) {
-            const history = getExerciseHistory();
-            const newRecord = {
-                date: getCurrentUserTime().toISOString(), // 사용자 시간대 적용
-                exerciseTime: exerciseData.exerciseTime,
-                completedSets: exerciseData.completedSets,
-                completedBreaths: exerciseData.completedBreaths,
-                isAborted: exerciseData.isAborted,
-                userFeedback: exerciseData.userFeedback,
-                resistanceSettings: exerciseData.resistanceSettings
-            };
-            
-            history.unshift(newRecord);
-            
-            if (history.length > 10) {
-                history.splice(10);
-            }
-            
-            localStorage.setItem('breathTrainerHistory', JSON.stringify(history));
-        }
-
-        function updateLocalStats(exerciseData) {
-            const stats = getLocalStats();
-            
-            stats.totalExercises += 1;
-            stats.totalSets += exerciseData.completedSets;
-            stats.totalBreaths += exerciseData.completedBreaths;
-            
-            const today = getCurrentUserTime().toDateString();
-            const lastDate = stats.lastExerciseDate ? new Date(stats.lastExerciseDate).toDateString() : null;
-            
-            if (lastDate === today) {
-                // 오늘 이미 트레이닝함
-            } else if (lastDate === new Date(Date.now() - 24*60*60*1000).toDateString()) {
-                // 어제 트레이닝함
-                stats.consecutiveDays += 1;
-            } else {
-                // 연속 끊김
-                stats.consecutiveDays = 1;
-            }
-            
-            stats.lastExerciseDate = getCurrentUserTime().toISOString();
-            stats.averageSets = stats.totalExercises > 0 ? Math.round((stats.totalSets / stats.totalExercises) * 10) / 10 : 0;
-            
-            localStorage.setItem('breathTrainerStats', JSON.stringify(stats));
-            return stats;
-        }
-
-        // 🔧 AI 조언 요청
-        async function getTrainerAdvice(exerciseData) {
-            try {
-                console.log('🤖 AI 조언 요청 시작');
-                console.log('📊 전달할 운동 데이터:', exerciseData);
-                
-                const params = new URLSearchParams({
-                    function: 'getAIAdvice',
-                    exerciseTime: exerciseData.exerciseTime,
-                    completedSets: exerciseData.completedSets.toString(),
-                    completedBreaths: exerciseData.completedBreaths.toString(),
-                    isAborted: exerciseData.isAborted.toString(),
-                    userFeedback: exerciseData.userFeedback || '',
-                    inhaleResistance: exerciseData.resistanceSettings ? exerciseData.resistanceSettings.inhale.toString() : '1',
-                    exhaleResistance: exerciseData.resistanceSettings ? exerciseData.resistanceSettings.exhale.toString() : '1'
-                });
-                
-                console.log('🌐 요청 파라미터:', params.toString());
-                
-                const response = await fetch(`${SCRIPT_URL}?${params}`);
-                
-                if (!response.ok) {
-                    throw new Error(`연결 오류: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                console.log('📦 Apps Script 응답:', result);
-                
-                if (result.success) {
-                    if (result.advice && typeof result.advice === 'object') {
-                        return {
-                            intensityAdvice: result.advice.intensityAdvice || result.advice,
-                            comprehensiveAdvice: result.advice.comprehensiveAdvice || "AI 트레이너가 당신의 꾸준한 노력을 응원합니다!"
-                        };
-                    } else if (typeof result.advice === 'string') {
-                        return {
-                            intensityAdvice: result.advice,
-                            comprehensiveAdvice: "AI 트레이너가 당신의 꾸준한 노력을 응원합니다!"
-                        };
-                    }
-                } 
-                
-                throw new Error(result.message || 'AI 조언 생성 실패');
-                
-            } catch (error) {
-                console.error('🚨 AI 조언 요청 오류:', error);
-                
-                const defaultAdvices = [
-                    `${exerciseData.completedSets}세트 완주! 숨트의 저항을 이겨내며 호흡근이 한층 강해졌습니다.`,
-                    `${exerciseData.exerciseTime} 동안의 집중적인 호흡 트레이닝, 수고하셨습니다!`,
-                    `호흡근육 강화 여정에서 또 한 걸음 전진하셨네요!`
-                ];
-                
-                const randomIndex = Math.floor(Math.random() * defaultAdvices.length);
-                return {
-                    intensityAdvice: defaultAdvices[randomIndex],
-                    comprehensiveAdvice: "꾸준히 도전하는 의지가 정말 대단해요!"
-                };
-            }
-        }
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function goToMain() {
-            showScreen('mainScreen');
-            resetExercise();
-            loadUserData();
-        }
-
-        function loadUserData() {
-            const stats = getLocalStats();
-            displayUserStats(stats);
-            updateChart();
-            updateSocialProofData(); // 🔥 새로운 기능: 사회적 증명 데이터 업데이트
-        }
-
-        function displayUserStats(stats) {
-            document.getElementById('totalExercises').textContent = stats.totalExercises;
-            document.getElementById('consecutiveDays').textContent = stats.consecutiveDays;
-            
-            // 🔧 오늘 완료한 세트 수 계산 (평균이 아닌 오늘 실제 완료 세트)
-            const todayCompletedSets = getTodayCompletedSets();
-            document.getElementById('averageSets').textContent = todayCompletedSets;
-            
-            // 🔧 오늘 완료한 호흡 횟수 계산
-            const todayBreaths = getTodayBreaths();
-            document.getElementById('totalBreaths').textContent = todayBreaths;
-        }
-
-        // 🔧 오늘 완료한 세트 수 계산 함수
-        function getTodayCompletedSets() {
-            const history = getExerciseHistory();
-            const today = getCurrentUserTime().toDateString();
-            
-            const todayData = history.filter(record => {
-                const recordDate = new Date(record.date);
-                return recordDate.toDateString() === today;
-            });
-            
-            return todayData.reduce((sum, record) => sum + record.completedSets, 0);
-        }
-
-        // 🔧 오늘 완료한 호흡 횟수 계산 함수
-        function getTodayBreaths() {
-            const history = getExerciseHistory();
-            const today = getCurrentUserTime().toDateString();
-            
-            const todayData = history.filter(record => {
-                const recordDate = new Date(record.date);
-                return recordDate.toDateString() === today;
-            });
-            
-            return todayData.reduce((sum, record) => sum + record.completedBreaths, 0);
-        }
-
-        function startExercise() {
-            resetExercise();
-            showScreen('exerciseScreen');
-            
-            gtag('event', 'exercise_start', {
-                inhale_resistance: resistanceSettings.inhale,
-                exhale_resistance: resistanceSettings.exhale
-            });
-            
-            startCountdown();
-        }
-
-        function startCountdown() {
-            let count = 3;
-            const countdownEl = document.getElementById('countdown');
-            
-            const countdownInterval = setInterval(() => {
-                countdownEl.textContent = count;
-                count--;
-                
-                if (count < 0) {
-                    clearInterval(countdownInterval);
-                    startBreathing();
-                }
-            }, 1000);
-        }
-
-        function startBreathing() {
-            document.getElementById('countdownSection').style.display = 'none';
-            document.getElementById('breathingSection').style.display = 'block';
-            
-            const circle = document.getElementById('breathingCircle');
-            circle.className = 'breathing-circle exhale';
-            
-            initializeProgressIndicators();
-            
-            exerciseStartTime = getCurrentUserTime(); // 사용자 시간대 적용
-            
-            setTimeout(() => {
-                breathingCycle();
-            }, 500);
-        }
-
-        function breathingCycle() {
-            if (isPaused || isAborted) return;
-
-            const circle = document.getElementById('breathingCircle');
-            const circleText = document.getElementById('circleText');
-
-            updateProgressIndicators();
-
-            if (breathingPhase === 'inhale') {
-                circleText.textContent = '들숨 (3초)';
-                circle.className = 'breathing-circle inhale';
-                
-                breathingTimer = setTimeout(() => {
-                    breathingPhase = 'hold';
-                    breathingCycle();
-                }, 3000);
-
-            } else if (breathingPhase === 'hold') {
-                circleText.textContent = '멈춤 (1초)';
-                circle.className = 'breathing-circle hold';
-                
-                breathingTimer = setTimeout(() => {
-                    breathingPhase = 'exhale';
-                    breathingCycle();
-                }, 1000);
-
-            } else if (breathingPhase === 'exhale') {
-                circleText.textContent = '날숨 (3초)';
-                circle.className = 'breathing-circle exhale';
-                
-                breathingTimer = setTimeout(() => {
-                    breathingPhase = 'exhale-hold';
-                    breathingCycle();
-                }, 3000);
-
-            } else if (breathingPhase === 'exhale-hold') {
-                circleText.textContent = '멈춤 (1초)';
-                circle.className = 'breathing-circle exhale-hold';
-                
-                breathingTimer = setTimeout(() => {
-                    currentBreath++;
-                    breathingPhase = 'inhale';
-                    
-                    if (currentBreath > 10) {
-                        currentSet++;
-                        currentBreath = 1;
-                        
-                        if (currentSet > 2) {
-                            completeExercise();
-                        } else {
-                            startRest();
-                        }
-                    } else {
-                        breathingCycle();
-                    }
-                }, 1000);
-            }
-        }
-
-        function startRest() {
-            document.getElementById('breathingSection').style.display = 'none';
-            
-            // 🔧 기존 타이머 정리
-            stopGlobalRestTimer();
-            clearInterval(restTimer);
-            
-            // 🎮 퀴즈 시스템이 활성화되어 있으면 퀴즈 제안부터 시작
-            if (QUIZ_CONFIG.QUIZ_ENABLED) {
-                showRestIntro();
-            } else {
-                showNormalRest();
-            }
-        }
-
-        // 🔧 전역 타이머 관리 함수들
-        function startGlobalRestTimer() {
-            globalRestTime = 120;
-            
-            if (globalRestTimer) {
-                clearInterval(globalRestTimer);
-            }
-            
-            globalRestTimer = setInterval(() => {
-                if (isAborted) {
-                    clearInterval(globalRestTimer);
-                    return;
-                }
-                
-                // 모든 화면의 카운트다운 업데이트
-                updateAllCountdowns();
-                globalRestTime--;
-                
-                if (globalRestTime < 0) {
-                    clearInterval(globalRestTimer);
-                    startNextSet();
-                }
-            }, 1000);
-        }
-
-        function updateAllCountdowns() {
-            const countdownElements = [
-                'restCountdown',
-                'quizOfferCountdown', 
-                'quizCountdown',
-                'quizRewardCountdown'  // 🔧 보상 화면 카운트다운 추가
-            ];
-            
-            countdownElements.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.textContent = globalRestTime;
-                }
-            });
-        }
-
-        function stopGlobalRestTimer() {
-            if (globalRestTimer) {
-                clearInterval(globalRestTimer);
-                globalRestTimer = null;
-            }
-        }
-
-        // 🎮 새로운 기능: 휴식 시간 소개 (개선된 버전)
-        function showRestIntro() {
-            document.getElementById('restSection').style.display = 'block';
-            document.getElementById('restControlButtons').style.display = 'none';
-            
-            const restProgressEl = document.getElementById('restProgressText');
-            restProgressEl.textContent = `${currentSet - 1}세트 완료`;
-            
-            // 🔧 전역 타이머 시작
-            startGlobalRestTimer();
-            
-            // GA 이벤트: 휴식 시작
-            gtag('event', 'rest_started', {
-                set_number: currentSet - 1,
-                quiz_enabled: QUIZ_CONFIG.QUIZ_ENABLED
-            });
-            
-            // 5초 후 퀴즈 제안 화면으로 전환
-            quizOfferTimer = setTimeout(() => {
-                if (!isAborted) {
-                    showQuizOffer();
-                }
-            }, QUIZ_CONFIG.OFFER_DELAY);
-        }
-
-        // 🎮 새로운 기능: 퀴즈 제안 화면 (타이머 연속성 개선)
-        function showQuizOffer() {
-            document.getElementById('restSection').style.display = 'none';
-            document.getElementById('quizOfferSection').style.display = 'block';
-            
-            // GA 이벤트: 퀴즈 제안 노출
-            gtag('event', 'quiz_offer_shown', {
-                set_number: currentSet - 1,
-                remaining_rest_time: globalRestTime
-            });
-        }
-
-        // 🎮 새로운 기능: 퀴즈 시작
-        function startQuiz() {
-            document.getElementById('quizOfferSection').style.display = 'none';
-            document.getElementById('quizProgressSection').style.display = 'block';
-            
-            // 퀴즈 상태 초기화
-            currentQuizQuestion = 0;
-            quizCorrectAnswers = 0;
-            quizStartTime = getCurrentUserTime();
-            
-            // 🎯 랜덤 2문제 선택
-            selectRandomQuestions();
-            
-            // GA 이벤트: 퀴즈 시작
-            gtag('event', 'quiz_started', {
-                set_number: currentSet - 1,
-                remaining_rest_time: parseInt(document.getElementById('restCountdown').textContent),
-                selected_questions: selectedQuestions
-            });
-            
-            showQuizQuestion();
-        }
-
-        // 🎮 새로운 기능: 퀴즈 문제 표시 (랜덤 문제 지원)
-        function showQuizQuestion() {
-            const questionIndex = selectedQuestions[currentQuizQuestion];
-            const question = QUIZ_QUESTIONS[questionIndex];
-            const questionEl = document.getElementById('quizQuestion');
-            const optionsEl = document.getElementById('quizOptions');
-            const explanationEl = document.getElementById('quizExplanation');
-            const progressFillEl = document.getElementById('quizProgressFill');
-            const progressTextEl = document.getElementById('quizProgressText');
-            const quizCountdownEl = document.getElementById('quizCountdown');
-            
-            // 문제 표시
-            questionEl.textContent = question.question;
-            
-            // 선택지 생성
-            optionsEl.innerHTML = '';
-            question.options.forEach((option, index) => {
-                const optionEl = document.createElement('div');
-                optionEl.className = 'quiz-option';
-                optionEl.textContent = option;
-                optionEl.onclick = () => selectQuizAnswer(index, questionIndex);
-                optionsEl.appendChild(optionEl);
-            });
-            
-            // 설명 숨기기
-            explanationEl.style.display = 'none';
-            
-            // 진행률 업데이트 (2문제 기준)
-            const progress = ((currentQuizQuestion + 1) / 2) * 100;
-            progressFillEl.style.width = `${progress}%`;
-            progressTextEl.textContent = `문제 ${currentQuizQuestion + 1} / 2`;
-            
-            // 카운트다운 동기화
-            const syncInterval = setInterval(() => {
-                const restCountdownEl = document.getElementById('restCountdown');
-                const currentTime = restCountdownEl.textContent;
-                quizCountdownEl.textContent = currentTime;
-                
-                if (parseInt(currentTime) <= 0) {
-                    clearInterval(syncInterval);
-                }
-            }, 1000);
-        }
-
-        // 🎮 새로운 기능: 퀴즈 답안 선택 (배지 추적 추가)
-        function selectQuizAnswer(selectedIndex, questionIndex) {
-            const question = QUIZ_QUESTIONS[questionIndex];
-            const optionsEl = document.getElementById('quizOptions');
-            const explanationEl = document.getElementById('quizExplanation');
-            const options = optionsEl.querySelectorAll('.quiz-option');
-            
-            // 선택지 비활성화
-            options.forEach(option => {
-                option.style.pointerEvents = 'none';
-            });
-            
-            // 정답/오답 표시
-            options[selectedIndex].classList.add(selectedIndex === question.correct ? 'correct' : 'incorrect');
-            if (selectedIndex !== question.correct) {
-                options[question.correct].classList.add('correct');
-            }
-            
-            // 정답 카운트
-            if (selectedIndex === question.correct) {
-                quizCorrectAnswers++;
-            }
-            
-            // 🎮 푼 문제 기록 (배지용)
-            addSolvedQuestion(questionIndex);
-            
-            // 설명 표시
-            explanationEl.textContent = question.explanation;
-            explanationEl.style.display = 'block';
-            
-            // GA 이벤트: 답안 선택
-            gtag('event', 'quiz_answer_selected', {
-                question_number: currentQuizQuestion + 1,
-                question_index: questionIndex,
-                selected_answer: selectedIndex,
-                correct_answer: question.correct,
-                is_correct: selectedIndex === question.correct
-            });
-            
-            // 2초 후 다음 문제 또는 결과 화면
-            setTimeout(() => {
-                currentQuizQuestion++;
-                if (currentQuizQuestion < 2) { // 2문제로 변경
-                    showQuizQuestion();
-                } else {
-                    showQuizResult();
-                }
-            }, 2500);
-        }
-
-        // 🎮 새로운 기능: 퀴즈 결과 화면
-        function showQuizResult() {
-            document.getElementById('quizProgressSection').style.display = 'none';
-            document.getElementById('quizRewardSection').style.display = 'block';
-            
-            const quizEndTime = getCurrentUserTime();
-            const quizDuration = Math.floor((quizEndTime - quizStartTime) / 1000);
-            
-            // 🎮 퀴즈 완료 배지 처리
-            handleQuizCompletionBadges();
-            
-            // 보상 내용 업데이트 (현재 상품 로테이션 사용)
-            updateRewardContent();
-            
-            // GA 이벤트: 퀴즈 완료
-            gtag('event', 'quiz_completed', {
-                correct_answers: quizCorrectAnswers,
-                total_questions: 2,
-                quiz_duration_seconds: quizDuration,
-                accuracy_percentage: Math.round((quizCorrectAnswers / 2) * 100)
-            });
-        }
-
-        // 🎮 새로운 기능: 퀴즈 완료 배지 처리
-        function handleQuizCompletionBadges() {
-            let badgesToShow = [];
-            
-            // 퀴즈 탐험가: 2문제를 모두 정답으로 맞혔을 때
-            if (quizCorrectAnswers === 2) {
-                incrementQuizPerfectCount();
-                updateConsecutivePerfectCount(true);
-                
-                const isNewBadge = saveBadge('quiz_explorer');
-                if (isNewBadge) {
-                    const badge = BADGES_CONFIG.find(b => b.id === 'quiz_explorer');
-                    badgesToShow.push(badge);
-                }
-            } else {
-                updateConsecutivePerfectCount(false);
-            }
-            
-            // 퀴즈 완벽주의자: 3번 연속 완벽
-            if (getConsecutivePerfectCount() >= 3) {
-                const isNewBadge = saveBadge('quiz_perfectionist');
-                if (isNewBadge) {
-                    const badge = BADGES_CONFIG.find(b => b.id === 'quiz_perfectionist');
-                    badgesToShow.push(badge);
-                }
-            }
-            
-            // 퀴즈 마스터: 모든 문제 경험
-            if (getSolvedQuestionsCount() >= 6) {
-                const isNewBadge = saveBadge('quiz_master');
-                if (isNewBadge) {
-                    const badge = BADGES_CONFIG.find(b => b.id === 'quiz_master');
-                    badgesToShow.push(badge);
-                }
-            }
-            
-            // 배지가 있으면 첫 번째 배지 즉시 팝업 표시
-            if (badgesToShow.length > 0) {
-                setTimeout(() => {
-                    showBadgePopup(badgesToShow[0]);
-                }, 1000);
-            }
-        }
-
-        // 🎮 새로운 기능: 보상 내용 업데이트 (상품 로테이션 적용)
-        function updateRewardContent() {
-            const rewardSubtitle = document.getElementById('quizRewardSubtitle');
-            const productName = document.getElementById('rewardProductName');
-            const productDescription = document.getElementById('rewardProductDescription');
-            const productImage = document.getElementById('rewardProductImage');
-            const originalPrice = document.getElementById('rewardOriginalPrice');
-            const discountPrice = document.getElementById('rewardDiscountPrice');
-            const discountBadge = document.getElementById('rewardDiscountBadge');
-            
-            // 정답 개수에 따른 메시지
-            if (quizCorrectAnswers === 2) {
-                rewardSubtitle.textContent = '🌟 완벽! 모든 문제를 맞혔어요!';
-            } else if (quizCorrectAnswers >= 1) {
-                rewardSubtitle.textContent = `👍 훌륭해요! ${quizCorrectAnswers}문제 정답!`;
-            } else {
-                rewardSubtitle.textContent = `💪 좋아요! 도전해주셔서 감사해요!`;
-            }
-            
-            // 🎁 현재 상품 로테이션 적용
-            const currentProduct = getCurrentProduct();
-            
-            productName.textContent = currentProduct.name;
-            productDescription.textContent = currentProduct.description;
-            productImage.src = currentProduct.image;
-            originalPrice.textContent = currentProduct.originalPrice;
-            discountPrice.textContent = currentProduct.discountPrice;
-            discountBadge.textContent = `${currentProduct.discountPercent}% 할인`;
-            
-            // 퀴즈 카운트 증가
-            incrementQuizCount();
-        }
-
-        // 🎮 새로운 기능: 특가 확인하기 (새 탭으로 열기)
-        function checkSpecialOffer() {
-            const shopUrl = generateShopUrl();
-            
-            // GA 이벤트: 특가 확인
-            gtag('event', 'special_offer_checked', {
-                correct_answers: quizCorrectAnswers,
-                total_questions: 2,
-                discount_percentage: getCurrentProduct().discountPercent,
-                shop_url: shopUrl,
-                open_method: 'new_tab'
-            });
-            
-            // 새 탭에서 쇼핑몰 열기 (앱은 그대로 유지)
-            window.open(shopUrl, '_blank');
-            
-            // 사용자에게 피드백 제공
-            const checkButton = document.querySelector('.quiz-check-button');
-            const originalText = checkButton.textContent;
-            checkButton.textContent = '✅ 새 탭에서 열림';
-            checkButton.style.background = 'rgba(76, 175, 80, 0.9)';
-            checkButton.style.color = 'white';
-            
-            // 3초 후 원래 상태로 복원
-            setTimeout(() => {
-                checkButton.textContent = originalText;
-                checkButton.style.background = '';
-                checkButton.style.color = '';
-            }, 3000);
-        }
-
-        // 🎮 새로운 기능: 쇼핑몰 URL 생성 (상품 로테이션 적용)
-        function generateShopUrl() {
-            const currentProduct = getCurrentProduct();
-            const baseUrl = `${QUIZ_CONFIG.SHOP_URL}${currentProduct.specialPath}`;
-            const params = new URLSearchParams({
-                utm_source: 'breath_app',
-                utm_medium: 'quiz_reward',
-                utm_campaign: 'rest_quiz',
-                utm_content: `${quizCorrectAnswers}_of_2_correct`,
-                quiz_score: quizCorrectAnswers,
-                discount: currentProduct.discountPercent,
-                product_id: currentProduct.id,
-                questions_solved: getSolvedQuestionsCount()
-            });
-            
-            return `${baseUrl}?${params.toString()}`;
-        }
-
-        // 🎮 새로운 기능: 퀴즈 후 다음 세트로
-        function continueToNextSet() {
-            // 퀴즈 관련 화면 모두 숨기기
-            document.getElementById('quizRewardSection').style.display = 'none';
-            
-            // 기존 휴식 타이머 정리
-            clearInterval(restTimer);
-            clearTimeout(quizOfferTimer);
-            
-            // 다음 세트 시작
-            startNextSet();
-        }
-
-        // 🎮 새로운 기능: 휴식만 선택
-        function chooseRestOnly() {
-            document.getElementById('quizOfferSection').style.display = 'none';
-            
-            // GA 이벤트: 휴식만 선택
-            gtag('event', 'quiz_declined', {
-                set_number: currentSet - 1,
-                remaining_rest_time: parseInt(document.getElementById('restCountdown').textContent)
-            });
-            
-            showNormalRest();
-        }
-
-        // 🎮 새로운 기능: 일반 휴식 화면 (기존 방식)
-        function showNormalRest() {
-            document.getElementById('restSection').style.display = 'block';
-            document.getElementById('restControlButtons').style.display = 'block'; // 이때 건너뛰기 버튼 활성화!
-            
-            let restTime = parseInt(document.getElementById('restCountdown').textContent) || 120;
-            const restCountdownEl = document.getElementById('restCountdown');
-            const restProgressEl = document.getElementById('restProgressText');
-            
-            restProgressEl.textContent = `${currentSet - 1}세트 완료`;
-            
-            restTimer = setInterval(() => {
-                if (isAborted) {
-                    clearInterval(restTimer);
-                    return;
-                }
-                
-                restCountdownEl.textContent = restTime;
-                restTime--;
-                
-                if (restTime < 0) {
-                    clearInterval(restTimer);
-                    startNextSet();
-                }
-            }, 1000);
-        }
-
-        function skipRest() {
-            stopGlobalRestTimer(); // 🔧 전역 타이머 정리
-            incrementSkippedRestCount(); // 🎮 배지 조건용 카운트
-            startNextSet();
-        }
-
-        function startNextSet() {
-            // 🔧 모든 휴식/퀴즈 관련 화면 숨기기
-            document.getElementById('restSection').style.display = 'none';
-            document.getElementById('quizOfferSection').style.display = 'none';
-            document.getElementById('quizProgressSection').style.display = 'none';
-            document.getElementById('quizRewardSection').style.display = 'none';
-            
-            // 🔧 모든 타이머 정리
-            stopGlobalRestTimer();
-            clearTimeout(quizOfferTimer);
-            
-            // 🚀 호흡 화면 표시
-            document.getElementById('breathingSection').style.display = 'block';
-            
-            const circle = document.getElementById('breathingCircle');
-            circle.className = 'breathing-circle exhale';
-            
-            initializeProgressIndicators();
-            
-            setTimeout(() => {
-                breathingCycle();
-            }, 500);
-        }
-
-        function pauseExercise() {
-            isPaused = !isPaused;
-            const button = event.target;
-            
-            if (isPaused) {
-                clearTimeout(breathingTimer);
-                button.textContent = '계속하기';
-                document.getElementById('circleText').textContent = '일시정지';
-            } else {
-                button.textContent = '일시정지';
-                breathingCycle();
-            }
-        }
-
-        async function completeExercise() {
-            clearTimeout(breathingTimer);
-            clearInterval(restTimer);
-            
-            const exerciseTime = Math.floor((getCurrentUserTime() - exerciseStartTime) / 1000);
-            const minutes = Math.floor(exerciseTime / 60);
-            const seconds = exerciseTime % 60;
-            
-            // 🔧 완료 세트 계산 수정: 10회 호흡을 완료한 세트만 카운트
-            let actualCompletedSets = 0;
-            if (!isAborted) {
-                actualCompletedSets = 2; // 완전히 끝까지 한 경우
-            } else {
-                // 중단한 경우: 완료된 세트 수 정확히 계산
-                if (currentSet === 1) {
-                    // 첫 세트 도중에 중단: 0세트 완료
-                    actualCompletedSets = 0;
-                } else if (currentSet === 2) {
-                    // 첫 세트 완료 후 중단 (휴식시간 또는 2세트 중): 1세트 완료
-                    actualCompletedSets = 1;
-                } else {
-                    // currentSet > 2인 경우는 없지만 안전장치
-                    actualCompletedSets = 2;
-                }
-            }
-            
-            // 🔧 완료 호흡 횟수 계산 개선
-            let actualCompletedBreaths = 0;
-            if (!isAborted) {
-                actualCompletedBreaths = 20;
-            } else {
-                if (currentSet === 1) {
-                    // 첫 세트 도중: 현재 호흡 - 1
-                    actualCompletedBreaths = Math.max(0, currentBreath - 1);
-                } else if (currentSet === 2) {
-                    // 두 번째 세트: 첫 세트 10회 + 현재 호흡 - 1
-                    actualCompletedBreaths = 10 + Math.max(0, currentBreath - 1);
-                }
-            }
-            
-            window.exerciseData = {
-                exerciseTime: `${minutes}:${seconds.toString().padStart(2, '0')}`,
-                completedSets: actualCompletedSets,
-                completedBreaths: actualCompletedBreaths,
-                isAborted: isAborted,
-                resistanceSettings: { ...resistanceSettings },
-                userFeedback: userFeedback
-            };
-
-            setTimeout(() => {
-                showFeedbackScreen();
-            }, 1000);
-        }
-
-        async function showResultScreen() {
-            try {
-                console.log('📋 결과 화면 표시 시작');
-                
-                showScreen('resultScreen');
-                
-                const timeData = window.exerciseData.exerciseTime.split(':');
-                const minutes = parseInt(timeData[0]);
-                const seconds = parseInt(timeData[1]);
-                
-                // 결과 통계 업데이트
-                document.getElementById('resistanceInfo').textContent = `${window.exerciseData.resistanceSettings.inhale}/${window.exerciseData.resistanceSettings.exhale}`;
-                document.getElementById('totalTime').textContent = `${minutes}분 ${seconds}초`;
-                document.getElementById('completedSets').textContent = `${window.exerciseData.completedSets}/2`;
-                document.getElementById('totalBreathsResult').textContent = `${window.exerciseData.completedBreaths}회`;
-                
-                document.getElementById('intensityAdvice').textContent = '강도 조절 분석을 진행하고 있습니다...';
-                document.getElementById('comprehensiveAdvice').textContent = 'AI 숨트레이너가 당신의 트레이닝을 분석하고 있습니다...';
-                
-                const exerciseDataWithFeedback = {
-                    ...window.exerciseData,
-                    userFeedback: userFeedback
-                };
-                
-                console.log('🎯 AI 분석용 최종 데이터:', exerciseDataWithFeedback);
-                
-                gtag('event', 'exercise_complete', {
-                    exercise_duration: exerciseDataWithFeedback.exerciseTime,
-                    completed_sets: exerciseDataWithFeedback.completedSets,
-                    completed_breaths: exerciseDataWithFeedback.completedBreaths,
-                    is_aborted: exerciseDataWithFeedback.isAborted,
-                    user_feedback: exerciseDataWithFeedback.userFeedback,
-                    inhale_resistance: exerciseDataWithFeedback.resistanceSettings.inhale,
-                    exhale_resistance: exerciseDataWithFeedback.resistanceSettings.exhale
-                });
-                
-                // 🎮 통계 업데이트 및 배지 체크
-                const updatedStats = updateLocalStats(window.exerciseData);
-                addExerciseHistory(exerciseDataWithFeedback);
-                
-                // 🎮 새 배지 체크 및 표시
-                const newBadges = checkNewBadges(updatedStats);
-                updateBadgesDisplay();
-                
-                // 🔥 새로운 기능: 사회적 증명 UI 초기화
-                updateSocialProofData();
-                initReviewsCarousel();
-                
-                if (newBadges.length > 0) {
-                    // 첫 번째 새 배지만 팝업으로 표시 (여러 개면 순차적으로)
-                    setTimeout(() => {
-                        showBadgePopup(newBadges[0]);
-                    }, 1000);
-                }
-                
-                const aiAdvice = await getTrainerAdvice(exerciseDataWithFeedback);
-                
-                console.log('🤖 AI 조언 결과:', aiAdvice);
-                
-                if (typeof aiAdvice === 'object' && aiAdvice.intensityAdvice && aiAdvice.comprehensiveAdvice) {
-                    handleExerciseResult({
-                        success: true,
-                        intensityAdvice: aiAdvice.intensityAdvice,
-                        comprehensiveAdvice: aiAdvice.comprehensiveAdvice,
-                        stats: updatedStats
-                    });
-                } else if (typeof aiAdvice === 'string') {
-                    handleExerciseResult({
-                        success: true,
-                        intensityAdvice: aiAdvice,
-                        comprehensiveAdvice: "AI 트레이너가 당신의 꾸준한 노력을 응원합니다!",
-                        stats: updatedStats
-                    });
-                } else {
-                    throw new Error('AI 조언 형식 오류');
-                }
-                
-                console.log('✅ 결과 화면 처리 완료');
-                
-            } catch (error) {
-                console.error('❌ showResultScreen 오류:', error);
-                
-                document.getElementById('intensityAdvice').textContent = '분석을 불러오는 중 문제가 발생했습니다.';
-                document.getElementById('comprehensiveAdvice').textContent = '네트워크 연결을 확인하고 다시 시도해주세요.';
-                
-                const updatedStats = updateLocalStats(window.exerciseData);
-                addExerciseHistory(window.exerciseData);
-                updateBadgesDisplay();
-                updateSocialProofData();
-                initReviewsCarousel();
-            }
-        }
-
-        // 🎯 개선된 결과 처리 함수 (스마트 분석 적용)
-        function handleExerciseResult(result) {
-            addFeedbackHistory(userFeedback, resistanceSettings);
-            const analysis = analyzeFeedbackPattern(userFeedback, resistanceSettings);
-            
-            console.log('🧠 스마트 분석 결과:', analysis);
-            
-            let finalIntensityAdvice = result.intensityAdvice;
-            let finalComprehensiveAdvice = result.comprehensiveAdvice;
-            
-            const additionalAdvice = generateLocalAdviceAddition(analysis, userFeedback, window.exerciseData.isAborted);
-            if (additionalAdvice) {
-                finalIntensityAdvice += additionalAdvice;
-            }
-            
-            document.getElementById('intensityAdvice').innerHTML = finalIntensityAdvice.replace(/\n/g, '<br>');
-            document.getElementById('comprehensiveAdvice').innerHTML = finalComprehensiveAdvice.replace(/\n/g, '<br>');
-        }
-
-        function resetExercise() {
-            currentSet = 1;
-            currentBreath = 1;
-            isPaused = false;
-            isAborted = false;
-            breathingPhase = 'inhale';
-            userFeedback = null;
-            clearTimeout(breathingTimer);
-            clearInterval(restTimer);
-            
-            // 🎮 퀴즈 시스템 초기화
-            currentQuizQuestion = 0;
-            quizCorrectAnswers = 0;
-            quizStartTime = null;
-            selectedQuestions = [];
-            clearTimeout(quizOfferTimer);
-            
-            // 🔥 새로운 기능: 리뷰 캐러셀 정리
-            if (reviewCarouselInterval) {
-                clearInterval(reviewCarouselInterval);
-            }
-            
-            // 모든 화면 숨기기
-            document.getElementById('countdownSection').style.display = 'block';
-            document.getElementById('breathingSection').style.display = 'none';
-            document.getElementById('restSection').style.display = 'none';
-            document.getElementById('quizOfferSection').style.display = 'none';
-            document.getElementById('quizProgressSection').style.display = 'none';
-            document.getElementById('quizRewardSection').style.display = 'none';
-        }
-
-        window.onload = function() {
-            loadUserData();
-            loadResistanceSettings();
-            updateBadgesDisplay();
-            
-            // 🔥 새로운 기능: 페이지 로드시 사회적 증명 데이터 업데이트
-            updateSocialProofData();
-            
-            // 🔥 새로운 기능: 메인화면 실시간 현황 주기적 업데이트 (2분마다)
-            setInterval(() => {
-                updateSocialProofData();
-            }, 120000);
-            // 🔥 새로운 기능: 온보딩 스와이프 초기화
-            initializeOnboardingSwipe();
-        };
-
-        // Service Worker 등록
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                        console.log('✅ ServiceWorker 등록 성공:', registration.scope);
-                        registration.update();
-                    })
-                    .catch(function(error) {
-                        console.log('❌ ServiceWorker 등록 실패:', error);
-                    });
-            });
-        }
-    </script>
-</body>
-</html>

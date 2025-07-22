@@ -3,7 +3,7 @@
   "short_name": "숨트레이너",
   "version": "1.0.0",
   "description": "AI와 함께하는 스마트 호흡운동 트레이닝 앱",
-  "start_url": "/?v=1.0.0",
+  "start_url": "/?v=1.0.1",
   "display": "standalone",
   "background_color": "#F9FAFC",
   "theme_color": "#667eea",

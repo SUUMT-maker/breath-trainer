@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "com.breathtrainer.app",
-        "sha256_cert_fingerprints": ["ED:87:02:29:91:CF:DA:03:9D:7C:E1:E3:FB:3E:37:18:2D:59:89:C0:88:B4:E6:10:14:DA:53:00:8F:73:24:81"]
+        "sha256_cert_fingerprints": ["15:59:CB:06:84:B6:BF:53:FC:C6:AF:79:88:3E:6E:12:3D:2B:48:61:90:0D:89:D3:23:4E:F1:E0:2E:A8:93:3B"]
       }
     }]

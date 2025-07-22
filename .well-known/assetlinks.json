@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "com.breathtrainer.app",
-        "sha256_cert_fingerprints": ["15:59:CB:06:84:B6:BF:53:FC:C6:AF:79:88:3E:6E:12:3D:2B:48:61:90:0D:89:D3:23:4E:F1:E0:2E:A8:93:3B"]
+        "package_name": "app.vercel.breath_trainer_tawny.twa",
+        "sha256_cert_fingerprints": ["BB:85:10:DB:8C:47:6D:AD:AA:52:13:6D:7C:27:5A:8E:9F:01:7F:71:F1:59:2E:F3:62:E8:82:B9:A7:98:50:C3"]
       }
     }]

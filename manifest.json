@@ -64,7 +64,7 @@
       "name": "트레이닝 시작",
       "short_name": "트레이닝",
       "description": "바로 호흡 트레이닝 시작하기",
-      "url": "/?action=start-training&v=1.0.0",
+      "url": "/?action=start-training&v=1.0.1",
       "icons": [
         {
           "src": "/icons/icon-192x192.png",

@@ -4089,7 +4089,7 @@ function hideIntro() {
             updateProgressIndicators();
 
             if (breathingPhase === 'inhale') {
-                circleText.textContent = '들숨 (3초)';
+                circleText.textContent = '깊게 들이마셔요';
                 circle.className = 'breathing-circle inhale';
                 
                 breathingTimer = setTimeout(() => {
@@ -4098,7 +4098,7 @@ function hideIntro() {
                 }, 3000);
 
             } else if (breathingPhase === 'hold') {
-                circleText.textContent = '멈춤 (1초)';
+                circleText.textContent = '잠시 멈추세요';
                 circle.className = 'breathing-circle hold';
                 
                 breathingTimer = setTimeout(() => {
@@ -4107,7 +4107,7 @@ function hideIntro() {
                 }, 1000);
 
             } else if (breathingPhase === 'exhale') {
-                circleText.textContent = '날숨 (3초)';
+                circleText.textContent = '깊게 들이마셔요';
                 circle.className = 'breathing-circle exhale';
                 
                 breathingTimer = setTimeout(() => {
@@ -4116,7 +4116,7 @@ function hideIntro() {
                 }, 3000);
 
             } else if (breathingPhase === 'exhale-hold') {
-                circleText.textContent = '멈춤 (1초)';
+                circleText.textContent = '잠시 멈추세요';
                 circle.className = 'breathing-circle exhale-hold';
                 
                 breathingTimer = setTimeout(() => {
